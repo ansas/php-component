@@ -58,7 +58,7 @@ namespace Ansas\Component\Session;
  *
  * @author Ansas Meyer <webmaster@ansas-meyer.de>
  */
-class ThriftyFileSession implements SessionHandlerInterface
+class ThriftyFileSession implements \SessionHandlerInterface
 {
     /**
      * @var int
@@ -148,15 +148,15 @@ class ThriftyFileSession implements SessionHandlerInterface
         static::$handler = (string) ini_get('session.save_handler');
 
         if (self::started()) {
-            throw new Exception("Session already started");
+            throw new \Exception("Session already started");
         }
 
         if (headers_sent($file, $line)) {
-            throw new Exception(sprintf("Headers already sent in file %s on line %d", $file, $line));
+            throw new \Exception(sprintf("Headers already sent in file %s on line %d", $file, $line));
         }
 
         if (!session_set_save_handler($this, false)) {
-            throw new Exception(sprintf("Cannot set %s as session handler", __CLASS__));
+            throw new \Exception(sprintf("Cannot set %s as session handler", __CLASS__));
         }
 
         register_shutdown_function([__CLASS__, 'kill']);
