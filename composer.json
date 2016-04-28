@@ -1,0 +1,27 @@
+{
+    "name": "ansas/php-component",
+    "type": "library",
+    "description": "Collection of cross-project PHP classes",
+    "keywords": [
+        "PHP",
+        "component",
+        "convert",
+        "session",
+        "format",
+        "file"
+    ],
+    "license": "MIT",
+    "authors": [{
+        "name": "Ansas Meyer",
+        "email": "webmaster@ansas-meyer.de",
+        "homepage": "https://ansas-meyer.de"
+    }],
+    "require": {
+        "php": ">=5.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ansas\\Component\\": "src/"
+        }
+    }
+}
