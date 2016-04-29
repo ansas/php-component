@@ -175,6 +175,10 @@ class ThriftyFileSession implements \SessionHandlerInterface
         // and therefore won't work with relative paths
         static::$path = realpath($path);
 
+        if (!is_writable(static::$path)) {
+            throw new \Exception(sprintf("Session path %s is not writable", static::$path));
+        }
+
         return true;
     }
 
