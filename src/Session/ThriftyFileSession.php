@@ -61,93 +61,100 @@ namespace Ansas\Component\Session;
 class ThriftyFileSession implements \SessionHandlerInterface
 {
     /**
-     * @var int
-     */
-    protected static $ttl;
-
-    /**
      * @var string
      */
-    protected static $path;
-    protected static $handler;
-    protected static $prefix = 'sess_';
+    protected $path    = null;
+    protected $handler = null;
+    protected $prefix  = 'sess_';
 
     /**
-     * @var bool
+     * @var boolean
      */
-    protected static $cookie;
-    protected static $exists;
+    protected $cookie;
+    protected $exists;
+
+    /**
+     * @var int
+     */
+    protected $ttl;
 
     /**
      * @var object
      */
+    protected $cleanup = null;
     protected static $instance = null;
-    protected static $cleanup = null;
 
     /**
      * Returns new or existing singleton instance
      *
-     * @return $this
+     * @return ThriftyFileSession
      */
-    public static function getInstance($start = false)
-    {
-        return self::init($start);
-    }
-
-    public static function init($start = true)
+    public static function getInstance()
     {
         if (null === static::$instance) {
             static::$instance = new self();
         }
-
-        if (
-            $start
-            && !self::started()
-        ) {
-            session_start();
-        }
-
         return static::$instance;
     }
 
-    public static function started()
+    /**
+     * Start session (init)
+     *
+     * Usually the only method you have to call. A new instance will be
+     * created (if needed) and the session is started.
+     */
+    public static function init()
     {
-        return session_status() === PHP_SESSION_ACTIVE;
+        self::getInstance()->sessionStart();
     }
 
+    /**
+     * Set time-to-live (ttl) for the session cookie
+     *
+     * @param int $ttl time-to-live for the session in seconds
+     */
     public static function ttl($ttl)
     {
-        static::$ttl = (int) $ttl;
+        self::getInstance()->setCookieLifetime($ttl);
     }
 
-    public static function cleanup($cleanup)
+    /**
+     * Set callback function to execute directly before session is
+     * closed (either when ThriftyFileSession::kill() is called or
+     * when script is terminated)
+     *
+     * @param callable $callback function to call on session termination
+     */
+    public static function cleanup($callback)
     {
-        static::$cleanup = $cleanup;
+        self::getInstance()->setCleanupCallback($callback);
     }
 
-    public static function exists()
-    {
-        return (bool) static::$exists;
-    }
-
+    /**
+     * Close session manually
+     *
+     * If set via ThriftyFileSession::cleanup() the cleanup callback
+     * will be executed and the session will be closed
+     */
     public static function kill()
     {
-        if (is_callable(static::$cleanup)) {
-            call_user_func(static::$cleanup);
+        if (null !== static::$instance) {
+            self::getInstance()->sessionEnd();
+            static::$instance = null;
         }
-        session_write_close();
     }
 
-    protected function __construct()
+
+    public function __construct()
     {
         // Note: ttl of cookie can be overwritten later and via ttl()
         // method as long as this object is not destroyed
-        static::$ttl = (int) ini_get('session.gc_maxlifetime');
+        $this->setCookieLifetime(ini_get('session.gc_maxlifetime'));
 
-        // Make sure save handler is 'files'
-        static::$handler = (string) ini_get('session.save_handler');
+        $this->cookie  = (bool)   ini_get('session.use_cookies');
+        $this->handler = (string) ini_get('session.save_handler');
 
-        if (self::started()) {
+        if ($this->isStarted()) {
             throw new \Exception("Session already started");
         }
 
@@ -163,7 +170,36 @@ class ThriftyFileSession implements \SessionHandlerInterface
 
         // Make sure no output is printed until __destruct() of this
         // class is called so that we can set session cookie later
-        ob_start();
+        if (!ob_start()) {
+            throw new \Exception("Cannot start output buffer");
+        }
+    }
+
+    public function __destruct()
+    {
+        if (
+            $this->cookie
+            && $this->exists
+            && !headers_sent()
+        ) {
+            setcookie(
+                session_name(),
+                session_id() ?: '-',
+                session_id() ? time() + $this->cookieLifetime : 1,
+                ini_get('session.cookie_path'),
+                ini_get('session.cookie_domain'),
+                ini_get('session.cookie_secure'),
+                ini_get('session.cookie_httponly')
+            );
+        }
+
+        // Restore overwritten ini settings
+        ini_set('session.save_handler', $this->handler);
+        ini_set('session.use_cookies', $this->cookie);
+
+        if (ob_get_length()) {
+            ob_end_flush();
+        }
     }
 
     private function __clone() {}
@@ -173,10 +209,10 @@ class ThriftyFileSession implements \SessionHandlerInterface
         // Note: create realpath here as method write() will have
         // path '/' because of chdir() internally somewhere later
         // and therefore won't work with relative paths
-        static::$path = realpath($path);
+        $this->path = realpath($path);
 
-        if (!is_writable(static::$path)) {
-            throw new \Exception(sprintf("Session path %s is not writable", static::$path));
+        if (!is_writable($this->path)) {
+            throw new \Exception(sprintf("Session path %s is not writable", $this->path));
         }
 
         return true;
@@ -187,15 +223,14 @@ class ThriftyFileSession implements \SessionHandlerInterface
         // Note: Prevent PHP from always setting session cookie but do
         // not disable this feature before this point as the cookie is
         // generated later but used for getting session-id before here
-        static::$cookie = (bool) ini_get('session.use_cookies');
         ini_set('session.use_cookies', false);
 
-        static::$exists = false;
+        $this->exists = false;
         $file = $this->file($id);
         $data = '';
 
         if (file_exists($file)) {
-            static::$exists = true;
+            $this->exists = true;
             $data = (string) @file_get_contents($file);
         }
 
@@ -209,7 +244,7 @@ class ThriftyFileSession implements \SessionHandlerInterface
         // the file to prevent early garbage collection)
         if (
             $data
-            || static::$exists
+            || $this->exists
         ) {
             // Save session data in session file on disk
             $file = $this->file($id);
@@ -219,7 +254,7 @@ class ThriftyFileSession implements \SessionHandlerInterface
             }
             @chmod($file, 0600);
 
-            static::$exists = true;
+            $this->exists = true;
         }
 
         return true;
@@ -227,30 +262,6 @@ class ThriftyFileSession implements \SessionHandlerInterface
 
     public function close()
     {
-        if (
-            static::$cookie
-            && static::$exists
-            && !headers_sent()
-        ) {
-            setcookie(
-                session_name(),
-                session_id() ?: '-',
-                session_id() ? time() + static::$ttl : 1,
-                ini_get('session.cookie_path'),
-                ini_get('session.cookie_domain'),
-                ini_get('session.cookie_secure'),
-                ini_get('session.cookie_httponly')
-            );
-        }
-
-        if (ob_get_length()) {
-            ob_end_flush();
-        }
-
-        // Restore overwritten ini settings
-        ini_set('session.save_handler', static::$handler);
-        ini_set('session.use_cookies', static::$cookie);
-
         return true;
     }
 
@@ -281,8 +292,81 @@ class ThriftyFileSession implements \SessionHandlerInterface
         return true;
     }
 
+    /**
+     * Checks if the session is already started (active)
+     *
+     * @return boolean
+     */
+    public function isStarted()
+    {
+        return session_status() == PHP_SESSION_ACTIVE;
+    }
+
     protected function file($id)
     {
-        return sprintf('%s/%s%s', static::$path, static::$prefix, $id);
+        if (is_null($this->path)) {
+            throw new \Exception("Path not set");
+        }
+
+        return sprintf('%s/%s%s', $this->path, $this->prefix, $id);
+    }
+
+    public function getCleanupCallback()
+    {
+        return $this->cleanupCallback;
+    }
+
+    public function sessionStart()
+    {
+        if (!$this->isStarted()) {
+            session_start();
+        }
+
+        return $this;
+    }
+
+    public function sessionEnd()
+    {
+        if ($this->isStarted()) {
+            if (is_callable($this->getCleanupCallback())) {
+                call_user_func($this->getCleanupCallback());
+            }
+            session_write_close();
+        }
+
+        return $this;
+    }
+
+    public function getCookieLifetime()
+    {
+        return $this->cookieLifetime;
+    }
+
+    public function setCleanupCallback($callback)
+    {
+        if (
+            !is_null($callback)
+            && !is_callable($callback)
+        ) {
+            throw new \InvalidArgumentException("No callable function provided");
+        }
+
+        $this->cleanupCallback = $callback;
+
+        return $this;
+    }
+
+    public function setCookieLifetime($ttl)
+    {
+        if (
+            !is_null($ttl)
+            && !is_numeric($ttl)
+        ) {
+            throw new \InvalidArgumentException("No valid ttl provided");
+        }
+
+        $this->cookieLifetime = (int) $ttl;
+
+        return $this;
     }
 }
