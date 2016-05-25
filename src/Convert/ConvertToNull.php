@@ -21,6 +21,8 @@ namespace Ansas\Component\Convert;
  * we have a more cleaned up object and also prevent e. g. the "versionable"
  * behavior from adding a new version (as "" !== null).
  *
+ * You can also provide an array $value and it will be sanitized recursive.
+ *
  * @author Ansas Meyer <webmaster@ansas-meyer.de>
  */
 trait ConvertToNull
@@ -44,25 +46,40 @@ trait ConvertToNull
      *
      * @param mixed $value Value to sanitize
      * @param array $considerNull Values to convert to null
+     * @param bool $trim Trim string values, default is false
      * @return mixed Sanitized value
      */
-    protected function convertToNull($value, array $considerNull)
+    protected function convertToNull($value, array $considerNull, $trim = false)
     {
-        if ($value !== null) {
-            $compareOriginal = $value;
-            if (is_string($compareOriginal)) {
-                $compareOriginal = mb_strtolower($compareOriginal);
+        if ($value === null) {
+            return $value;
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $subKey => $subValue) {
+                $value[$subKey] = $this->convertToNull($subValue, $considerNull);
             }
-            foreach ($considerNull as $compareNull) {
-                if (is_string($compareNull)) {
-                    $compareNull = mb_strtolower($compareNull);
-                }
-                if ($compareOriginal === $compareNull) {
-                    $value = null;
-                    break;
-                }
+            return $value;
+        }
+
+        $compareOriginal = $value;
+        if (is_string($value)) {
+            if ($trim) {
+                $value = trim($value);
+            }
+            $compareOriginal = mb_strtolower($value);
+        }
+
+        foreach ($considerNull as $compareNull) {
+            if (is_string($compareNull)) {
+                $compareNull = mb_strtolower($compareNull);
+            }
+            if ($compareOriginal === $compareNull) {
+                $value = null;
+                break;
             }
         }
+
         return $value;
     }
 
@@ -75,7 +92,7 @@ trait ConvertToNull
      */
     protected function trimAndConvertEmptyToNull($value, array $considerNull = [''])
     {
-        return $this->trimAndConvertToNull($value, $considerNull);
+        return $this->convertToNull($value, $considerNull, true);
     }
 
     /**
@@ -87,9 +104,6 @@ trait ConvertToNull
      */
     protected function trimAndConvertToNull($value, array $considerNull)
     {
-        if (is_string($value)) {
-            $value = trim($value);
-        }
-        return $this->convertToNull($value, $considerNull);
+        return $this->convertToNull($value, $considerNull, true);
     }
 }
