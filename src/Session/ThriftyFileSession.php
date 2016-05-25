@@ -225,8 +225,7 @@ class ThriftyFileSession implements \SessionHandlerInterface
      */
     public function __destruct()
     {
-        if (
-            $this->cookie
+        if ($this->cookie
             && $this->exists
             && !headers_sent()
         ) {
@@ -255,7 +254,9 @@ class ThriftyFileSession implements \SessionHandlerInterface
      *
      * Make sure instance cannot be cloned
      */
-    private function __clone() {}
+    private function __clone()
+    {
+    }
 
     /**
      * INTERNAL METHOD open
@@ -299,8 +300,7 @@ class ThriftyFileSession implements \SessionHandlerInterface
         // Only store session to disk if data exists or session already
         // existed before (in last case we always want to touch the file
         // to prevent early garbage collection)
-        if (
-            $data
+        if ($data
             || $this->exists
         ) {
             $file = $this->getPathForSessionId($id);
@@ -396,8 +396,7 @@ class ThriftyFileSession implements \SessionHandlerInterface
     public function start()
     {
         if (!$this->isStarted()) {
-            if (
-                $this->cookie
+            if ($this->cookie
                 && !empty($_COOKIE[session_name()])
             ) {
                 session_id($_COOKIE[session_name()]);
@@ -456,8 +455,7 @@ class ThriftyFileSession implements \SessionHandlerInterface
      */
     public function setCleanupCallback($callback)
     {
-        if (
-            !is_null($callback)
+        if (!is_null($callback)
             && !is_callable($callback)
         ) {
             throw new \InvalidArgumentException("No callable function provided");
@@ -476,8 +474,7 @@ class ThriftyFileSession implements \SessionHandlerInterface
      */
     public function setCookieLifetime($ttl)
     {
-        if (
-            !is_null($ttl)
+        if (!is_null($ttl)
             && !is_numeric($ttl)
         ) {
             throw new \InvalidArgumentException("No valid ttl provided");

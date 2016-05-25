@@ -26,7 +26,7 @@ class ConvertPrice
     /** price format cent */
     const CENT = 'cent';
 
-    protected static $_instance = NULL;
+    protected static $instance = null;
 
     /**
      * @var array
@@ -112,7 +112,6 @@ class ConvertPrice
         $this->validatePriceFormat($format);
 
         if ($format == self::EURO) {
-
             // remove: all not allowed chars
             $price = preg_replace('/[^0-9,-\.\+]/', '', $price);
 
@@ -159,11 +158,11 @@ class ConvertPrice
      */
     final public static function getInstance()
     {
-        if (null === static::$_instance) {
-            static::$_instance = new ConvertPrice();
+        if (null === static::$instance) {
+            static::$instance = new ConvertPrice();
         }
 
-        return static::$_instance;
+        return static::$instance;
     }
 
     /**
