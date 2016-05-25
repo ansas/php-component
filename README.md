@@ -29,7 +29,7 @@ behavior from adding a new version (as "" !== null).
 Methods:
 ```php
 protected function convertEmptyToNull($value, array $considerNull = [''])
-protected function convertToNull($value, array $considerNull)
+protected function convertToNull($value, array $considerNull, $trim = false)
 protected function trimAndConvertEmptyToNull($value, array $considerNull = [''])
 protected function trimAndConvertToNull($value, array $considerNull)
 ```
