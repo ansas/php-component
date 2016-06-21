@@ -71,9 +71,11 @@ class ThriftyFileSession implements \SessionHandlerInterface
     /**
      * @var boolean $cookie Flag if cookies are supposed to be set
      * @var boolean $cookie Flag if session exists on disk
+     * @var boolean $force  Flag if session is to be started even with no data
      */
     protected $cookie = false;
     protected $exists = false;
+    protected $force  = false;
 
     /**
      * @var int $ttl Cookie time-to-live value in seconds
@@ -116,6 +118,17 @@ class ThriftyFileSession implements \SessionHandlerInterface
     public static function init()
     {
         self::getInstance()->start();
+    }
+
+    /**
+     * Set force flag to always start (even emtpy) session
+     *
+     * @static
+     * @param boolean $force Start session even with no data
+     */
+    public static function force($force)
+    {
+        self::getInstance()->setForceStart($force);
     }
 
     /**
@@ -300,8 +313,10 @@ class ThriftyFileSession implements \SessionHandlerInterface
         // Only store session to disk if data exists or session already
         // existed before (in last case we always want to touch the file
         // to prevent early garbage collection)
+        // Note: This logic can be overwritten by the force flag
         if ($data
             || $this->exists
+            || $this->force
         ) {
             $file = $this->getPathForSessionId($id);
             file_put_contents($file, $data);
@@ -481,6 +496,19 @@ class ThriftyFileSession implements \SessionHandlerInterface
         }
 
         $this->cookieLifetime = (int) $ttl;
+
+        return $this;
+    }
+
+    /**
+     * Set force flag
+     *
+     * @param boolean $force Start session even with no data
+     * @return $this
+     */
+    public function setForceStart($force)
+    {
+        $this->force = (bool) $force;
 
         return $this;
     }
