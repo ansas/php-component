@@ -55,13 +55,12 @@ sessions).
 
 Methods (without internal):
 ```php
-public static function cleanup($cleanup)
-public static function exists()
-public static function getInstance($start = false)
-public static function init($start = true)
+public static function getInstance()
+public static function init()
+public static function force(boolean $force)
+public static function ttl(int $ttl)
+public static function cleanup(callable $cleanup)
 public static function kill()
-public static function started()
-public static function ttl($ttl)
 ```
 
 
