@@ -7,6 +7,7 @@ Install:
 $ composer require ansas/ansas/php-component
 ```
 
+
 ## Ansas\Component\Convert\ConvertPrice
 Convert "dirty" prices into Euro or Cent
 
@@ -67,11 +68,67 @@ public static function cleanup(callable $cleanup)
 public static function kill()
 ```
 
+
+## Ansas\Monolog\Profiler
+A small profiler (stop watch) for different profiles that are logged to any Monolog logger.
+
+Methods (without internal):
+```php
+public function __construct(Logger $logger, $level = Logger::DEBUG, callable $formatter = null)
+public function start(string $profile)
+public function lap($profile = null, $message = 'Laptime')
+public function stop($profile = null, $message = 'Runtime')
+public function clear() // removes all running profiles
+public function lastStartedProfile()
+public function countProfiles()
+public function defaultFormatter()
+public function getFormatter()
+public function getProfiles()
+public function isRunning($profile)
+public function setLevel($level)
+public function setLogger(Logger $logger)
+public function setFormatter(callable $formatter = null)
+public function quit()
+```
+
+Usage:
+```php
+use Ansas\Monolog\Profiler;
+
+$profiler = new Profiler($logger);
+
+$profiler->start("testA");
+sleep(1);
+
+$profiler->lap(); // lap last started profile
+$profiler->start("anotherB");
+sleep(1);
+
+$profiler->stop(); // stop last started profile
+$profiler->start("moreC");
+$profiler->start("lastD");
+sleep(1);
+
+$profiler->lap("moreC");
+sleep(1);
+
+// all open profiles are logged if profiler is destroyed or program ends
+$profiler = null;
+gc_collect_cycles();
+sleep(3);
+```
+
+
 ## Ansas\Monolog\Processor\ConsoleColorProcessor
 Adds colors to Monolog for console output via Processor. The `$record` parts `level_name` and `message` are colored by this processor
 
 Usage:
 ```php
+use Ansas\Monolog\Processor\ConsoleColorProcessor;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
+
 $loggerFormat   = "[%datetime%] %level_name% %message% %context%\n";
 $loggerLevel    = getenv('DEBUG') ? Logger::DEBUG : Logger::NOTICE;
 $loggerTimeZone = new DateTimeZone('Europe/Berlin');
