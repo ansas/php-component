@@ -8,7 +8,8 @@
         "convert",
         "session",
         "format",
-        "file"
+        "file",
+        "monolog"
     ],
     "license": "MIT",
     "authors": [{
@@ -21,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Ansas\\Component\\": "src/"
+            "Ansas\\": "src/"
         }
     }
 }

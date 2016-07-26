@@ -63,6 +63,40 @@ public static function cleanup(callable $cleanup)
 public static function kill()
 ```
 
+## Ansas\Monolog\Processor\ConsoleColorProcessor
+Adds colors to Monolog for console output via Processor. The `$record` parts `level_name` and `message` are colored by this processor
+
+Usage:
+```php
+$loggerFormat   = "[%datetime%] %level_name% %message% %context%\n";
+$loggerLevel    = getenv('DEBUG') ? Logger::DEBUG : Logger::NOTICE;
+$loggerTimeZone = new DateTimeZone('Europe/Berlin');
+
+$formatter = new LineFormatter($loggerFormat, $loggerTimeFormat);
+$formatter->ignoreEmptyContextAndExtra(true);
+
+$defaultHandler = new StreamHandler('php://stdout', $loggerLevel, $bubble = false);
+$defaultHandler->setFormatter($formatter);
+
+$errorHandler = new StreamHandler('php://stderr', Logger::ERROR, $bubble = false);
+$errorHandler->setFormatter($formatter);
+
+$logger = new Logger('console');
+$logger->pushHandler($defaultHandler);
+$logger->pushHandler($errorHandler);
+$logger->pushProcessor(new ConsoleColorProcessor());
+$logger->useMicrosecondTimestamps(true);
+
+$logger->debug(str_repeat("Xx ", rand(5, 40)));
+$logger->info(str_repeat("Xx ", rand(5, 40)));
+$logger->notice(str_repeat("Xx ", rand(5, 40)));
+$logger->warning(str_repeat("Xx ", rand(5, 40)));
+$logger->error(str_repeat("Xx ", rand(5, 40)));
+$logger->critical(str_repeat("Xx ", rand(5, 40)));
+$logger->alert(str_repeat("Xx ", rand(5, 40)));
+$logger->emergency(str_repeat("Xx ", rand(5, 40)));
+```
+
 
 ## TODO
 - Write tests
