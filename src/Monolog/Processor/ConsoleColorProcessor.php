@@ -1,14 +1,25 @@
 <?php declare(strict_types=1);
 
+/**
+ * This file is part of the PHP components package.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license MIT License
+ */
+
 namespace Ansas\Monolog\Processor;
 
 use Monolog\Logger;
 
 /**
+ * ConsoleColorProcessor
+ *
  * Adds color to record parts
  *
- * @see: http://misc.flogisoft.com/bash/tip_colors_and_formatting
- * @author Ansas Meyer
+ * @see http://misc.flogisoft.com/bash/tip_colors_and_formatting
+ * @author Ansas Meyer <webmaster@ansas-meyer.de>
  */
 class ConsoleColorProcessor
 {

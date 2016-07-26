@@ -2,6 +2,10 @@
 
 Collection of cross-project PHP classes
 
+Install:
+```shell
+$ composer require ansas/ansas/php-component
+```
 
 ## Ansas\Component\Convert\ConvertPrice
 Convert "dirty" prices into Euro or Cent
