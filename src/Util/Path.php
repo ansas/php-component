@@ -1,10 +1,26 @@
 <?php
 
+/**
+ * This file is part of the PHP components package.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license MIT License
+ */
+
 namespace Ansas\Util;
 
 use Exception;
 use SplFileInfo;
 
+/**
+ * Path
+ *
+ * Util class for path / directory handling
+ *
+ * @author Ansas Meyer <webmaster@ansas-meyer.de>
+ */
 class Path
 {
     /**
@@ -34,7 +50,7 @@ class Path
                 throw new Exception("Cannot determine root path.");
             }
         }
-        
+
         return $rootForPath;
     }
 }

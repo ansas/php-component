@@ -77,7 +77,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
-     * Adds item to collection for secified key 
+     * Adds item to collection for secified key
      * (converts item to array if key already exists)
      *
      * @param  mixed $key   The item key
@@ -91,12 +91,12 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
         } else {
             $this->data[$key] = (array) $this->data[$key];
             $this->data[$key][] = $value;
-        }        
+        }
         return $this;
     }
 
     /**
-     * Appends specified items to collection 
+     * Appends specified items to collection
      * (overwrites existing keys)
      *
      * @param  array $items The items to append / overwrite to collection
@@ -259,7 +259,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
 
     /**
      * Create an iterator to be able to traverse items via foreach
-     * 
+     *
      * @return \ArrayIterator
      */
     public function getIterator()
