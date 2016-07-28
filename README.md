@@ -126,25 +126,85 @@ use Ansas\Monolog\Profiler;
 
 $profiler = new Profiler($logger);
 
-$profiler->start("testA");
+// Starts default profile (must be started before any other profiles)
+$profiler->start();
+
 sleep(1);
 
-$profiler->lap(); // lap last started profile
-$profiler->start("anotherB");
+// Adds profile "testA" and logs default message "Start"
+$profiler->add("testA")->start(); 
+
 sleep(1);
 
-$profiler->stop(); // stop last started profile
-$profiler->start("moreC");
-$profiler->start("lastD");
+// Gets profile "testA" and adds a lap incl. logging it with default message 
+// "Lap"
+$profiler->get("testA")->lap();
+
+// Adds profile "anotherB" (add always returns new new profile)
+$anotherB = $profiler->add("anotherB");
+
+// Starts profile "anotherB" with individual message "B is rolling"
+$anotherB->start("B is rolling");
+
 sleep(1);
 
-$profiler->lap("moreC");
+// Add lap for default profile with individual message
+$profiler->lap("Lap for main / default profile");
+
+// Stop profile "anotherB" and log with default message "Stop"
+$anotherB->stop();
+
+// Add subprofile "moreC" to profile "anotherB" and start with individual 
+// message and context array (default Monolog / PSR3 signature)
+$moreC = $anotherB->add("moreC")->start("Message", ['key' => 1]);
+
+// Add profile "lastD"  to "anotherB" as well
+$lastD = $profiler->get("anotherB")->add("lastD");
+
+// Just log a note to profile "lastD"
+$lastD->note("Starting soon");
 sleep(1);
 
-// all open profiles are logged if profiler is destroyed or program ends
+// Clear only profile "anotherB" and start it again
+$anotherB->clear()->start("Restarting after clear");
+
+// Stopping "testA" (will not be restarted with upcomming "startAll")
+$testA = $profiler->get("testA");
+$testA->stop();
+
+// Just add a profile without doing anything (will be started with startAll)
+$profiler->add("test123");
+
+// Start all profiles incl. default that are not startet
+$profiler->startAll("Starting all profiles not started yet");
+
+// Add "veryLastE" to "lastD" but do not log it (as message is null)
+$veryLastE = $lastD->add("veryLastE")->start(null);
+
+sleep(1);
+
+// Some more profiling
+$profiler->get("anotherB")->get("moreC")->lap("Lapdance ;P");
+$veryLastE->stop("Stopping E");
+
+sleep(1);
+
+// Clear "lastD" all subprofiles (no logging will be done now or on exit)
+$lastD->clearAll("Clearing D and all subprofiles");
+
+// Stops all counters (done automatically on script end)
+$anotherB->stopAll();
+
+// Display current profiling status / report
+echo $profiler;
+
+// All running profiles are lapped (if needed), stopped and logged if profiler
+// is destroyed or program ends
 $profiler = null;
 gc_collect_cycles();
 sleep(3);
+
+exit;
 ```
 
 

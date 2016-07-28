@@ -56,6 +56,26 @@ class Profiler
         }
     }
 
+    public function __toString()
+    {
+        // Set report for this profile
+        $report = sprintf(
+            "started: %s\tstopped: %s\tlaps: %d\truntime: %.03f\tname: %s\n",
+            ($this->isStarted() ? 'yes' : 'no'),
+            ($this->isStopped() ? 'yes' : 'no'),
+            count($this->getLaps()),
+            $this->timeTotal(),
+            $this->getName()
+        );
+
+        // Add report of all child profiles
+        foreach ($this->getProfiles() as $child) {
+            $report .= (string) $child;
+        }
+
+        return $report;
+    }
+
     /*
      ******************************
      * profile methods
@@ -131,7 +151,7 @@ class Profiler
         // The main profile
         if (null === $this->name) {
             if ($this->children) {
-                throw new Exception("Profile MAIN must be started before all other profiles.");
+                throw new Exception("Profile {$this->getName()} must be started before all other profiles.");
             }
             $timeStart = $_SERVER['REQUEST_TIME_FLOAT'] ?? $this->timeCurrent();
         } else {
@@ -207,7 +227,7 @@ class Profiler
     public function stopAll($message = 'Stop', $context = [])
     {
         // Stop all running child profiles first
-        foreach ($this->getProfiles() as $child) {
+        foreach (array_reverse($this->getProfiles()) as $child) {
             $child->stopAll($message, $context);
         }
 
