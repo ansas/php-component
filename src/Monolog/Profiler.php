@@ -56,6 +56,17 @@ class Profiler
         }
     }
 
+    /**
+     * Get specified profile
+     *
+     * @param  string $profile
+     * @return object The profile
+     */
+    public function __get($profile)
+    {
+        return $this->exists($profile) ? $this->get($profile) : $this->add($profile);
+    }
+
     public function __toString()
     {
         // Set report for this profile
@@ -143,6 +154,12 @@ class Profiler
 
     public function start($message = 'Start', $context = [])
     {
+        // Check if method was called only with $context
+        if (is_array($message)) {
+            $context = $message;
+            $message = 'Start';
+        }
+
         // A profile can only be started if never started or cleared before
         if ($this->isStarted()) {
             throw new Exception("Profile {$this->getName()} already started.");
@@ -185,6 +202,12 @@ class Profiler
 
     public function lap($message = 'Lap', $context = [])
     {
+        // Check if method was called only with $context
+        if (is_array($message)) {
+            $context = $message;
+            $message = 'Lap';
+        }
+
         if (!$this->isRunning()) {
             throw new Exception("Profile {$this->getName()} not running.");
         }
@@ -203,6 +226,12 @@ class Profiler
 
     public function stop($message = 'Stop', $context = [])
     {
+        // Check if method was called only with $context
+        if (is_array($message)) {
+            $context = $message;
+            $message = 'Stop';
+        }
+
         if (!$this->isRunning()) {
             throw new Exception("Profile {$this->getName()} not running.");
         }
@@ -239,8 +268,14 @@ class Profiler
         return $this;
     }
 
-    public function note($message, $context = [])
+    public function note($message = 'Note', $context = [])
     {
+        // Check if method was called only with $context
+        if (is_array($message)) {
+            $context = $message;
+            $message = 'Note';
+        }
+
         // Skip log entry if message is null
         if (is_null($message)) {
             return $this;
@@ -275,6 +310,19 @@ class Profiler
         $this->clear();
 
         return $this;
+    }
+
+    public function restart($message = 'Restart', $context = [])
+    {
+        // Check if method was called only with $context
+        if (is_array($message)) {
+            $context = $message;
+            $message = 'Restart';
+        }
+
+        // Clear data and start (again)
+        $this->clear();
+        $this->start($message, $context);
     }
 
     /*

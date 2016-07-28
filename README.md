@@ -77,6 +77,8 @@ Methods (without internal):
 // object handling methods
 public function __construct(Logger $logger, $level = Logger::DEBUG, callable $formatter = null)
 public function __destruct()
+public function __get($profile)
+public function __toString()
 
 // profile methods
 public function add($profile)
@@ -87,13 +89,19 @@ public function removeAll()
 
 // stopwatch methods
 public function start($message = 'Start', $context = [])
+public function start($context = [])
 public function startAll($message = 'Start', $context = [])
 public function lap($message = 'Lap', $context = [])
+public function lap($context = [])
 public function stop($message = 'Stop', $context = [])
+public function stop($context = [])
 public function stopAll($message = 'Stop', $context = [])
-public function note($message, $context)
+public function note($message = 'Note', $context = [])
+public function note($context = [])
 public function clear()
 public function clearAll()
+public function restart($message = 'Restart', $context = [])
+public function restart($context = [])
 
 // setter methods
 public function setLogger(Logger $logger)
