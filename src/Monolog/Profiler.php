@@ -24,135 +24,257 @@ use Monolog\Logger;
  */
 class Profiler
 {
-    protected $start;
-    protected $stash;
     protected $logger;
     protected $level;
     protected $formatter;
 
+    protected $name     = null; // only children must have a name!
+    protected $children = []; // all child profiles go here
+
+    protected $start = null;
+    protected $stop  = null;
+    protected $laps  = [];
+
+    /*
+     ******************************
+     * object handling methods
+     ******************************
+     */
+
     public function __construct(Logger $logger, $level = Logger::DEBUG, callable $formatter = null)
     {
-        $this->start = $_SERVER['REQUEST_TIME_FLOAT'] ?? $this->snapshot();
-
-        $this->clear();
-
         $this->setLogger($logger);
         $this->setLevel($level);
         $this->setFormatter($formatter);
-
-        $this->save(null, 'START', null);
     }
 
     public function __destruct()
     {
-        $this->quit();
+        // Skip stop routine if not the parent profile
+        if (!$this->name) {
+            $this->stopAll();
+        }
     }
 
-    public function start(string $profile)
+    /*
+     ******************************
+     * profile methods
+     ******************************
+     */
+
+    public function add($profile)
     {
+        if ($this->exists($profile)) {
+            throw new Exception("Profile {$profile} already exist.");
+        }
+
         if (!strlen($profile)) {
             throw new Exception("Profile must be set.");
         }
 
-        if ($this->isRunning($profile)) {
-            throw new Exception("Profile {$profile} already stated.");
-        }
+        $child = clone $this;
+        $child->clear();
+        $child->name     = ($this->name ? $this->name . ' > ' : '') . $profile;
+        $child->children = [];
 
-        $starttime = $this->snapshot();
+        $this->children[$profile] = $child;
 
-        $this->stash[$profile] = [
-            'start' => $starttime,
-            'lap'   => null,
-        ];
-
-        return $starttime;
+        return $child;
     }
 
-    public function lap($profile = null, $message = 'Laptime')
+    public function exists($profile)
     {
-        $profile = $profile ?? $this->lastStartedProfile();
-
-        if (!$this->isRunning($profile)) {
-            throw new Exception("Profile {$profile} does not exist.");
-        }
-
-        $laptime = $this->snapshot();
-        $runtime = $laptime - ($this->stash[$profile]['lap'] ?? $this->stash[$profile]['start']);
-        $this->stash[$profile]['lap'] = $laptime;
-
-        $this->save($profile, $message, $runtime);
-        return $runtime;
+        return isset($this->children[$profile]);
     }
 
-    public function stop($profile = null, $message = 'Runtime')
+    public function get($profile)
     {
-        $profile = $profile ?? $this->lastStartedProfile();
-
-        if (!$this->isRunning($profile)) {
+        if (!$this->exists($profile)) {
             throw new Exception("Profile {$profile} does not exist.");
         }
+        return $this->children[$profile];
+    }
 
-        if (isset($this->stash[$profile]['lap'])) {
-            $this->lap($profile);
+    public function remove($profile)
+    {
+        $child = $this->get($profile);
+        $child->clearAll();
+        $child->removeAll();
+
+        unset($this->children[$profile]);
+
+        return $this;
+    }
+
+    public function removeAll()
+    {
+        foreach ($this->getProfiles() as $profile => $child) {
+            $this->remove($profile);
         }
-        $stoptime = $this->snapshot();
-        $runtime = $stoptime - $this->stash[$profile]['start'];
 
-        unset($this->stash[$profile]);
+        return $this;
+    }
 
-        $this->save($profile, $message, $runtime);
-        return $runtime;
+    /*
+     ******************************
+     * stopwatch methods
+     ******************************
+     */
+
+    public function start($message = 'Start', $context = [])
+    {
+        // A profile can only be started if never started or cleared before
+        if ($this->isStarted()) {
+            throw new Exception("Profile {$this->getName()} already started.");
+        }
+
+        // The main profile
+        if (null === $this->name) {
+            if ($this->children) {
+                throw new Exception("Profile MAIN must be started before all other profiles.");
+            }
+            $timeStart = $_SERVER['REQUEST_TIME_FLOAT'] ?? $this->timeCurrent();
+        } else {
+            $timeStart = $this->timeCurrent();
+        }
+
+        // Start counter and first lap
+        $this->start  = $timeStart;
+        $this->laps[] = $timeStart;
+
+        // Log
+        $this->note($message, $context);
+
+        return $this;
+    }
+
+    public function startAll($message = 'Start', $context = [])
+    {
+        // Start this profile if not started
+        if (!$this->isStarted()) {
+            $this->start($message, $context);
+        }
+
+        // Start all child profiles afterwards
+        foreach ($this->getProfiles() as $child) {
+            $child->startAll($message, $context);
+        }
+
+        return $this;
+    }
+
+    public function lap($message = 'Lap', $context = [])
+    {
+        if (!$this->isRunning()) {
+            throw new Exception("Profile {$this->getName()} not running.");
+        }
+
+        // Add current laptime to context
+        $context['runtime'] = $this->timeLap();
+
+        // Start new lap
+        $this->laps[] = $this->timeCurrent();
+
+        // Log
+        $this->note($message, $context);
+
+        return $this;
+    }
+
+    public function stop($message = 'Stop', $context = [])
+    {
+        if (!$this->isRunning()) {
+            throw new Exception("Profile {$this->getName()} not running.");
+        }
+
+        // Skip saving and logging lap for single lap profiles
+        if (count($this->laps) > 1) {
+            $this->lap();
+        }
+
+        // Stop counter
+        $this->stop = $this->timeCurrent();
+
+        // Add total runtime to context
+        $context['runtime'] = $this->timeTotal();
+
+        // Log
+        $this->note($message, $context);
+
+        return $this;
+    }
+
+    public function stopAll($message = 'Stop', $context = [])
+    {
+        // Stop all running child profiles first
+        foreach ($this->getProfiles() as $child) {
+            $child->stopAll($message, $context);
+        }
+
+        // Stop this profile if still running
+        if ($this->isRunning()) {
+            $this->stop($message, $context);
+        }
+
+        return $this;
+    }
+
+    public function note($message, $context = [])
+    {
+        // Skip log entry if message is null
+        if (is_null($message)) {
+            return $this;
+        }
+
+        // Add and format context
+        $context['profile'] = $this->name;
+        $context['runtime'] = isset($context['runtime']) ? $this->getFormatter()($context['runtime']) : null;
+
+        // Log
+        $this->logger->log($this->level, $message, $context);
+
+        return $this;
     }
 
     public function clear()
     {
-        $this->stash = [];
+        // Clear all stopwatch related values
+        $this->start = null;
+        $this->stop  = null;
+        $this->laps  = [];
+
         return $this;
     }
 
-    public function lastStartedProfile()
+    public function clearAll()
     {
-        end($this->stash);
-        return key($this->stash);
-    }
+        foreach ($this->getProfiles() as $child) {
+            $child->clearAll();
+        }
 
-    public function countProfiles()
-    {
-        return count($this->stash);
-    }
+        $this->clear();
 
-    public function defaultFormatter()
-    {
-        return function (float $var) {
-            return number_format($var, 3, ',', '.') . " sec.";
-        };
-    }
-
-    public function getFormatter()
-    {
-        return $this->formatter;
-    }
-
-    public function getProfiles()
-    {
-        return array_keys($this->stash);
-    }
-
-    public function isRunning($profile)
-    {
-        return isset($this->stash[$profile]);
-    }
-
-    public function setLevel($level)
-    {
-        Logger::getLevelName($level);
-        $this->level = $level;
         return $this;
     }
+
+    /*
+     ******************************
+     * setter methods
+     ******************************
+     */
 
     public function setLogger(Logger $logger)
     {
         $this->logger = $logger;
+        return $this;
+    }
+
+    public function setLevel($level)
+    {
+        // Check if specified level is a valid Monolog level
+        Logger::getLevelName($level);
+
+        $this->level = $level;
         return $this;
     }
 
@@ -162,27 +284,103 @@ class Profiler
         return $this;
     }
 
-    public function quit()
-    {
-        while ($this->countProfiles()) {
-            $this->stop($this->lastStartedProfile());
-        }
+    /*
+     ******************************
+     * time methods
+     ******************************
+     */
 
-        $runtime = $this->snapshot() - $this->start;
-        $this->save(null, 'QUIT', $runtime);
-    }
-
-    protected function save($profile, $message, $runtime)
-    {
-        $context = [];
-        $profile && $context['profile'] = $profile;
-        $runtime && $context['runtime'] = $this->getFormatter()($runtime);
-        
-        $this->logger->log($this->level, $message, $context);
-    }
-
-    protected function snapshot()
+    public function timeCurrent()
     {
         return microtime(true);
+    }
+
+    public function timeStart()
+    {
+        return $this->start;
+    }
+
+    public function timeStop()
+    {
+        return $this->stop;
+    }
+
+    public function timeTotal()
+    {
+        if (!$this->isStarted()) {
+            return null;
+        }
+        if (!$this->isStopped()) {
+            return $this->timeCurrent() - $this->timeStart();
+        }
+        return $this->timeStop() - $this->timeStart();
+    }
+
+    public function timeLap($lap = -1)
+    {
+        if (!$this->isStarted()) {
+            return null;
+        }
+
+        // FIXME: Make this method return value for every lap instead of FIXED last lap
+        $lap = -1;
+
+        $timeLapStart = array_slice($this->getLaps(), $lap, 1)[0];
+        $timeLapStop  = $this->timeStop() ?? $this->timeCurrent();
+        return $timeLapStop - $timeLapStart;
+    }
+
+    /*
+     ******************************
+     * default methods
+     ******************************
+     */
+
+    public function defaultFormatter()
+    {
+        return function (float $var) {
+            return number_format($var, 3, ',', '.') . " sec.";
+        };
+    }
+
+    /*
+     ******************************
+     * helper methods
+     ******************************
+     */
+
+    public function getFormatter()
+    {
+        return $this->formatter;
+    }
+
+    public function getName()
+    {
+        return $this->name ?? 'MAIN';
+    }
+
+    public function getLaps()
+    {
+        return $this->laps;
+    }
+
+    public function getProfiles()
+    {
+        return $this->children;
+    }
+
+    public function isRunning()
+    {
+        return $this->isStarted() && !$this->isStopped();
+    }
+
+    public function isStarted()
+    {
+        return null !== $this->timeStart();
+    }
+
+    public function isStopped()
+    {
+        return null !== $this->timeStop();
     }
 }

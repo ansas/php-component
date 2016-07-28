@@ -74,21 +74,50 @@ A small profiler (stop watch) for different profiles that are logged to any Mono
 
 Methods (without internal):
 ```php
+// object handling methods
 public function __construct(Logger $logger, $level = Logger::DEBUG, callable $formatter = null)
-public function start(string $profile)
-public function lap($profile = null, $message = 'Laptime')
-public function stop($profile = null, $message = 'Runtime')
-public function clear() // removes all running profiles
-public function lastStartedProfile()
-public function countProfiles()
-public function defaultFormatter()
-public function getFormatter()
-public function getProfiles()
-public function isRunning($profile)
-public function setLevel($level)
+public function __destruct()
+
+// profile methods
+public function add($profile)
+public function exists($profile)
+public function get($profile)
+public function remove($profile)
+public function removeAll()
+
+// stopwatch methods
+public function start($message = 'Start', $context = [])
+public function startAll($message = 'Start', $context = [])
+public function lap($message = 'Lap', $context = [])
+public function stop($message = 'Stop', $context = [])
+public function stopAll($message = 'Stop', $context = [])
+public function note($message, $context)
+public function clear()
+public function clearAll()
+
+// setter methods
 public function setLogger(Logger $logger)
+public function setLevel($level)
 public function setFormatter(callable $formatter = null)
-public function quit()
+
+// time methods
+public function timeCurrent()
+public function timeStart()
+public function timeStop()
+public function timeTotal()
+public function timeLap($lap = -1)
+
+// default methods
+public function defaultFormatter()
+
+// helper methods
+public function getFormatter()
+public function getLaps()
+public function getName()
+public function getProfiles()
+public function isRunning()
+public function isStarted()
+public function isStopped()
 ```
 
 Usage:
