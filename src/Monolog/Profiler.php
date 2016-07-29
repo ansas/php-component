@@ -20,7 +20,7 @@ use Monolog\Logger;
  * A slim stop watch for different profiles that are logged to any Monolog
  * logger.
  *
- * @author Ansas Meyer <webmaster@ansas-meyer.de>
+ * @author Ansas Meyer <mail@ansas-meyer.de>
  */
 class Profiler
 {

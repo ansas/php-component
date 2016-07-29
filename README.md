@@ -23,6 +23,70 @@ final public static function getInstance()
 ```
 
 
+## Ansas\Component\Collection\Collection
+Making handling of context data a bit easier.
+
+Usage:
+```php
+use Ansas\Component\Collection\Collection;
+
+// Create e. g. context
+$context = new Collection([
+    'key1' => 'value1',
+]);
+
+// Setter
+$context->key2 = 'value2';
+$context['key3'] = 'value3';
+$context->set('key4', 'value4');
+$context->append([
+    'key4', 'value4',
+    'key5', 'value5',
+]);
+
+// Getter
+$key1 = $context->get('key1');
+$key2 = $context['key2'];
+$key3 = $context->key3;
+
+// Getter (array)
+$array = $context->all();
+$partArray1 = $context->only('key1,key3');
+$partArray2 = $context->only(['key2', 'key4']);
+
+// Count
+$elemets = $context->count();
+$elemets = count($context);
+
+// Delete
+$context->remove('key1');
+unset($context->key1);
+unset($context['key1']);
+
+// Delete (extended)
+$context->replace([
+    'key4', 'value4',
+    'key5', 'value5',
+]); // replaces all existing elements with specified elements
+$context->clear(); // deletes all elements
+
+// Check
+if ($context->has('key1')) {}
+if (isset($context->key1)) {}
+if (isset($context['key1'])) {}
+
+// Iterate
+foreach ($context as $key => $value) {}
+foreach ($context->getIterator() as $key => $value) {}
+
+// Special
+$context->add('key6', 'value1'); // element key6 is string
+$context->add('key6', 'value2'); // key6 is converted to array automatically
+$keyArray = $context->keys(); // new numeric array containing keys only
+$valueArray = $context->values(); // new numeric array containing values only
+```
+
+
 ## Ansas\Component\Convert\ConvertToNull
 This trait can be used to "sanitize values" by setting empty values to null.
 

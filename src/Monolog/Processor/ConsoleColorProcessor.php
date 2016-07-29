@@ -19,7 +19,7 @@ use Monolog\Logger;
  * Adds color to record parts
  *
  * @see http://misc.flogisoft.com/bash/tip_colors_and_formatting
- * @author Ansas Meyer <webmaster@ansas-meyer.de>
+ * @author Ansas Meyer <mail@ansas-meyer.de>
  */
 class ConsoleColorProcessor
 {

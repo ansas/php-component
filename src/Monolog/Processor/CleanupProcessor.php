@@ -19,7 +19,7 @@ use Traversable;
  *
  * Removes bloating data from log
  *
- * @author Ansas Meyer <webmaster@ansas-meyer.de>
+ * @author Ansas Meyer <mail@ansas-meyer.de>
  */
 class CleanupProcessor
 {

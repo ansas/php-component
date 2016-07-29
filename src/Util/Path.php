@@ -19,7 +19,7 @@ use SplFileInfo;
  *
  * Util class for path / directory handling
  *
- * @author Ansas Meyer <webmaster@ansas-meyer.de>
+ * @author Ansas Meyer <mail@ansas-meyer.de>
  */
 class Path
 {

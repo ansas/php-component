@@ -55,7 +55,7 @@ namespace Ansas\Component\Session;
  *  - session.use_strict_mode does not work
  *  - session ids collision is possible
  *
- * @author Ansas Meyer <webmaster@ansas-meyer.de>
+ * @author Ansas Meyer <mail@ansas-meyer.de>
  */
 class ThriftyFileSession implements \SessionHandlerInterface
 {

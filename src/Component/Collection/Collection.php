@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of the PHP components package.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license MIT License
+ */
+
 namespace Ansas\Component\Collection;
 
 use ArrayAccess;
@@ -8,7 +17,15 @@ use Countable;
 use IteratorAggregate;
 use Serializable;
 
-
+/**
+ * Collection
+ *
+ * Making handling of context data a bit easier. Collection can be accessed as
+ * array or object. Elements can be set / added / retrieved / removed as single 
+ * elements or bundled as array.
+ *
+ * @author Ansas Meyer <mail@ansas-meyer.de>
+ */
 class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializable
 {
     /**

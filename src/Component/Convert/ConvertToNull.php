@@ -23,7 +23,7 @@ namespace Ansas\Component\Convert;
  *
  * You can also provide an array $value and it will be sanitized recursive.
  *
- * @author Ansas Meyer <webmaster@ansas-meyer.de>
+ * @author Ansas Meyer <mail@ansas-meyer.de>
  */
 trait ConvertToNull
 {

@@ -16,7 +16,7 @@ namespace Ansas\Component\Convert;
  *
  * Convert "dirty" prices into Euro or Cent
  *
- * @author Ansas Meyer <webmaster@ansas-meyer.de>
+ * @author Ansas Meyer <mail@ansas-meyer.de>
  */
 class ConvertPrice
 {
