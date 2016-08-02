@@ -17,7 +17,8 @@ use Traversable;
 /**
  * CleanupProcessor
  *
- * Removes bloating data from log
+ * Removes bloating data from log provided via constructor parameter
+ * Note: Always removes keys with null values
  *
  * @author Ansas Meyer <mail@ansas-meyer.de>
  */
@@ -63,7 +64,11 @@ class CleanupProcessor
             return $clean;
         }
 
-        $clean = str_replace($this->strip, '', $record);
-        return $clean;
+
+        if ($this->strip && is_scalar($record)) {
+            return str_replace($this->strip, '', $record);
+        }
+
+        return $record;
     }
 }
