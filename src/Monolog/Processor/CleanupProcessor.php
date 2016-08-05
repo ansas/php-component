@@ -12,29 +12,50 @@
 namespace Ansas\Monolog\Processor;
 
 use Exception;
+use Throwable;
 use Traversable;
 
 /**
- * CleanupProcessor
+ * Class CleanupProcessor
+ * @package Ansas\Monolog\Processor
+ * @author Ansas Meyer <mail@ansas-meyer.de>
  *
  * Removes bloating data from log provided via constructor parameter
  * Note: Always removes keys with null values
- *
- * @author Ansas Meyer <mail@ansas-meyer.de>
  */
 class CleanupProcessor
 {
-    protected $strip;
+    /**
+     * @var array|string
+     */
+    protected $stripTags;
 
     /**
-     * @param mixed $strip
+     * @var bool
+     */
+    protected $removeNull = true;
+
+    /**
+     * @var bool
+     */
+    protected $convertThrowable = true;
+
+    /**
+     * @var bool
+     */
+    protected $convertTraversable = true;
+
+    /**
+     * CleanupProcessor constructor.
+     * @param array $strip
+     * @throws Exception
      */
     public function __construct($strip = [])
     {
         if (!is_scalar($strip) && !is_array($strip)) {
             throw new Exception("Strip must be scalar or array of scalar.");
         }
-        $this->strip = $strip;
+        $this->stripTags = $strip;
     }
 
     /**
@@ -47,15 +68,35 @@ class CleanupProcessor
     }
 
     /**
-     * @param  array $record
-     * @return array
+     * @param  mixed $record
+     * @return mixed
      */
     protected function cleanup($record)
     {
-        if (is_array($record) || $record instanceof Traversable) {
+        // Translate Throwable (Exception || Error) object into simple array
+        if ($this->convertThrowable && $record instanceof Throwable) {
+            $record = [
+                'message' => $record->getMessage(),
+                'line' => $record->getLine(),
+                'file' => $record->getFile(),
+                'class' => get_class($record),
+                'code' => $record->getCode(),
+                'trace' => $record->getTrace(),
+                'previous' => $record->getPrevious(),
+            ];
+        }
+
+        // Translate Traversable object into simple array
+        if ($this->convertTraversable && $record instanceof Traversable) {
+            $record = (array) $record;
+        }
+
+        // Traverse over array
+        if (is_array($record)) {
             $clean = [];
             foreach ($record as $key => $value) {
-                if (is_null($value)) {
+                // Remove elements with null value
+                if ($this->removeNull && is_null($value)) {
                     unset($clean[$key]);
                     continue;
                 }
@@ -64,11 +105,52 @@ class CleanupProcessor
             return $clean;
         }
 
-
-        if ($this->strip && is_scalar($record)) {
-            return str_replace($this->strip, '', $record);
+        // Strip unwanted strings from simple scalar values
+        if ($this->stripTags && is_scalar($record)) {
+            return str_replace($this->stripTags, '', $record);
         }
 
+        // Return original value if not scalar or array
         return $record;
+    }
+
+    /**
+     * @param array|string $stripTags
+     * @return CleanupProcessor
+     */
+    public function setStripTags($stripTags)
+    {
+        $this->stripTags = $stripTags;
+        return $this;
+    }
+
+    /**
+     * @param boolean $removeNull
+     * @return CleanupProcessor
+     */
+    public function setRemoveNull(bool $removeNull)
+    {
+        $this->removeNull = $removeNull;
+        return $this;
+    }
+
+    /**
+     * @param boolean $convertThrowable
+     * @return CleanupProcessor
+     */
+    public function setConvertThrowable(bool $convertThrowable)
+    {
+        $this->convertThrowable = $convertThrowable;
+        return $this;
+    }
+
+    /**
+     * @param boolean $convertTraversable
+     * @return CleanupProcessor
+     */
+    public function setConvertTraversable(bool $convertTraversable)
+    {
+        $this->convertTraversable = $convertTraversable;
+        return $this;
     }
 }
