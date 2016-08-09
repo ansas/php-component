@@ -1,12 +1,11 @@
 <?php
-
 /**
  * This file is part of the PHP components package.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE.md file distributed with this source code.
  *
  * @license MIT License
+ * @link    https://github.com/ansas/php-component
  */
 
 namespace Ansas\Component\File;
@@ -384,7 +383,7 @@ class FTP
      *
      * @param string $remoteFile Remote file path.
      *
-     * @return int File size in byte
+     * @return int File size in byte.
      * @throws Exception
      */
     public function getSize(string $remoteFile)

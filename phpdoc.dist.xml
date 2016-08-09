@@ -2,7 +2,7 @@
 <phpdoc>
     <title>PHP component</title>
     <parser>
-        <target>doc/cache</target>
+        <target>tmp/phpdoc</target>
         <default-package-name>Documentation</default-package-name>
         <markers>
             <item>TODO</item>

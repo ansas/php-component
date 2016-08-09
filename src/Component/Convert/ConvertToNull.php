@@ -1,12 +1,11 @@
 <?php
-
 /**
  * This file is part of the PHP components package.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE.md file distributed with this source code.
  *
  * @license MIT License
+ * @link    https://github.com/ansas/php-component
  */
 
 namespace Ansas\Component\Convert;
@@ -15,7 +14,6 @@ namespace Ansas\Component\Convert;
  * Trait ConvertToNull
  *
  * This trait can be used to "sanitize values" by setting empty values to null.
- *
  * It holds methods which can be called in order to check if a field is empty
  * and set it to "null" before calling the parent setter method. By doing this
  * we have a more cleaned up object and also prevent e. g. the "versionable"
@@ -23,15 +21,17 @@ namespace Ansas\Component\Convert;
  *
  * You can also provide an array $value and it will be sanitized recursive.
  *
- * @author Ansas Meyer <mail@ansas-meyer.de>
+ * @package Ansas\Component\Convert
+ * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 trait ConvertToNull
 {
     /**
-     * Set empty $value to null
+     * Set empty $value to null.
      *
-     * @param mixed $value Value to sanitize
-     * @param array $considerNull (optional) Values to convert to null
+     * @param mixed $value        Value to sanitize
+     * @param array $considerNull [optional] Values to convert to null
+     *
      * @return mixed Sanitized value
      */
     protected function convertEmptyToNull($value, array $considerNull = [''])
@@ -41,13 +41,13 @@ trait ConvertToNull
 
     /**
      * Set $value to null if matching one of the values of $considerNull list
-     *
      * Check on string values is case insensitive (so 'Null' is seen as 'null').
      *
-     * @param mixed $value Value to sanitize
-     * @param array $considerNull Values to convert to null
-     * @param bool $trim Trim string values, default is false
-     * @return mixed Sanitized value
+     * @param mixed $value        Value to sanitize.
+     * @param array $considerNull Values to convert to null.
+     * @param bool  $trim         [optional] Trim string values, default is false.
+     *
+     * @return mixed Sanitized value.
      */
     protected function convertToNull($value, array $considerNull, $trim = false)
     {
@@ -59,6 +59,7 @@ trait ConvertToNull
             foreach ($value as $subKey => $subValue) {
                 $value[$subKey] = $this->convertToNull($subValue, $considerNull);
             }
+
             return $value;
         }
 
@@ -84,11 +85,12 @@ trait ConvertToNull
     }
 
     /**
-     * Trim $value and also set empty $value to null
+     * Trim $value and also set empty $value to null.
      *
-     * @param mixed $value Value to sanitize
-     * @param array $considerNull (optional) Values to convert to null
-     * @return mixed Sanitized value
+     * @param mixed $value        Value to sanitize.
+     * @param array $considerNull [optional] Values to convert to null.
+     *
+     * @return mixed Sanitized value.
      */
     protected function trimAndConvertEmptyToNull($value, array $considerNull = [''])
     {
@@ -96,10 +98,11 @@ trait ConvertToNull
     }
 
     /**
-     * Trim $value and set to null if matching one of the values of $considerNull list
+     * Trim $value and set to null if matching one of the values of $considerNull list.
      *
-     * @param mixed $value Value to sanitize
-     * @param array $considerNull Values to convert to null
+     * @param mixed $value        Value to sanitize.
+     * @param array $considerNull Values to convert to null.
+     *
      * @return mixed Sanitized value
      */
     protected function trimAndConvertToNull($value, array $considerNull)

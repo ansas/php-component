@@ -1,12 +1,11 @@
 <?php
-
 /**
  * This file is part of the PHP components package.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE.md file distributed with this source code.
  *
  * @license MIT License
+ * @link    https://github.com/ansas/php-component
  */
 
 namespace Ansas\Component\Convert;
@@ -30,12 +29,12 @@ class ConvertPrice
     const CENT = 'cent';
 
     /**
-     * @var ConvertPrice Instance for singleton usage
+     * @var ConvertPrice Instance for singleton usage.
      */
     protected static $instance = null;
 
     /**
-     * @var array Allowed formats
+     * @var array Allowed formats.
      */
     protected static $formats = [
         self::EURO => self::EURO,
@@ -43,7 +42,7 @@ class ConvertPrice
     ];
 
     /**
-     * @var int Price
+     * @var int Price.
      */
     protected $price;
 
@@ -63,15 +62,13 @@ class ConvertPrice
     }
 
     /**
-     * Clear price.
+     * Output formatted price in euro if object is used in string context.
      *
-     * @return $this
+     * @return string
      */
-    public function clearPrice()
+    public function __toString()
     {
-        $this->price = null;
-
-        return $this;
+        return sprintf('%.02f', $this->getPrice(self::EURO));
     }
 
     /**
@@ -89,13 +86,15 @@ class ConvertPrice
     }
 
     /**
-     * Output formatted price in euro if object is used in string context.
+     * Clear price.
      *
-     * @return string
+     * @return $this
      */
-    public function __toString()
+    public function clearPrice()
     {
-        return sprintf('%.02f', $this->getPrice(self::EURO));
+        $this->price = null;
+
+        return $this;
     }
 
     /**
@@ -160,11 +159,26 @@ class ConvertPrice
     }
 
     /**
+     * Set price and return sanitized value at once.
+     *
+     * @param mixed  $price
+     * @param string $format [optional] the type of $price, default ConvertPrice::EURO.
+     *
+     * @return mixed
+     * @throws InvalidArgumentException
+     */
+    public function sanitize($price, $format = self::EURO)
+    {
+        return $this->setPrice($price, $format)->getPrice($format);
+    }
+
+    /**
      * Check if price format is supported.
      *
      * @param $format
      *
      * @return $this
+     * @throws InvalidArgumentException
      */
     private function validatePriceFormat($format)
     {
@@ -173,19 +187,5 @@ class ConvertPrice
         }
 
         return $this;
-    }
-
-    /**
-     * Set price and return sanitized value at once.
-     *
-     * @param mixed  $price
-     * @param string $format [optional] the type of $price, default ConvertPrice::EURO
-     *
-     * @return mixed
-     * @throws InvalidArgumentException
-     */
-    public function sanitize($price, $format = self::EURO)
-    {
-        return $this->setPrice($price, $format)->getPrice($format);
     }
 }

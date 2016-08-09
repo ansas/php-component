@@ -1,12 +1,11 @@
 <?php
-
 /**
  * This file is part of the PHP components package.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE.md file distributed with this source code.
  *
  * @license MIT License
+ * @link    https://github.com/ansas/php-component
  */
 
 declare(strict_types = 1);
@@ -22,9 +21,6 @@ use Traversable;
  *
  * @package Ansas\Monolog\Processor
  * @author  Ansas Meyer <mail@ansas-meyer.de>
- *
- * Removes bloating data from log provided via constructor parameter
- * Note: Always removes keys with null values
  */
 class CleanupProcessor
 {
@@ -99,7 +95,7 @@ class CleanupProcessor
 
         // Translate Traversable object into simple array
         if ($this->convertTraversable && $record instanceof Traversable) {
-            $record = (array) $record;
+            $record = (array)$record;
         }
 
         // Traverse over array
@@ -129,34 +125,6 @@ class CleanupProcessor
     /**
      * Set flag.
      *
-     * @param array|string $stripTags
-     *
-     * @return CleanupProcessor
-     */
-    public function setStripTags($stripTags)
-    {
-        $this->stripTags = $stripTags;
-
-        return $this;
-    }
-
-    /**
-     * Set flag.
-     *
-     * @param bool $removeNull
-     *
-     * @return CleanupProcessor
-     */
-    public function setRemoveNull(bool $removeNull)
-    {
-        $this->removeNull = $removeNull;
-
-        return $this;
-    }
-
-    /**
-     * Set flag.
-     *
      * @param bool $convertThrowable
      *
      * @return CleanupProcessor
@@ -178,6 +146,34 @@ class CleanupProcessor
     public function setConvertTraversable(bool $convertTraversable)
     {
         $this->convertTraversable = $convertTraversable;
+
+        return $this;
+    }
+
+    /**
+     * Set flag.
+     *
+     * @param bool $removeNull
+     *
+     * @return CleanupProcessor
+     */
+    public function setRemoveNull(bool $removeNull)
+    {
+        $this->removeNull = $removeNull;
+
+        return $this;
+    }
+
+    /**
+     * Set flag.
+     *
+     * @param array|string $stripTags
+     *
+     * @return CleanupProcessor
+     */
+    public function setStripTags($stripTags)
+    {
+        $this->stripTags = $stripTags;
 
         return $this;
     }

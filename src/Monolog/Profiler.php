@@ -1,12 +1,11 @@
 <?php
-
 /**
  * This file is part of the PHP components package.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE.md file distributed with this source code.
  *
  * @license MIT License
+ * @link    https://github.com/ansas/php-component
  */
 
 declare(strict_types = 1);
@@ -14,6 +13,7 @@ declare(strict_types = 1);
 namespace Ansas\Monolog;
 
 use Ansas\Component\Collection\Collection;
+use Closure;
 use Exception;
 use Monolog\Logger;
 
@@ -26,8 +26,8 @@ use Monolog\Logger;
  * @package Ansas\Monolog
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  *
- * @property-read Collection $context
- * @property-read Logger     $logger
+ * @property Collection $context
+ * @property Logger     $logger
  */
 class Profiler
 {
@@ -212,9 +212,7 @@ class Profiler
     /**
      * Set / remove context for this and all later created child profiles.
      *
-     * Set context to null to remove context.
-     *
-     * @param Collection|null $context
+     * @param Collection|null $context Set context to null to remove context.
      *
      * @return $this
      */
@@ -238,7 +236,7 @@ class Profiler
     /**
      * Get default formatter.
      *
-     * @return \Closure
+     * @return Closure
      */
     public function defaultFormatter()
     {
