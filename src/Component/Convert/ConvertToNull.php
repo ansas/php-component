@@ -12,7 +12,7 @@
 namespace Ansas\Component\Convert;
 
 /**
- * ConvertToNull
+ * Trait ConvertToNull
  *
  * This trait can be used to "sanitize values" by setting empty values to null.
  *

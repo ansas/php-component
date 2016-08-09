@@ -12,34 +12,52 @@
 namespace Ansas\Util;
 
 use Exception;
-use SplFileInfo;
 
 /**
- * Path
+ * Class Path
  *
- * Util class for path / directory handling
- *
- * @author Ansas Meyer <mail@ansas-meyer.de>
+ * @package Ansas\Util
+ * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class Path
 {
     /**
-     * Get the "project" root path
+     * Change to (use) directory / path.
+     *
+     * @param string $path
+     *
+     * @throws Exception
+     */
+    public static function chdir(string $path)
+    {
+        if (@chdir($path)) {
+            return;
+        }
+
+        throw new Exception(sprintf("Cannot change to path %s.", $path));
+    }
+
+    /**
+     * Get the "project" root path.
      *
      * For an optionally specified $rootForPath (default is start script path)
      * it traverses the path structure until it finds an optionally specified
      * $rootHasDir (default is "lib") and returns it.
      *
-     * Throws an \Exception if root path cannot be determined.
+     * Throws an Exception if root path cannot be determined.
      *
-     * @param  string $rootForPath (optional) The file or path to get project root path for
-     * @param  string $rootHasDir  (optional) The directory that must exist in root path
+     * @param  string $rootForPath [optional] The file or path to get project root path for.
+     * @param  string $rootHasDir  [optional] The directory that must exist in root path.
+     *
      * @return string The root path
-     * @throws \Exception If root path cannot be determined
+     * @throws Exception If root path cannot be determined
      */
     public static function getRoot($rootForPath = null, $rootHasDir = 'lib')
     {
-        $rootForPath || $rootForPath = (get_included_files())[0];
+        if (!$rootForPath) {
+            $includes    = get_included_files();
+            $rootForPath = $includes[0];
+        }
 
         $rootForPath = rtrim($rootForPath, DIRECTORY_SEPARATOR);
         $rootHasDir  = ltrim($rootHasDir, DIRECTORY_SEPARATOR);
@@ -52,5 +70,27 @@ class Path
         }
 
         return $rootForPath;
+    }
+
+    /**
+     * Creates a directory / path if it does not already exist.
+     *
+     * @param string $path
+     * @param int    $mode      [optional]
+     * @param bool   $recursive [optional]
+     *
+     * @throws Exception
+     */
+    public static function mkdir(string $path, int $mode = 0777, bool $recursive = true)
+    {
+        if (@is_dir($path)) {
+            return;
+        }
+
+        if (@mkdir($path, $mode, $recursive)) {
+            return;
+        }
+
+        throw new Exception(sprintf("Cannot create path %s.", $path));
     }
 }

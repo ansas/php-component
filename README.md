@@ -146,10 +146,12 @@ public function __toString()
 
 // profile methods
 public function add($profile)
-public function exists($profile)
+public function context(Collection $context = null)
 public function get($profile)
+public function has($profile)
 public function remove($profile)
 public function removeAll()
+public function set($profile)
 
 // stopwatch methods
 public function start($message = 'Start', $context = [])
@@ -183,6 +185,7 @@ public function timeLap($lap = -1)
 public function defaultFormatter()
 
 // helper methods
+public function countLaps()
 public function getFormatter()
 public function getLaps()
 public function getName()
@@ -258,6 +261,12 @@ sleep(1);
 // Some more profiling
 $profiler->get("anotherB")->get("moreC")->lap("Lapdance ;P");
 $veryLastE->stop("Stopping E");
+
+// Make things easier, just create profiles via set() or magic method __get()
+$profiler->set("profilX")->start();
+$profiler->set("profilX")->lap();
+$profiler->profilX->lap();
+$profiler->profilX->stop();
 
 sleep(1);
 

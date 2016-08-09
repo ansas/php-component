@@ -11,12 +11,15 @@
 
 namespace Ansas\Component\Convert;
 
+use InvalidArgumentException;
+
 /**
- * ConvertPrice
+ * Class ConvertPrice
  *
- * Convert "dirty" prices into Euro or Cent
+ * Convert "dirty" prices into Euro or Cent.
  *
- * @author Ansas Meyer <mail@ansas-meyer.de>
+ * @package Ansas\Component\Convert
+ * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class ConvertPrice
 {
@@ -26,27 +29,29 @@ class ConvertPrice
     /** price format cent */
     const CENT = 'cent';
 
+    /**
+     * @var ConvertPrice Instance for singleton usage
+     */
     protected static $instance = null;
 
     /**
-     * @var array
+     * @var array Allowed formats
      */
-    protected static $formats = array(
+    protected static $formats = [
         self::EURO => self::EURO,
         self::CENT => self::CENT,
-    );
+    ];
 
     /**
-     * price
-     * @var int
+     * @var int Price
      */
     protected $price;
 
     /**
-     * Constructor
+     * ConvertPrice constructor.
      *
-     * @param mixed  $price (optional) the price to convert
-     * @param string $format (optional) the type of $price, default ConvertPrice::EURO
+     * @param mixed  $price  [optional] the price to convert
+     * @param string $format [optional] the type of $price, default ConvertPrice::EURO
      */
     public function __construct($price = null, $format = self::EURO)
     {
@@ -58,17 +63,7 @@ class ConvertPrice
     }
 
     /**
-     * Output formatted price in euro if object is used in string context
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return sprintf('%.02f', $this->getPrice(self::EURO));
-    }
-
-    /**
-     * Reset clear price
+     * Clear price.
      *
      * @return $this
      */
@@ -80,9 +75,34 @@ class ConvertPrice
     }
 
     /**
-     * Get price
+     * Returns new or existing Singleton instance.
      *
-     * @param string $format (optional) the type of $price, default ConvertPrice::EURO
+     * @return ConvertPrice
+     */
+    final public static function getInstance()
+    {
+        if (null === static::$instance) {
+            static::$instance = new ConvertPrice();
+        }
+
+        return static::$instance;
+    }
+
+    /**
+     * Output formatted price in euro if object is used in string context.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return sprintf('%.02f', $this->getPrice(self::EURO));
+    }
+
+    /**
+     * Get price.
+     *
+     * @param string $format [optional] the type of $price, default ConvertPrice::EURO.
+     *
      * @return mixed
      * @throws InvalidArgumentException
      */
@@ -98,12 +118,13 @@ class ConvertPrice
     }
 
     /**
-     * Set price after cutting out all unwanted chars
+     * Set price after cutting out all unwanted chars.
      *
-     * This method converts (almost) every string into a price
+     * This method converts (almost) every string into a price.
      *
      * @param mixed  $price
-     * @param string $format (optional) the type of $price, default ConvertPrice::EURO
+     * @param string $format [optional] the type of $price, default ConvertPrice::EURO
+     *
      * @return $this
      * @throws InvalidArgumentException
      */
@@ -139,44 +160,32 @@ class ConvertPrice
     }
 
     /**
-     * Set price and return sanitized value at once
+     * Check if price format is supported.
+     *
+     * @param $format
+     *
+     * @return $this
+     */
+    private function validatePriceFormat($format)
+    {
+        if (!in_array($format, self::$formats)) {
+            throw new InvalidArgumentException('value of parameter $format not supported');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set price and return sanitized value at once.
      *
      * @param mixed  $price
-     * @param string $format (optional) the type of $price, default ConvertPrice::EURO
+     * @param string $format [optional] the type of $price, default ConvertPrice::EURO
+     *
      * @return mixed
      * @throws InvalidArgumentException
      */
     public function sanitize($price, $format = self::EURO)
     {
         return $this->setPrice($price, $format)->getPrice($format);
-    }
-
-    /**
-     * Returns new or existing Singleton instance
-     *
-     * @return Singleton
-     */
-    final public static function getInstance()
-    {
-        if (null === static::$instance) {
-            static::$instance = new ConvertPrice();
-        }
-
-        return static::$instance;
-    }
-
-    /**
-     * Check if price format is supported
-     *
-     * @return $this
-     * @throws InvalidArgumentException
-     */
-    private function validatePriceFormat($format)
-    {
-        if (!in_array($format, self::$formats)) {
-            throw new \InvalidArgumentException('value of parameter $format not supported');
-        }
-
-        return $this;
     }
 }

@@ -11,8 +11,11 @@
 
 namespace Ansas\Component\Session;
 
+use Exception;
+use SessionHandlerInterface;
+
 /**
- * ThriftyFileSession
+ * Class ThriftyFileSession
  *
  * All you need is to configure the native PHP session settings, see:
  * http://php.net/manual/de/session.configuration.php
@@ -25,7 +28,7 @@ namespace Ansas\Component\Session;
  * as usual.
  *
  * The benefit of this class (compared to pure native PHP sessions):
- * - session is only storaged on disk if $_SESSION has data
+ * - session is only stored on disk if $_SESSION has data
  * - session cookie is only set if $_SESSION has data
  * - session cookie is updated after every request
  * - session cookie is deleted automatically when session is destroyed
@@ -55,126 +58,62 @@ namespace Ansas\Component\Session;
  *  - session.use_strict_mode does not work
  *  - session ids collision is possible
  *
- * @author Ansas Meyer <mail@ansas-meyer.de>
+ * @package Ansas\Component\Session
+ * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
-class ThriftyFileSession implements \SessionHandlerInterface
+class ThriftyFileSession implements SessionHandlerInterface
 {
     /**
-     * @var string $path    Session save path
-     * @var string $handler Original session handler
-     * @var string $prefix  Session prefix (is native PHP session value)
-     */
-    protected $path    = null;
-    protected $handler = null;
-    protected $prefix  = 'sess_';
-
-    /**
-     * @var boolean $cookie Flag if cookies are supposed to be set
-     * @var boolean $cookie Flag if session exists on disk
-     * @var boolean $force  Flag if session is to be started even with no data
-     */
-    protected $cookie = false;
-    protected $exists = false;
-    protected $force  = false;
-
-    /**
-     * @var int $ttl Cookie time-to-live value in seconds
-     */
-    protected $ttl = 0;
-
-    /**
-     * @var callable $clenup Function called before session close
-     */
-    protected $cleanup = null;
-
-    /**
-     * @static object $instance Holds instance of this class (singleton)
+     * @var object Holds instance of this class (singleton).
      */
     protected static $instance = null;
 
     /**
-     * Returns new or existing singleton instance
-     *
-     * @static
-     * @return ThriftyFileSession
+     * @var string $path Session save path.
      */
-    public static function getInstance()
-    {
-        if (null === static::$instance) {
-            static::$instance = new self();
-        }
-
-        return static::$instance;
-    }
+    protected $path = null;
 
     /**
-     * Start session (init)
-     *
-     * Usually the only method you have to call. A new instance will be
-     * created (if needed) and the session is started.
-     *
-     * @static
+     * @var string $handler Original session handler.
      */
-    public static function init()
-    {
-        self::getInstance()->start();
-    }
+    protected $handler = null;
 
     /**
-     * Set force flag to always start (even emtpy) session
-     *
-     * @static
-     * @param boolean $force Start session even with no data
+     * @var string $prefix Session prefix (is native PHP session value).
      */
-    public static function force($force)
-    {
-        self::getInstance()->setForceStart($force);
-    }
+    protected $prefix = 'sess_';
 
     /**
-     * Set time-to-live (ttl) for the session cookie
-     *
-     * @static
-     * @param int $ttl time-to-live for the session in seconds
+     * @var bool $cookie Flag if cookies are supposed to be set.
      */
-    public static function ttl($ttl)
-    {
-        self::getInstance()->setCookieLifetime($ttl);
-    }
+    protected $cookie = false;
 
     /**
-     * Set callback function to execute directly before session closed
-     *
-     * @static
-     * @param callable $callback function to call on session termination
+     * @var bool $cookie Flag if session exists on disk.
      */
-    public static function cleanup($callback)
-    {
-        self::getInstance()->setCleanupCallback($callback);
-    }
+    protected $exists = false;
 
     /**
-     * Close session
-     *
-     * This method closes the session. This method will be called on
-     * script termination automatically if init() was called.
-     *
-     * @static
+     * @var bool $force Flag if session is to be started even with no data.
      */
-    public static function kill()
-    {
-        if (null !== static::$instance) {
-            self::getInstance()->end();
-            static::$instance = null;
-        }
-    }
+    protected $force = false;
 
     /**
-     * Constructor
+     * @var int $cookieLifetime Cookie time-to-live value in seconds.
+     */
+    protected $cookieLifetime = 0;
+
+    /**
+     * @var callable $cleanup Function called before session close.
+     */
+    protected $cleanupCallback = null;
+
+    /**
+     * ThriftyFileSession constructor.
      *
      * Must be called via static method init()
      *
-     * Performes session setup:
+     * Performs session setup:
      * - several checks
      * - register this class as session handler
      * - add kill() as shutdown function
@@ -182,7 +121,7 @@ class ThriftyFileSession implements \SessionHandlerInterface
      */
     protected function __construct()
     {
-        $this->cookie  = (bool)   ini_get('session.use_cookies');
+        $this->cookie  = (bool) ini_get('session.use_cookies');
         $this->handler = (string) ini_get('session.save_handler');
         $this->path    = (string) realpath(ini_get('session.save_path'));
 
@@ -190,18 +129,18 @@ class ThriftyFileSession implements \SessionHandlerInterface
         // ini values or override the session handler before session is
         // started
         if ($this->isStarted()) {
-            throw new \Exception("Session already started");
+            throw new Exception("Session already started");
         }
 
         // Make sure nothing is sent to client already as we have to be
         // able to set cookie just before script is terminated
         if (headers_sent($file, $line)) {
-            throw new \Exception(sprintf("Headers already sent in file %s on line %d", $file, $line));
+            throw new Exception(sprintf("Headers already sent in file %s on line %d", $file, $line));
         }
 
         // Make current instance of class responsible for saving session
         if (!session_set_save_handler($this, false)) {
-            throw new \Exception(sprintf("Cannot set %s as session handler", __CLASS__));
+            throw new Exception(sprintf("Cannot set %s as session handler", __CLASS__));
         }
 
         // Make sure session is closes (and saved) on script termination
@@ -210,7 +149,7 @@ class ThriftyFileSession implements \SessionHandlerInterface
         // Make sure no output is printed until __destruct() of this
         // class is called so that we can set session cookie later
         if (!ob_start()) {
-            throw new \Exception("Cannot start output buffer");
+            throw new Exception("Cannot start output buffer");
         }
 
         // Initial cookie time-to-live value, can be overwritten via
@@ -222,8 +161,17 @@ class ThriftyFileSession implements \SessionHandlerInterface
 
         // Make sure session save path is writable
         if (!is_writable($this->path)) {
-            throw new \Exception(sprintf("Session path %s is not writable", $this->path));
+            throw new Exception(sprintf("Session path %s is not writable", $this->path));
         }
+    }
+
+    /**
+     * Clone.
+     *
+     * Make sure instance cannot be cloned.
+     */
+    private function __clone()
+    {
     }
 
     /**
@@ -263,74 +211,89 @@ class ThriftyFileSession implements \SessionHandlerInterface
     }
 
     /**
-     * Clone
+     * Set callback function to execute directly before session closed
      *
-     * Make sure instance cannot be cloned
+     * @static
+     *
+     * @param callable $callback function to call on session termination
      */
-    private function __clone()
+    public static function cleanup($callback)
     {
+        self::getInstance()->setCleanupCallback($callback);
     }
 
     /**
-     * INTERNAL METHOD open
+     * Set force flag to always start (even empty) session
      *
-     * {@inheritdoc}
+     * @static
+     *
+     * @param bool $force Start session even with no data
      */
-    public function open($path, $name)
+    public static function force($force)
     {
-        return true;
+        self::getInstance()->setForceStart($force);
     }
 
     /**
-     * INTERNAL METHOD read
+     * Returns new or existing singleton instance
      *
-     * {@inheritdoc}
+     * @static
+     * @return ThriftyFileSession|object
      */
-    public function read($id)
+    public static function getInstance()
     {
-        // Reset data
-        $data = '';
-        $this->exists = false;
-
-        // Check if session file exists but (unlike native sessions) do
-        // not create new session file on disk if session does not exist
-        $file = $this->getPathForSessionId($id);
-        if (file_exists($file)) {
-            $data = (string) file_get_contents($file);
-            $this->exists = true;
+        if (null === static::$instance) {
+            static::$instance = new self();
         }
 
-        return $data;
+        return static::$instance;
     }
 
     /**
-     * INTERNAL METHOD write
+     * Start session (init)
      *
-     * {@inheritdoc}
+     * Usually the only method you have to call. A new instance will be
+     * created (if needed) and the session is started.
+     *
+     * @static
      */
-    public function write($id, $data)
+    public static function init()
     {
-        // Only store session to disk if data exists or session already
-        // existed before (in last case we always want to touch the file
-        // to prevent early garbage collection)
-        // Note: This logic can be overwritten by the force flag
-        if ($data
-            || $this->exists
-            || $this->force
-        ) {
-            $file = $this->getPathForSessionId($id);
-            file_put_contents($file, $data);
-            chmod($file, 0600);
-            $this->exists = true;
-        }
+        self::getInstance()->start();
+    }
 
-        return true;
+    /**
+     * Close session
+     *
+     * This method closes the session. This method will be called on
+     * script termination automatically if init() was called.
+     *
+     * @static
+     */
+    public static function kill()
+    {
+        if (null !== static::$instance) {
+            self::getInstance()->end();
+            static::$instance = null;
+        }
+    }
+
+    /**
+     * Set time-to-live (ttl) for the session cookie
+     *
+     * @static
+     *
+     * @param int $ttl time-to-live for the session in seconds
+     */
+    public static function ttl($ttl)
+    {
+        self::getInstance()->setCookieLifetime($ttl);
     }
 
     /**
      * INTERNAL METHOD close
      *
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function close()
     {
@@ -340,7 +303,7 @@ class ThriftyFileSession implements \SessionHandlerInterface
     /**
      * INTERNAL METHOD destroy
      *
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function destroy($id)
     {
@@ -358,9 +321,28 @@ class ThriftyFileSession implements \SessionHandlerInterface
     }
 
     /**
+     * End session
+     *
+     * Call cleanup callback and close session
+     *
+     * @return $this
+     */
+    public function end()
+    {
+        if ($this->isStarted()) {
+            if (is_callable($this->getCleanupCallback())) {
+                call_user_func($this->getCleanupCallback());
+            }
+            session_write_close();
+        }
+
+        return $this;
+    }
+
+    /**
      * INTERNAL METHOD gc
      *
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function gc($ttl)
     {
@@ -377,9 +359,29 @@ class ThriftyFileSession implements \SessionHandlerInterface
     }
 
     /**
+     * Get defined cleanup callback function
+     *
+     * @return callable|null
+     */
+    public function getCleanupCallback()
+    {
+        return $this->cleanupCallback;
+    }
+
+    /**
+     * Get defined cookie time-to-live
+     *
+     * @return int
+     */
+    public function getCookieLifetime()
+    {
+        return $this->cookieLifetime;
+    }
+
+    /**
      * Checks if the session is already started (active)
      *
-     * @return boolean
+     * @return bool
      */
     public function isStarted()
     {
@@ -387,18 +389,89 @@ class ThriftyFileSession implements \SessionHandlerInterface
     }
 
     /**
-     * Get full path for session id provided via $id
+     * INTERNAL METHOD open
      *
-     * @param string $id Session id
-     * @return string
+     * {@inheritDoc}
      */
-    protected function getPathForSessionId($id)
+    public function open($path, $name)
     {
-        if (is_null($this->path)) {
-            throw new \Exception("Path not set");
+        return true;
+    }
+
+    /**
+     * INTERNAL METHOD read
+     *
+     * {@inheritDoc}
+     */
+    public function read($id)
+    {
+        // Reset data
+        $data         = '';
+        $this->exists = false;
+
+        // Check if session file exists but (unlike native sessions) do
+        // not create new session file on disk if session does not exist
+        $file = $this->getPathForSessionId($id);
+        if (file_exists($file)) {
+            $data         = (string) file_get_contents($file);
+            $this->exists = true;
         }
 
-        return sprintf('%s/%s%s', $this->path, $this->prefix, $id);
+        return $data;
+    }
+
+    /**
+     * Set session cleanup callback function
+     *
+     * @param callable $callback Cleanup callback function
+     *
+     * @return $this
+     */
+    public function setCleanupCallback($callback)
+    {
+        if (!is_null($callback)
+            && !is_callable($callback)
+        ) {
+            throw new \InvalidArgumentException("No callable function provided");
+        }
+
+        $this->cleanupCallback = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Set cookie time-to-live
+     *
+     * @param int $ttl Cookie time-to-live
+     *
+     * @return $this
+     */
+    public function setCookieLifetime($ttl)
+    {
+        if (!is_null($ttl)
+            && !is_numeric($ttl)
+        ) {
+            throw new \InvalidArgumentException("No valid ttl provided");
+        }
+
+        $this->cookieLifetime = (int) $ttl;
+
+        return $this;
+    }
+
+    /**
+     * Set force flag
+     *
+     * @param bool $force Start session even with no data
+     *
+     * @return $this
+     */
+    public function setForceStart($force)
+    {
+        $this->force = (bool) $force;
+
+        return $this;
     }
 
     /**
@@ -424,92 +497,43 @@ class ThriftyFileSession implements \SessionHandlerInterface
     }
 
     /**
-     * End session
+     * INTERNAL METHOD write
      *
-     * Call cleanup callback and close session
-     *
-     * @return $this
+     * {@inheritDoc}
      */
-    public function end()
+    public function write($id, $data)
     {
-        if ($this->isStarted()) {
-            if (is_callable($this->getCleanupCallback())) {
-                call_user_func($this->getCleanupCallback());
-            }
-            session_write_close();
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get defined cleanup callback function
-     *
-     * @return callable|null
-     */
-    public function getCleanupCallback()
-    {
-        return $this->cleanupCallback;
-    }
-
-    /**
-     * Get defined cookie time-to-live
-     *
-     * @return int
-     */
-    public function getCookieLifetime()
-    {
-        return $this->cookieLifetime;
-    }
-
-    /**
-     * Set session cleanup callback function
-     *
-     * @param callable $callback Cleanup callback function
-     * @return $this
-     */
-    public function setCleanupCallback($callback)
-    {
-        if (!is_null($callback)
-            && !is_callable($callback)
+        // Only store session to disk if data exists or session already
+        // existed before (in last case we always want to touch the file
+        // to prevent early garbage collection)
+        // Note: This logic can be overwritten by the force flag
+        if ($data
+            || $this->exists
+            || $this->force
         ) {
-            throw new \InvalidArgumentException("No callable function provided");
+            $file = $this->getPathForSessionId($id);
+            file_put_contents($file, $data);
+            chmod($file, 0600);
+            $this->exists = true;
         }
 
-        $this->cleanupCallback = $callback;
-
-        return $this;
+        return true;
     }
 
     /**
-     * Set cookie time-to-live
+     * Get full path for session id provided via $id
      *
-     * @param int $ttl Cookie time-to-live
-     * @return $this
+     * @param string $id Session id
+     *
+     * @return string
+     * @throws Exception
      */
-    public function setCookieLifetime($ttl)
+    protected function getPathForSessionId($id)
     {
-        if (!is_null($ttl)
-            && !is_numeric($ttl)
-        ) {
-            throw new \InvalidArgumentException("No valid ttl provided");
+        if (is_null($this->path)) {
+            throw new Exception("Path not set");
         }
 
-        $this->cookieLifetime = (int) $ttl;
-
-        return $this;
-    }
-
-    /**
-     * Set force flag
-     *
-     * @param boolean $force Start session even with no data
-     * @return $this
-     */
-    public function setForceStart($force)
-    {
-        $this->force = (bool) $force;
-
-        return $this;
+        return sprintf('%s/%s%s', $this->path, $this->prefix, $id);
     }
 }

@@ -18,18 +18,19 @@ use IteratorAggregate;
 use Serializable;
 
 /**
- * Collection
+ * Class Collection
  *
  * Making handling of context data a bit easier. Collection can be accessed as
- * array or object. Elements can be set / added / retrieved / removed as single 
+ * array or object. Elements can be set / added / retrieved / removed as single
  * elements or bundled as array.
  *
- * @author Ansas Meyer <mail@ansas-meyer.de>
+ * @package Ansas\Component\Collection
+ * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializable
 {
     /**
-     * @var array
+     * @var array Holds complete collection data
      */
     protected $data = [];
 
@@ -44,61 +45,26 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
-     * Get specified collection item
+     * Replaces the collection with the specified items.
      *
-     * @param  mixed $key     The item key
-     * @param  mixed $default The default value (if key does not exist)
-     * @return mixed The item value
-     */
-    public function get($key, $default = null)
-    {
-        return $this->has($key) ? $this->data[$key] : $default;
-    }
-
-    /**
-     * Set specified collection item
+     * @param  array $items The items to replace collection with.
      *
-     * @param  mixed $key   The item key
-     * @param  mixed $value The item value
      * @return $this
      */
-    public function set($key, $value)
+    public function replace(array $items)
     {
-        $this->data[$key] = $value;
-        return $this;
-    }
+        $this->data = $items;
 
-    /**
-     * Check if specified collection item exists
-     *
-     * @param  mixed $key The item key
-     * @return boolean
-     */
-    public function has($key)
-    {
-        return isset($this->data[$key]);
-    }
-
-    /**
-     * Removes specified collection item
-     *
-     * @param  mixed $key The item key
-     * @return $this
-     */
-    public function remove($key)
-    {
-        if ($this->has($key)) {
-            unset($this->data[$key]);
-        }
         return $this;
     }
 
     /**
      * Adds item to collection for secified key
-     * (converts item to array if key already exists)
+     * (converts item to array if key already exists).
      *
-     * @param  mixed $key   The item key
-     * @param  mixed $value The item value to add / set
+     * @param  mixed $key   The item key.
+     * @param  mixed $value The item value to add / set.
+     *
      * @return $this
      */
     public function add($key, $value)
@@ -106,17 +72,46 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
         if (!$this->has($key)) {
             $this->set($key, $value);
         } else {
-            $this->data[$key] = (array) $this->data[$key];
+            $this->data[$key]   = (array) $this->data[$key];
             $this->data[$key][] = $value;
         }
+
+        return $this;
+    }
+
+    /**
+     * Check if specified collection item exists.
+     *
+     * @param  mixed $key The item key.
+     *
+     * @return bool
+     */
+    public function has($key)
+    {
+        return isset($this->data[$key]);
+    }
+
+    /**
+     * Set specified collection item.
+     *
+     * @param  mixed $key   The item key.
+     * @param  mixed $value The item value.
+     *
+     * @return $this
+     */
+    public function set($key, $value)
+    {
+        $this->data[$key] = $value;
+
         return $this;
     }
 
     /**
      * Appends specified items to collection
-     * (overwrites existing keys)
+     * (overwrites existing keys).
      *
-     * @param  array $items The items to append / overwrite to collection
+     * @param  array $items The items to append / overwrite to collection.
+     *
      * @return $this
      */
     public function append(array $items)
@@ -124,35 +119,25 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
         foreach ($items as $key => $value) {
             $this->set($key, $value);
         }
+
         return $this;
     }
 
     /**
-     * Replaces the collection with the specified items
-     *
-     * @param  array $items The items to replace collection with
-     * @return $this
-     */
-    public function replace(array $items)
-    {
-        $this->data = $items;
-        return $this;
-    }
-
-    /**
-     * Clears the collection (remove all items)
+     * Clears the collection (remove all items).
      *
      * @return $this
      */
     public function clear()
     {
         $this->replace([]);
+
         return $this;
     }
 
     /**
      * Get complete collection as array
-     * (with original key => value pairs)
+     * (with original key => value pairs).
      *
      * @return array All items
      */
@@ -163,12 +148,13 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
 
     /**
      * Get filtered collection as array
-     * (with original key => value pairs)
+     * (with original key => value pairs).
      *
-     * $keys can be an array or a comma separated string of keys
+     * $keys can be an array or a comma separated string of keys.
      *
-     * @param  mixed $keys The item keys to export
-     * @return array Filtered items
+     * @param  mixed $keys The item keys to export.
+     *
+     * @return array Filtered items.
      */
     public function only($keys)
     {
@@ -182,9 +168,9 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
-     * Get collection keys
+     * Get collection keys.
      *
-     * @return array All item keys
+     * @return array All item keys.
      */
     public function keys()
     {
@@ -192,13 +178,37 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
-     * Get collection values
+     * Get collection values.
      *
-     * @return array All item values
+     * @return array All item values.
      */
     public function values()
     {
         return array_values($this->data);
+    }
+
+    /**
+     * Check if specified collection item exists.
+     *
+     * @param  mixed $key The item key.
+     *
+     * @return bool
+     */
+    public function offsetExists($key)
+    {
+        return $this->has($key);
+    }
+
+    /**
+     * Get specified collection item.
+     *
+     * @param  mixed $key The item key.
+     *
+     * @return mixed The item value.
+     */
+    public function offsetGet($key)
+    {
+        return $this->get($key);
     }
 
     /*
@@ -208,32 +218,24 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      */
 
     /**
-     * Check if specified collection item exists
+     * Get specified collection item.
      *
-     * @param  mixed $key The item key
-     * @return boolean
+     * @param  mixed $key     The item key.
+     * @param  mixed $default The default value (if key does not exist).
+     *
+     * @return mixed The item value.
      */
-    public function offsetExists($key)
+    public function get($key, $default = null)
     {
-        return $this->has($key);
+        return $this->has($key) ? $this->data[$key] : $default;
     }
 
     /**
-     * Get specified collection item
+     * Set specified collection item.
      *
-     * @param  mixed $key The item key
-     * @return mixed The item value
-     */
-    public function offsetGet($key)
-    {
-        return $this->get($key);
-    }
-
-    /**
-     * Set specified collection item
+     * @param  mixed $key   The item key.
+     * @param  mixed $value The item value.
      *
-     * @param  mixed $key   The item key
-     * @param  mixed $value The item value
      * @return void
      */
     public function offsetSet($key, $value)
@@ -242,14 +244,32 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
-     * Removes specified collection item
+     * Removes specified collection item.
      *
-     * @param  mixed $key The item key
+     * @param  mixed $key The item key.
+     *
      * @return $this
      */
     public function offsetUnset($key)
     {
         $this->remove($key);
+    }
+
+    /**
+     * Removes specified collection item.
+     *
+     * @param mixed $key    The item key.
+     * @param bool  $remove [optional] Conditional remove statement.
+     *
+     * @return $this
+     */
+    public function remove($key, $remove = true)
+    {
+        if ($remove && $this->has($key)) {
+            unset($this->data[$key]);
+        }
+
+        return $this;
     }
 
     /*
@@ -259,7 +279,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      */
 
     /**
-     * Count collection elements
+     * Count collection elements.
      *
      * @return int
      */
@@ -275,9 +295,9 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      */
 
     /**
-     * Create an iterator to be able to traverse items via foreach
+     * Create an iterator to be able to traverse items via foreach.
      *
-     * @return \ArrayIterator
+     * @return ArrayIterator
      */
     public function getIterator()
     {
@@ -291,24 +311,27 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      */
 
     /**
-     * Convert object into string to make it storable (freeze, store)
-     *
-     * @return string
-     */
-    public function serialize()
-    {
-        return json_encode($this->data);
-    }
-
-    /**
-     * Convert string back into object from storage (unfreeze, restore)
+     * Convert string back into object from storage (unfreeze, restore).
      *
      * @param  string $data
+     *
      * @return void
      */
     public function unserialize($data)
     {
         $this->data = json_decode($data);
+    }
+
+    /**
+     * Get specified collection item.
+     *
+     * @param  mixed $key The item key.
+     *
+     * @return mixed The item value.
+     */
+    public function __get($key)
+    {
+        return $this->get($key);
     }
 
     /*
@@ -318,32 +341,11 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      */
 
     /**
-     * Get specified collection item
+     * Set specified collection item.
      *
-     * @param  mixed $key The item key
-     * @return mixed The item value
-     */
-    public function __get($key)
-    {
-        return $this->get($key);
-    }
-
-    /**
-     * Check if specified collection item exists
+     * @param  mixed $key   The item key.
+     * @param  mixed $value The item value.
      *
-     * @param  mixed $key The item key
-     * @return boolean
-     */
-    public function __isset($key)
-    {
-        return $this->isset($key);
-    }
-
-    /**
-     * Set specified collection item
-     *
-     * @param  mixed $key   The item key
-     * @param  mixed $value The item value
      * @return void
      */
     public function __set($key, $value)
@@ -352,9 +354,22 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
-     * Removes specified collection item
+     * Check if specified collection item exists.
      *
-     * @param  mixed $key The item key
+     * @param  mixed $key The item key.
+     *
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return $this->isset($key);
+    }
+
+    /**
+     * Removes specified collection item.
+     *
+     * @param  mixed $key The item key.
+     *
      * @return $this
      */
     public function __unset($key)
@@ -363,12 +378,22 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
-     * Converts object to string
+     * Converts object to string.
      *
      * @return string
      */
     public function __toString()
     {
         return $this->serialize();
+    }
+
+    /**
+     * Convert object into string to make it storable (freeze, store).
+     *
+     * @return string
+     */
+    public function serialize()
+    {
+        return json_encode($this->data);
     }
 }
