@@ -85,8 +85,8 @@ abstract class AbstractController
      *
      * @param  Response $response
      * @param  string   $route  The route to redirect to
-     * @param  array    $params (optional) Route params
-     * @param  string   $suffix (optional) URL suffix like query string
+     * @param  array    $params [optional] Route params
+     * @param  string   $suffix [optional] URL suffix like query string
      *
      * @return Response
      */
@@ -102,7 +102,7 @@ abstract class AbstractController
      *
      * @param  Response $response
      * @param  string   $template The template to render
-     * @param  int      $status   (optional) Response status code
+     * @param  int      $status   [optional] Response status code
      *
      * @return Response
      */
