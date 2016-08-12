@@ -20,8 +20,7 @@ use Monolog\Logger;
 /**
  * Class Profiler.
  *
- * A slim stop watch for different profiles that are logged to any Monolog
- * logger.
+ * A slim stop watch for different profiles that are logged to any Monolog logger.
  *
  * @package Ansas\Monolog
  * @author  Ansas Meyer <mail@ansas-meyer.de>
@@ -80,8 +79,8 @@ class Profiler
      * Profiler constructor.
      *
      * @param Logger        $logger
-     * @param int           $level
-     * @param callable|null $formatter
+     * @param int           $level     [optional]
+     * @param callable|null $formatter [optional]
      */
     public function __construct(Logger $logger, $level = Logger::DEBUG, callable $formatter = null)
     {
@@ -173,7 +172,7 @@ class Profiler
      * - be started again
      * - will not be logged at profiler destruction
      *
-     * @param bool $clearContext Clear context as well?
+     * @param bool $clearContext [optional] Clear context as well?
      *
      * @return $this
      */
@@ -194,7 +193,7 @@ class Profiler
     /**
      * Clear this and all child profiles.
      *
-     * @param bool $clearContext Clear context as well?
+     * @param bool $clearContext [optional] Clear context as well?
      *
      * @return $this
      */
@@ -212,7 +211,13 @@ class Profiler
     /**
      * Set / remove context for this and all later created child profiles.
      *
-     * @param Collection|null $context Set context to null to remove context.
+     * Usage:
+     * - <code>$profiler->context($context)</code><br>
+     *   Set context.
+     * - <code>$profiler->context()</code> or <code>$profiler->context(null)</code><br>
+     *   Remove context.
+     *
+     * @param Collection|null $context [optional] Set context to null to remove context.
      *
      * @return $this
      */
@@ -353,8 +358,8 @@ class Profiler
     /**
      * Add lap to this (running) profile.
      *
-     * @param string $message
-     * @param array  $context
+     * @param string $message [optional]
+     * @param array  $context [optional]
      *
      * @return $this
      * @throws Exception
@@ -389,8 +394,8 @@ class Profiler
      * This is the main method for actually logging everything. start()|stop()|lap() use this method for logging. This
      * method can be used to note information without using a time feature.
      *
-     * @param string $message
-     * @param array  $context
+     * @param string $message [optional]
+     * @param array  $context [optional]
      *
      * @return $this
      */
@@ -458,8 +463,8 @@ class Profiler
     /**
      * Clear and start profile again.
      *
-     * @param string $message
-     * @param array  $context
+     * @param string $message [optional]
+     * @param array  $context [optional]
      */
     public function restart($message = 'Restart', $context = [])
     {
@@ -491,7 +496,7 @@ class Profiler
     /**
      * Set formatter.
      *
-     * @param callable|null $formatter
+     * @param callable|null $formatter [optional]
      *
      * @return $this
      */
@@ -536,8 +541,8 @@ class Profiler
     /**
      * Start this profile.
      *
-     * @param string $message
-     * @param array  $context
+     * @param string $message [optional]
+     * @param array  $context [optional]
      *
      * @return $this
      * @throws Exception
@@ -578,8 +583,8 @@ class Profiler
     /**
      * Start this and all child profiles.
      *
-     * @param string $message
-     * @param array  $context
+     * @param string $message [optional]
+     * @param array  $context [optional]
      *
      * @return $this
      */
@@ -601,9 +606,29 @@ class Profiler
     /**
      * Stop this profile.
      *
-     * @param string $message
-     * @param array  $context
-     * @param bool   $lap
+     * Usage:
+     * - <code>$profiler->stop("Msg")</code><br>
+     *   Simple message with only default context => if set via <code>context()</code>
+     * - <code>$profiler->stop("Msg", ['key' => 'value'])</code><br>
+     *   Message and (additional) context
+     * - <code>$profiler->stop("Msg", ['key' => 'value'], false)</code><br>
+     *   For "no lap" before stop
+     * - <code>$profiler->stop(['key' => 'value'])</code><br>
+     *   Default message and (additional) context
+     * - <code>$profiler->stop(['key' => 'value'], false)</code><br>
+     *   Context, but "no lap" before stop
+     * - <code>$profiler->stop("Msg", false)</code><br>
+     *   No (additional) context and "no lap" before stop
+     * - <code>$profiler->stop(false)</code><br>
+     *   Default message, no (additional) context and "no lap" before stop
+     * - <code>$profiler->stop(null)</code><br>
+     *   Stop without logging
+     * - <code>$profiler->stop(null, false)</code><br>
+     *   Stop without logging and "no lap" before stop
+     *
+     * @param string $message [optional]
+     * @param array  $context [optional]
+     * @param bool   $lap     [optional]
      *
      * @return $this
      * @throws Exception
@@ -615,6 +640,13 @@ class Profiler
             $lap     = $context;
             $context = $message;
             $message = 'Stop';
+        } elseif (is_bool($message)) {
+            $lap     = $message;
+            $context = [];
+            $message = 'Stop';
+        } elseif (is_bool($context)) {
+            $lap     = $context;
+            $context = [];
         }
 
         if (!$this->isRunning()) {
@@ -641,9 +673,9 @@ class Profiler
     /**
      * Stop this profile and all children of this profile.
      *
-     * @param string $message
-     * @param array  $context
-     * @param bool   $lap
+     * @param string $message [optional]
+     * @param array  $context [optional]
+     * @param bool   $lap     [optional]
      *
      * @return $this
      */
