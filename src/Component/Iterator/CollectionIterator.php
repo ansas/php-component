@@ -51,26 +51,15 @@ class CollectionIterator implements IteratorAggregate, Countable
     }
 
     /**
-     * @return Generator
-     */
-    public function getIterator()
-    {
-        $this->reset();
-
-        foreach ($this->iterator as $item) {
-            $this->position++;
-            yield $item;
-        }
-    }
-
-    /**
-     * Check if the collection is empty.
+     * Returns the number of elements.
      *
-     * @return bool
+     * This method implements the Countable interface.
+     *
+     * @return int
      */
-    public function isEmpty()
+    public function count()
     {
-        return !$this->positions;
+        return $this->getTotal();
     }
 
     /**
@@ -81,6 +70,19 @@ class CollectionIterator implements IteratorAggregate, Countable
     public function getIndex()
     {
         return $this->position;
+    }
+
+    /**
+     * @return Generator
+     */
+    public function getIterator()
+    {
+        $this->reset();
+
+        foreach ($this->iterator as $item) {
+            $this->position++;
+            yield $item;
+        }
     }
 
     /**
@@ -101,6 +103,38 @@ class CollectionIterator implements IteratorAggregate, Countable
     public function hasNext()
     {
         return !$this->isLast();
+    }
+
+    /**
+     * Check if the collection is empty.
+     *
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return !$this->positions;
+    }
+
+    /**
+     * Check if it's an even loop call.
+     *
+     * @return bool
+     */
+    public function isEven()
+    {
+        return $this->getIndex() % 2 == 0;
+    }
+
+    /**
+     * Check if loop call index is a part of $split.
+     *
+     * @param int $split
+     *
+     * @return bool
+     */
+    public function isEvery(int $split)
+    {
+        return $this->getIndex() % $split == 0;
     }
 
     /**
@@ -131,40 +165,6 @@ class CollectionIterator implements IteratorAggregate, Countable
     public function isOdd()
     {
         return !$this->isEven();
-    }
-
-    /**
-     * Check if loop call index is a part of $split.
-     *
-     * @param int $split
-     *
-     * @return bool
-     */
-    public function isEvery(int $split)
-    {
-        return $this->getIndex() % $split == 0;
-    }
-
-    /**
-     * Check if it's an even loop call.
-     *
-     * @return bool
-     */
-    public function isEven()
-    {
-        return $this->getIndex() % 2 == 0;
-    }
-
-    /**
-     * Returns the number of elements.
-     *
-     * This method implements the Countable interface.
-     *
-     * @return int
-     */
-    public function count()
-    {
-        return $this->getTotal();
     }
 
     /**
