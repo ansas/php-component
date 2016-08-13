@@ -19,9 +19,8 @@ use Serializable;
 /**
  * Class Collection
  *
- * Making handling of context data a bit easier. Collection can be accessed as
- * array or object. Elements can be set / added / retrieved / removed as single
- * elements or bundled as array.
+ * Making handling of context data a bit easier. Collection can be accessed as array or object. Elements can be
+ * set / added / retrieved / removed as single elements or bundled as array.
  *
  * @package Ansas\Component\Collection
  * @author  Ansas Meyer <mail@ansas-meyer.de>
@@ -34,9 +33,9 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     protected $data = [];
 
     /**
-     * Constructor
+     * Collection constructor.
      *
-     * @param array $items The initial items
+     * @param array $items [optional] The initial items
      */
     public function __construct(array $items = [])
     {
@@ -174,10 +173,23 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
+     * Create a new instance.
+     *
+     * @param array $items [optional] The initial items
+     *
+     * @return Collection A new instance
+     *
+     */
+    public static function create(array $items = [])
+    {
+        return new static($items);
+    }
+
+    /**
      * Get specified collection item.
      *
      * @param  mixed $key     The item key.
-     * @param  mixed $default The default value (if key does not exist).
+     * @param  mixed $default [optional] The default value (if key does not exist).
      *
      * @return mixed The item value.
      */
