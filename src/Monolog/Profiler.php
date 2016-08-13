@@ -140,12 +140,13 @@ class Profiler
     /**
      * Add child profile.
      *
-     * @param $profile
+     * @param string $profile
+     * @param bool   $inheritContext [optional] Also set context for child profile?
      *
      * @return Profiler
      * @throws Exception
      */
-    public function add($profile)
+    public function add(string $profile, $inheritContext = false)
     {
         if ($this->has($profile)) {
             throw new Exception("Profile {$profile} already exist.");
@@ -156,7 +157,7 @@ class Profiler
         }
 
         $child = clone $this;
-        $child->clear();
+        $child->clear(!$inheritContext);
         $child->name     = ($this->name ? $this->name . ' > ' : '') . $profile;
         $child->children = [];
 
@@ -253,12 +254,12 @@ class Profiler
     /**
      * Get child profile.
      *
-     * @param $profile
+     * @param string $profile
      *
      * @return mixed
      * @throws Exception
      */
-    public function get($profile)
+    public function get(string $profile)
     {
         if (!$this->has($profile)) {
             throw new Exception("Profile {$profile} does not exist.");
@@ -316,11 +317,11 @@ class Profiler
     /**
      * Check if profile exists.
      *
-     * @param $profile
+     * @param string $profile
      *
      * @return bool
      */
-    public function has($profile)
+    public function has(string $profile)
     {
         return isset($this->children[$profile]);
     }
@@ -431,11 +432,11 @@ class Profiler
     /**
      * Removes specified child profile from this profile.
      *
-     * @param $profile
+     * @param string $profile
      *
      * @return $this
      */
-    public function remove($profile)
+    public function remove(string $profile)
     {
         $child = $this->get($profile);
         $child->clearAll();
@@ -484,13 +485,14 @@ class Profiler
      *
      * Quick form for add() and get(): Adds child profile if needed and returns the child profile.
      *
-     * @param $profile
+     * @param string $profile
+     * @param bool   $inheritContext [optional] Also set context for child profile?
      *
      * @return Profiler
      */
-    public function set($profile)
+    public function set(string $profile, $inheritContext = false)
     {
-        return $this->has($profile) ? $this->get($profile) : $this->add($profile);
+        return $this->has($profile) ? $this->get($profile) : $this->add($profile, $inheritContext);
     }
 
     /**
@@ -633,7 +635,7 @@ class Profiler
      * @return $this
      * @throws Exception
      */
-    public function stop($message = 'Stop', $context = [], bool $lap = true)
+    public function stop($message = 'Stop', $context = [], $lap = true)
     {
         // Check if method was called only with $context
         if (is_array($message)) {
@@ -679,7 +681,7 @@ class Profiler
      *
      * @return $this
      */
-    public function stopAll($message = 'Stop', $context = [], bool $lap = true)
+    public function stopAll($message = 'Stop', $context = [], $lap = true)
     {
         // Stop all running child profiles first
         foreach ($this->getProfiles(true) as $child) {
@@ -697,7 +699,7 @@ class Profiler
     /**
      * Get current timestamp (incl. microtime).
      *
-     * @return mixed
+     * @return float
      */
     public function timeCurrent()
     {
