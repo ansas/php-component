@@ -13,6 +13,7 @@ namespace Ansas\Component\Collection;
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
+use Exception;
 use IteratorAggregate;
 use Serializable;
 
@@ -196,6 +197,24 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     public function get($key, $default = null)
     {
         return $this->has($key) ? $this->data[$key] : $default;
+    }
+
+    /**
+     * Get specified collection item.
+     *
+     * @param  mixed $key The item key.
+     *
+     * @return mixed The item value.
+     * @throws Exception
+     *
+     */
+    public function require($key)
+    {
+        if (!$this->has($key)) {
+            throw new Exception("Required key {$key} does not exist.");
+        }
+
+        return $this->get($key);
     }
 
     /**
