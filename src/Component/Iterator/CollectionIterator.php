@@ -79,9 +79,9 @@ class CollectionIterator implements IteratorAggregate, Countable
     {
         $this->reset();
 
-        foreach ($this->iterator as $item) {
+        foreach ($this->iterator as $key => $value) {
             $this->position++;
-            yield $item;
+            yield $key => $value;
         }
     }
 
