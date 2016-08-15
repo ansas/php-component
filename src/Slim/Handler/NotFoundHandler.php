@@ -38,7 +38,7 @@ class NotFoundHandler extends AbstractHandler
         $acceptHeader = $request->getHeaderLine('Accept');
         if (stripos($acceptHeader, 'html') !== false) {
             return $this->view->render(
-                $response,
+                $response->withStatus(404),
                 '_notfound' . $this->settings['view']['extension']
             );
         }
