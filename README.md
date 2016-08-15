@@ -1,5 +1,10 @@
 #Ansas\Component
 
+[![Latest Stable Version](https://poser.pugx.org/ansas/php-component/v/stable)](https://packagist.org/packages/ansas/php-component)
+[![Total Downloads](https://poser.pugx.org/ansas/php-component/downloads)](https://packagist.org/packages/ansas/php-component)
+[![Latest Unstable Version](https://poser.pugx.org/ansas/php-component/v/unstable)](https://packagist.org/packages/ansas/php-component)
+[![License](https://poser.pugx.org/ansas/php-component/license)](https://packagist.org/packages/ansas/php-component)
+
 Collection of cross-project PHP classes
 
 Install:
@@ -48,6 +53,7 @@ $context->append([
 $key1 = $context->get('key1');
 $key2 = $context['key2'];
 $key3 = $context->key3;
+$key4 = $context->need('key6'); // throws Exception if key does not exist
 
 // Getter (array)
 $array = $context->all();

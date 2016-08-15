@@ -51,7 +51,7 @@ class Profiler
     protected $name = null;
 
     /**
-     * @var array Child profiles (all child profiles go here).
+     * @var Profiler[] Child profiles (all child profiles go here).
      */
     protected $children = [];
 
@@ -303,7 +303,7 @@ class Profiler
      *
      * @param bool $reverse Reverse results?
      *
-     * @return array
+     * @return Profiler[]
      */
     public function getProfiles($reverse = false)
     {

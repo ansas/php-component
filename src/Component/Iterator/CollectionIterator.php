@@ -73,6 +73,10 @@ class CollectionIterator implements IteratorAggregate, Countable
     }
 
     /**
+     * Get the iterator.
+     *
+     * This method implements the IteratorAggregate interface.
+     *
      * @return Generator
      */
     public function getIterator()

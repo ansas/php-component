@@ -74,6 +74,8 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
+     * Create new instance from file name via static method.
+     *
      * @param string|SplFileInfo|SplFileObject $file
      *
      * @return CsvReader A new instance
@@ -84,6 +86,8 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
+     * Create new instance from string via static method.
+     *
      * @param $string
      *
      * @return CsvReader A new instance
@@ -101,6 +105,8 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
+     * Return CSV as complete array (one element per line).
+     *
      * @return array
      */
     public function asArray()
@@ -109,6 +115,8 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
+     * Return CSV header as array.
+     *
      * @return array
      * @throws Exception
      */
@@ -126,7 +134,7 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
-     * Returns an Iterator for the current Finder configuration.
+     * Get the iterator.
      *
      * This method implements the IteratorAggregate interface.
      *
@@ -149,6 +157,8 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
+     * Fetch CSV elements as array.
+     *
      * @return Generator
      */
     public function fetchArray()
@@ -157,6 +167,8 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
+     * Fetch CSV elements as object.
+     *
      * @return Generator
      */
     public function fetchObject()
@@ -167,6 +179,8 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
+     * Get current line number in file.
+     *
      * @return int
      */
     public function getLineNumber()
@@ -175,6 +189,8 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
+     * Reset file.
+     *
      * @return $this
      */
     public function reset()
@@ -187,6 +203,8 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
+     * Set CSV delimiter string.
+     *
      * @param string $delimiter
      *
      * @return $this
@@ -199,6 +217,8 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
+     * Set CSV enclosure string.
+     *
      * @param string $enclosure
      *
      * @return $this
@@ -211,6 +231,8 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
+     * Set CSV escape string.
+     *
      * @param string $escape
      *
      * @return $this
@@ -223,6 +245,10 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
+     * Set CSV header.
+     *
+     * Useful for CSV files without header line.
+     *
      * @param array $header
      *
      * @return $this
@@ -234,14 +260,9 @@ class CsvReader implements IteratorAggregate
         return $this;
     }
 
-    public function generateRows()
-    {
-        while ($line = $this->getNextDataSet()) {
-            yield $line;
-        }
-    }
-
     /**
+     * Get and parse next data set (line).
+     *
      * @return array|null
      * @throws Exception
      */
