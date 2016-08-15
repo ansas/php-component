@@ -1,3 +1,7 @@
+# files
+composer.lock
+
 # paths
 doc
 tmp
+vendor
