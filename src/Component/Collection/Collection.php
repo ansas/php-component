@@ -103,6 +103,19 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
+     * Create a new instance.
+     *
+     * @param array $items [optional] The initial items
+     *
+     * @return Collection A new instance
+     *
+     */
+    public static function create(array $items = [])
+    {
+        return new static($items);
+    }
+
+    /**
      * Adds item to collection for specified key
      * (converts item to array if key already exists).
      *
@@ -116,7 +129,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
         if (!$this->has($key)) {
             $this->set($key, $value);
         } else {
-            $this->data[$key]   = (array)$this->data[$key];
+            $this->data[$key]   = (array) $this->data[$key];
             $this->data[$key][] = $value;
         }
 
@@ -174,19 +187,6 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
-     * Create a new instance.
-     *
-     * @param array $items [optional] The initial items
-     *
-     * @return Collection A new instance
-     *
-     */
-    public static function create(array $items = [])
-    {
-        return new static($items);
-    }
-
-    /**
      * Get specified collection item.
      *
      * @param  mixed $key     The item key.
@@ -197,24 +197,6 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     public function get($key, $default = null)
     {
         return $this->has($key) ? $this->data[$key] : $default;
-    }
-
-    /**
-     * Get specified collection item.
-     *
-     * @param  mixed $key The item key.
-     *
-     * @return mixed The item value.
-     * @throws Exception
-     *
-     */
-    public function require($key)
-    {
-        if (!$this->has($key)) {
-            throw new Exception("Required key {$key} does not exist.");
-        }
-
-        return $this->get($key);
     }
 
     /**
@@ -247,6 +229,24 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     public function keys()
     {
         return array_keys($this->data);
+    }
+
+    /**
+     * Get specified collection item.
+     *
+     * @param  mixed $key The item key.
+     *
+     * @return mixed The item value.
+     * @throws Exception
+     *
+     */
+    public function need($key)
+    {
+        if (!$this->has($key)) {
+            throw new Exception("Required key {$key} does not exist.");
+        }
+
+        return $this->get($key);
     }
 
     /**
