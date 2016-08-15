@@ -13,12 +13,12 @@ namespace Ansas\Component\File;
 use Exception;
 
 /**
- * Class FTP
+ * Class FtpClient
  *
  * @package Ansas\Component\File
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
-class FTP
+class FtpClient
 {
     /**
      * @var string Host
