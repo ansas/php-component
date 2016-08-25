@@ -238,7 +238,6 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      *
      * @return mixed The item value.
      * @throws Exception
-     *
      */
     public function need($key)
     {

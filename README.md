@@ -5,7 +5,7 @@
 [![Latest Unstable Version](https://poser.pugx.org/ansas/php-component/v/unstable)](https://packagist.org/packages/ansas/php-component)
 [![License](https://poser.pugx.org/ansas/php-component/license)](https://packagist.org/packages/ansas/php-component)
 
-Collection of cross-project PHP classes
+The "__PHP components__" package: Collection of cross-project PHP classes
 
 Install:
 ```shell
