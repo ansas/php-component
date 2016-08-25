@@ -11,6 +11,9 @@
 namespace Ansas\Util;
 
 use Exception;
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 /**
  * Class Path
@@ -20,6 +23,9 @@ use Exception;
  */
 class Path
 {
+    /** flag recursive */
+    const RECURSIVE = 1;
+
     /**
      * Change to (use) directory / path.
      *
@@ -80,7 +86,7 @@ class Path
      *
      * @throws Exception
      */
-    public static function mkdir(string $path, int $mode = 0777, bool $recursive = true)
+    public static function create(string $path, int $mode = 0777, bool $recursive = true)
     {
         if (@is_dir($path)) {
             return;
@@ -91,5 +97,49 @@ class Path
         }
 
         throw new Exception(sprintf("Cannot create path %s.", $path));
+    }
+
+    /**
+     * Delete a directory / path if it still exists.
+     *
+     * @param string $path
+     * @param bool   $recursive [optional] Path::RECURSIVE
+     *
+     * @throws Exception
+     */
+    public static function delete(string $path, bool $recursive = false)
+    {
+        if (!$path) {
+            throw new Exception("Path must not be empty.");
+        }
+        if ($path == DIRECTORY_SEPARATOR) {
+            throw new Exception("Path must not be root path.");
+        }
+        if ($path == '.' || $path == '..') {
+            throw new Exception("Path must not be dot path.");
+        }
+
+        if (!is_dir($path)) {
+            return;
+        }
+
+        if ($recursive) {
+            $dir = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
+            $files = new RecursiveIteratorIterator($dir, RecursiveIteratorIterator::CHILD_FIRST);
+
+            foreach ($files as $file) {
+                if ($file->isDir()) {
+                    Path::delete($file->getPathName());
+                    continue;
+                }
+                File::delete($file->getPathname());
+            }
+        }
+
+        if (@rmdir($path)) {
+            return;
+        }
+
+        throw new Exception(sprintf("Cannot delete path %s.", $path));
     }
 }

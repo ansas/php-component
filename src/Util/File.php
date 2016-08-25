@@ -21,6 +21,21 @@ use Exception;
 class File
 {
     /**
+     * Copy a (remote) file.
+     *
+     * @param string $pathOld
+     * @param string $pathNew
+     *
+     * @throws Exception
+     */
+    public static function copy(string $pathOld, string $pathNew)
+    {
+        if (!@copy($pathOld, $pathNew)) {
+            throw new Exception(sprintf("Cannot copy %s to %s.", $pathOld, $pathNew));
+        }
+    }
+
+    /**
      * Delete a file.
      *
      * @param string $file
@@ -29,6 +44,10 @@ class File
      */
     public static function delete(string $file)
     {
+        if (!is_file($file)) {
+            return;
+        }
+
         if (@unlink($file)) {
             return;
         }
@@ -56,6 +75,22 @@ class File
     }
 
     /**
+     * Touch a file.
+     *
+     * @param string   $file
+     * @param int|null $time
+     *
+     * @throws Exception
+     */
+    public static function touch(string $file, int $time = null)
+    {
+        $touch = $time ? @touch($file, $time) : @touch($file);
+        if (true !== $touch) {
+            throw new Exception(sprintf("Cannot touch %s.", $file));
+        }
+    }
+
+    /**
      * Unzip a file.
      *
      * @param string      $file
@@ -74,22 +109,6 @@ class File
 
         if ($returnCode != 0) {
             throw new Exception("Cannot unzip %s: %s", $file, join("\n", $output));
-        }
-    }
-
-    /**
-     * Touch a file.
-     *
-     * @param string   $file
-     * @param int|null $time
-     *
-     * @throws Exception
-     */
-    public function touch(string $file, int $time = null)
-    {
-        $touch = $time ? @touch($file, $time) : @touch($file);
-        if (true !== $touch) {
-            throw new Exception(sprintf("Cannot touch %s.", $file));
         }
     }
 }
