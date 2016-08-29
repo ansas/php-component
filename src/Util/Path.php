@@ -109,6 +109,51 @@ class Path
      */
     public static function delete(string $path, bool $recursive = false)
     {
+        Path::validatePath($path);
+
+        if ($recursive) {
+            Path::purge($path);
+        }
+
+        if (@rmdir($path)) {
+            return;
+        }
+
+        throw new Exception(sprintf("Cannot delete path %s.", $path));
+    }
+
+    /**
+     * Delete directory content
+     *
+     * @param string $path
+     *
+     * @throws Exception
+     */
+    public static function purge(string $path)
+    {
+        Path::validatePath($path);
+
+        $dir = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
+        $files = new RecursiveIteratorIterator($dir, RecursiveIteratorIterator::CHILD_FIRST);
+
+        foreach ($files as $file) {
+            if ($file->isDir()) {
+                Path::delete($file->getPathName());
+                continue;
+            }
+            File::delete($file->getPathname());
+        }
+    }
+
+    /**
+     * Internal: Validate path.
+     *
+     * @param $path
+     *
+     * @throws Exception
+     */
+    protected static function validatePath($path)
+    {
         if (!$path) {
             throw new Exception("Path must not be empty.");
         }
@@ -118,28 +163,8 @@ class Path
         if ($path == '.' || $path == '..') {
             throw new Exception("Path must not be dot path.");
         }
-
         if (!is_dir($path)) {
-            return;
+            throw new Exception("Path must be an existing path.");
         }
-
-        if ($recursive) {
-            $dir = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
-            $files = new RecursiveIteratorIterator($dir, RecursiveIteratorIterator::CHILD_FIRST);
-
-            foreach ($files as $file) {
-                if ($file->isDir()) {
-                    Path::delete($file->getPathName());
-                    continue;
-                }
-                File::delete($file->getPathname());
-            }
-        }
-
-        if (@rmdir($path)) {
-            return;
-        }
-
-        throw new Exception(sprintf("Cannot delete path %s.", $path));
     }
 }
