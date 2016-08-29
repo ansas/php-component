@@ -32,9 +32,9 @@ class TwigProvider extends AbstractProvider
     public static function getDefaultSettings()
     {
         return [
-            'engine'  => 'twig',
-            'path'    => '.',
-            'options' => [
+            'engine'     => 'twig',
+            'path'       => '.',
+            'options'    => [
                 'autoescape'       => true,
                 'auto_reload'      => true,
                 'cache'            => false,
@@ -42,6 +42,7 @@ class TwigProvider extends AbstractProvider
                 'debug'            => true,
                 'strict_variables' => false,
             ],
+            'extensions' => [],
         ];
     }
 
@@ -54,9 +55,6 @@ class TwigProvider extends AbstractProvider
     {
         $settings = array_merge([], self::getDefaultSettings(), $container['settings']['view']);
 
-        $path    = rtrim($settings['path'], '/') . '/';
-        $options = $settings['options'];
-
         /**
          * Add dependency (DI).
          *
@@ -64,8 +62,11 @@ class TwigProvider extends AbstractProvider
          *
          * @return Twig
          */
-        $container['view'] = function (Container $c) use ($path, $options) {
-            $view = new Twig($path, $options);
+        $container['view'] = function (Container $c) use ($settings) {
+
+            $path = rtrim($settings['path'], '/') . '/';
+
+            $view = new Twig($path, $settings['options']);
             $view->addExtension(
                 new TwigExtension(
                     $c['router'],
@@ -73,7 +74,12 @@ class TwigProvider extends AbstractProvider
                 )
             );
             $view->addExtension(new \Twig_Extension_Debug());
-            $view->addExtension(new \Twig_Extensions_Extension_Intl());
+
+            // Add extensions (must be loaded via e. g. composer)
+            foreach ($settings['extensions'] as $extension) {
+                $extension = is_callable($extension) ? $extension() : new $extension();
+                $view->addExtension($extension);
+            }
 
             // Make container available to template engine (global)
             $view->getEnvironment()->addGlobal("c", $c);
