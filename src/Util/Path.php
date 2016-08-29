@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the PHP components package.
+ * This file is part of the PHP components.
  *
  * For the full copyright and license information, please view the LICENSE.md file distributed with this source code.
  *

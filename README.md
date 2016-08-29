@@ -1,15 +1,15 @@
-#Ansas\Component
+# PHP components
 
 [![Latest Stable Version](https://poser.pugx.org/ansas/php-component/v/stable)](https://packagist.org/packages/ansas/php-component)
 [![Total Downloads](https://poser.pugx.org/ansas/php-component/downloads)](https://packagist.org/packages/ansas/php-component)
 [![Latest Unstable Version](https://poser.pugx.org/ansas/php-component/v/unstable)](https://packagist.org/packages/ansas/php-component)
 [![License](https://poser.pugx.org/ansas/php-component/license)](https://packagist.org/packages/ansas/php-component)
 
-The "__PHP components__" package: Collection of cross-project PHP classes
+Collection of cross-project PHP classes.
 
 Install:
 ```shell
-$ composer require ansas/ansas/php-component
+$ composer require ansas/php-component
 ```
 
 
@@ -337,3 +337,19 @@ $logger->emergency(str_repeat("Xx ", rand(5, 40)));
 
 ## TODO
 - Write tests
+
+
+## Contribute
+
+Everybody can contribute to this package. Just:
+
+1. fork it,
+2. make your changes and
+3. send a pull request.
+
+Please make sure to follow [PSR-1](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md) and [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md) coding conventions.
+
+
+## License
+
+__MIT license__ (see the [LICENSE](LICENSE.md) file for more information).

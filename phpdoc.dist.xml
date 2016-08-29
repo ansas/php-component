@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpdoc>
-    <title>PHP component</title>
+    <title>PHP components</title>
     <parser>
         <target>tmp/phpdoc</target>
         <default-package-name>Documentation</default-package-name>

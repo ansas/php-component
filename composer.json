@@ -1,7 +1,7 @@
 {
     "name": "ansas/php-component",
     "type": "library",
-    "description": "Collection of cross-project PHP classes",
+    "description": "PHP components - collection of cross-project PHP classes",
     "keywords": [
         "PHP",
         "component",
@@ -10,6 +10,7 @@
         "format",
         "file",
         "monolog",
+        "slim",
         "profiler"
     ],
     "license": "MIT",
