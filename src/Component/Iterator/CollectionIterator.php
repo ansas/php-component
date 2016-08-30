@@ -132,6 +132,8 @@ class CollectionIterator implements IteratorAggregate, Countable
     /**
      * Check if loop call index is a part of $split.
      *
+     * Useful for e. g. flushing a buffer every x calls or using this in combination with progress profiling.
+     *
      * @param int $split
      *
      * @return bool
@@ -142,13 +144,27 @@ class CollectionIterator implements IteratorAggregate, Countable
     }
 
     /**
+     * Check if loop call index is a part of $split or if it is the last loop call.
+     *
+     * Useful if you want to e. g. flush a buffer every x calls and if it is the last call.
+     *
+     * @param int $split
+     *
+     * @return bool
+     */
+    public function isEveryOrLast(int $split)
+    {
+        return $this->isEvery($split) || $this->isLast();
+    }
+
+    /**
      * Check if it's the first loop call.
      *
      * @return bool
      */
     public function isFirst()
     {
-        return $this->getIndex() === 1;
+        return $this->getIndex() == 1;
     }
 
     /**
@@ -169,6 +185,16 @@ class CollectionIterator implements IteratorAggregate, Countable
     public function isOdd()
     {
         return !$this->isEven();
+    }
+
+    /**
+     * Check if it's the first and only (= last) loop call.
+     *
+     * @return bool
+     */
+    public function isOnly()
+    {
+        return $this->isFirst() && $this->isLast();
     }
 
     /**

@@ -10,6 +10,8 @@
 
 namespace Ansas\Util;
 
+use Ansas\Iterator\DirectoryRegexIterator;
+use Ansas\Iterator\FileRegexIterator;
 use Exception;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
@@ -123,20 +125,28 @@ class Path
     }
 
     /**
-     * Delete directory content
+     * Delete directory content.
      *
-     * @param string $path
-     *
-     * @throws Exception
+     * @param string       $path
+     * @param string|array $fileFilterRegex [optional] Regex of files to purge (can be negated to skip files)
+     * @param string|array $dirFilterRegex  [optional] Regex of dirs to purge (can be negated to skip dirs)
      */
-    public static function purge(string $path)
+    public static function purge(string $path, $fileFilterRegex = null, $dirFilterRegex = null)
     {
         Path::validatePath($path);
 
-        $dir = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
-        $files = new RecursiveIteratorIterator($dir, RecursiveIteratorIterator::CHILD_FIRST);
+        $iterator = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
+        $iterator = new RecursiveIteratorIterator($iterator, RecursiveIteratorIterator::CHILD_FIRST);
 
-        foreach ($files as $file) {
+        foreach ((array) $fileFilterRegex as $regex) {
+            $iterator = new FileRegexIterator($iterator, $regex);
+        }
+
+        foreach ((array) $dirFilterRegex as $regex) {
+            $iterator = new DirectoryRegexIterator($iterator, $regex);
+        }
+
+        foreach ($iterator as $file) {
             if ($file->isDir()) {
                 Path::delete($file->getPathName());
                 continue;
