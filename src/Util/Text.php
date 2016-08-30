@@ -19,6 +19,46 @@ namespace Ansas\Util;
 class Text
 {
     /**
+     * Set case to upper
+     */
+    const UPPER = 'upper';
+    /**
+     * Set case to lower
+     */
+    const LOWER = 'lower';
+    /**
+     * Use case "as is"
+     */
+    const NONE = 'none';
+
+    /**
+     * Convert case of a string.
+     *
+     * @param string $string
+     * @param string $case
+     *
+     * @return string
+     * @throws Exception
+     */
+    public static function toCase(string $string, $case)
+    {
+        switch ($case) {
+            case self::UPPER:
+                $string = strtoupper($string);
+                break;
+            case self::LOWER:
+                $string = strtolower($string);
+                break;
+            case self::NONE:
+                break;
+            default:
+                throw new Exception(sprintf("Cannot set case %s", $case));
+        }
+
+        return $string;
+    }
+
+    /**
      * Convert string into regex.
      *
      * @param string $string    String to convert into regex.

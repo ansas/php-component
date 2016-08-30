@@ -19,12 +19,22 @@ namespace Ansas\Util;
 class Debug
 {
     /**
-     * Print variable.
+     * Check if running in cli modus.
+     *
+     * @return bool
+     */
+    public static function isCli()
+    {
+        return PHP_SAPI === 'cli-server';
+    }
+
+    /**
+     * Print (dump) variable.
      *
      * @param      $data
      * @param null $description
      */
-    public static function print($data, $description = null)
+    public static function dump($data, $description = null)
     {
         if (self::isCli()) {
             if ($description) {
@@ -53,15 +63,5 @@ class Debug
     public static function separator($char = '=', $repeat = 50)
     {
         echo str_repeat($char, $repeat) . (self::isCli() ? "\n" : "<br>\n");
-    }
-
-    /**
-     * Check if running in cli modus.
-     *
-     * @return bool
-     */
-    public static function isCli()
-    {
-        return PHP_SAPI === 'cli-server';
     }
 }

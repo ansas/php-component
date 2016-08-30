@@ -45,41 +45,6 @@ class Path
     }
 
     /**
-     * Get the "project" root path.
-     *
-     * For an optionally specified $rootForPath (default is start script path)
-     * it traverses the path structure until it finds an optionally specified
-     * $rootHasDir (default is "lib") and returns it.
-     *
-     * Throws an Exception if root path cannot be determined.
-     *
-     * @param  string $rootForPath [optional] The file or path to get project root path for.
-     * @param  string $rootHasDir  [optional] The directory that must exist in root path.
-     *
-     * @return string The root path
-     * @throws Exception If root path cannot be determined
-     */
-    public static function getRoot($rootForPath = null, $rootHasDir = 'lib')
-    {
-        if (!$rootForPath) {
-            $includes    = get_included_files();
-            $rootForPath = $includes[0];
-        }
-
-        $rootForPath = rtrim($rootForPath, DIRECTORY_SEPARATOR);
-        $rootHasDir  = ltrim($rootHasDir, DIRECTORY_SEPARATOR);
-
-        while (!is_dir($rootForPath . DIRECTORY_SEPARATOR . $rootHasDir)) {
-            $rootForPath = dirname($rootForPath);
-            if ($rootForPath == DIRECTORY_SEPARATOR) {
-                throw new Exception("Cannot determine root path.");
-            }
-        }
-
-        return $rootForPath;
-    }
-
-    /**
      * Creates a directory / path if it does not already exist.
      *
      * @param string $path
@@ -122,6 +87,41 @@ class Path
         }
 
         throw new Exception(sprintf("Cannot delete path %s.", $path));
+    }
+
+    /**
+     * Get the "project" root path.
+     *
+     * For an optionally specified $rootForPath (default is start script path)
+     * it traverses the path structure until it finds an optionally specified
+     * $rootHasDir (default is "lib") and returns it.
+     *
+     * Throws an Exception if root path cannot be determined.
+     *
+     * @param  string $rootForPath [optional] The file or path to get project root path for.
+     * @param  string $rootHasDir  [optional] The directory that must exist in root path.
+     *
+     * @return string The root path
+     * @throws Exception If root path cannot be determined
+     */
+    public static function getRoot($rootForPath = null, $rootHasDir = 'lib')
+    {
+        if (!$rootForPath) {
+            $includes    = get_included_files();
+            $rootForPath = $includes[0];
+        }
+
+        $rootForPath = rtrim($rootForPath, DIRECTORY_SEPARATOR);
+        $rootHasDir  = ltrim($rootHasDir, DIRECTORY_SEPARATOR);
+
+        while (!is_dir($rootForPath . DIRECTORY_SEPARATOR . $rootHasDir)) {
+            $rootForPath = dirname($rootForPath);
+            if ($rootForPath == DIRECTORY_SEPARATOR) {
+                throw new Exception("Cannot determine root path.");
+            }
+        }
+
+        return $rootForPath;
     }
 
     /**
