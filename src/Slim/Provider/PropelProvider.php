@@ -1,7 +1,15 @@
 <?php
-namespace App\Provider;
+/**
+ * This file is part of the PHP components.
+ *
+ * For the full copyright and license information, please view the LICENSE.md file distributed with this source code.
+ *
+ * @license MIT License
+ * @link    https://github.com/ansas/php-component
+ */
 
-use Ansas\Slim\Provider\AbstractProvider;
+namespace Ansas\Slim\Provider;
+
 use Pimple\Container;
 use Propel\Runtime\Connection\ConnectionManagerSingle;
 use Propel\Runtime\Propel;
