@@ -74,7 +74,7 @@ class ConvertPrice
     /**
      * Returns new or existing Singleton instance.
      *
-     * @return ConvertPrice
+     * @return static
      */
     final public static function getInstance()
     {

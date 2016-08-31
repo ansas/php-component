@@ -10,8 +10,13 @@
 
 namespace Ansas\Component\Locale;
 
+use Ansas\Util\Text;
+
 /**
  * Class Locales
+ *
+ * Stores locales added via constructor or addLocale() / addLocales() methods. This is a simple container class with
+ * several find methods to check for available locales.
  *
  * @package Ansas\Component\Locale
  * @author  Ansas Meyer <mail@ansas-meyer.de>
@@ -21,12 +26,7 @@ class Locales
     /**
      * @var Locale[] List of locales
      */
-    protected $locales;
-
-    /**
-     * @var Locale Default (fallback) locale
-     */
-    protected $default;
+    protected $available;
 
     /**
      * @var Locale Active (current) used locale
@@ -55,9 +55,10 @@ class Locales
         // Get sanitized locale
         $locale = Locale::sanitizeLocale($locale);
 
-        if (!isset($this->locales[$locale])) {
-            $locale                              = new Locale($locale);
-            $this->locales[$locale->getLocale()] = $locale;
+        if (!isset($this->available[$locale])) {
+            $locale = new Locale($locale);
+
+            $this->available[$locale->getLocale()] = $locale;
         }
 
         return $this;
@@ -84,11 +85,87 @@ class Locales
      *
      * @param array|Locale[] $locales [optional] List of available locales.
      *
-     * @return Locales
+     * @return static
      */
     public static function create($locales = [])
     {
         return new static($locales);
+    }
+
+    /**
+     * Get locale with specified language (de), country (DE) or locale (de_DE).
+     *
+     * @param $string
+     *
+     * @return Locale|null
+     *
+     */
+    public function find($string)
+    {
+        if (strlen($string) == 2) {
+            if (Text::isUpper($string)) {
+                return $this->findByCountry($string);
+            }
+
+            return $this->findByLanguage($string);
+        }
+
+        return $this->findByLocale($string);
+    }
+
+    /**
+     * Get locale with specified country.
+     *
+     * @param $country
+     *
+     * @return Locale|null
+     *
+     */
+    public function findByCountry($country)
+    {
+        $country = Text::toUpper($country);
+        foreach ($this->getAvailable() as $locale) {
+            if ($country == $locale->getCountry(Text::UPPER)) {
+                return $locale;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get locale with specified language.
+     *
+     * @param $language
+     *
+     * @return Locale|null
+     *
+     */
+    public function findByLanguage($language)
+    {
+        $language = Text::toLower($language);
+        foreach ($this->getAvailable() as $locale) {
+            if ($language == $locale->getLanguage(Text::LOWER)) {
+                return $locale;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get locale with specified name.
+     *
+     * @param string|Locale $locale
+     *
+     * @return Locale|null
+     */
+    public function findByLocale($locale)
+    {
+        // Get sanitized locale
+        $locale = Locale::sanitizeLocale($locale);
+
+        return $this->available[$locale] ?? null;
     }
 
     /**
@@ -108,36 +185,11 @@ class Locales
      */
     public function getAvailable()
     {
-        return $this->locales;
+        return $this->available;
     }
 
     /**
-     * Get default (fallback) locale.
-     *
-     * @return Locale|null
-     */
-    public function getDefault()
-    {
-        return $this->default;
-    }
-
-    /**
-     * Get locale with specified name.
-     *
-     * @param string|Locale $locale
-     *
-     * @return Locale|null
-     */
-    public function getLocale($locale)
-    {
-        // Get sanitized locale
-        $locale = Locale::sanitizeLocale($locale);
-
-        return $this->locales[$locale] ?? null;
-    }
-
-    /**
-     * Set the current active locale.
+     * Set the current active locale incl. localization parameters.
      *
      * @param string|Locale $locale
      *
@@ -149,33 +201,10 @@ class Locales
         $this->addLocale($locale);
 
         // Mark as current locale
-        $this->active = $this->getLocale($locale);
+        $this->active = $this->findByLocale($locale);
 
         // Set as global default for other classes
         \Locale::setDefault($this->active->getLocale());
-
-        return $this;
-    }
-
-    /**
-     * Set the default locale.
-     *
-     * @param string|Locale $locale
-     *
-     * @return $this
-     */
-    public function setDefault($locale)
-    {
-        // Make sure locale is available (set it on list if not set yet)
-        $this->addLocale($locale);
-
-        // Mark as default locale
-        $this->default = $this->getLocale($locale);
-
-        // Mark as current locale (if none set yet)
-        if (!$this->active) {
-            $this->setActive($this->default);
-        }
 
         return $this;
     }

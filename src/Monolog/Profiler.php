@@ -18,7 +18,7 @@ use Exception;
 use Monolog\Logger;
 
 /**
- * Class Profiler.
+ * Class Profiler
  *
  * A slim stop watch for different profiles that are logged to any Monolog logger.
  *

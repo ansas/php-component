@@ -74,11 +74,11 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
-     * Create new instance from file name via static method.
+     * Create new instance.
      *
      * @param string|SplFileInfo|SplFileObject $file
      *
-     * @return CsvReader A new instance
+     * @return static
      */
     public static function create($file)
     {
@@ -86,11 +86,11 @@ class CsvReader implements IteratorAggregate
     }
 
     /**
-     * Create new instance from string via static method.
+     * Create new instance.
      *
      * @param $string
      *
-     * @return CsvReader A new instance
+     * @return static
      * @throws Exception
      */
     public static function createFromString($string)
