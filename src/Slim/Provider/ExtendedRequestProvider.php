@@ -10,7 +10,7 @@
 
 namespace Ansas\Slim\Provider;
 
-use Ansas\Slim\Handler\ExtendedRequestHandler;
+use Ansas\Slim\Http\ExtendedRequest;
 use Pimple\Container;
 
 /**
@@ -22,9 +22,7 @@ use Pimple\Container;
 class ExtendedRequestProvider extends AbstractProvider
 {
     /**
-     * Register Provider.
-     *
-     * @param Container $container
+     * {@inheritdoc}
      */
     public function register(Container $container)
     {
@@ -33,10 +31,10 @@ class ExtendedRequestProvider extends AbstractProvider
          *
          * @param Container $c
          *
-         * @return ExtendedRequestHandler
+         * @return ExtendedRequest
          */
         $container['request'] = function ($c) {
-            return ExtendedRequestHandler::createFromEnvironment($c['environment']);
+            return ExtendedRequest::createFromEnvironment($c['environment']);
         };
     }
 }
