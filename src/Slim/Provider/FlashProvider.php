@@ -24,9 +24,7 @@ use Slim\Flash\Messages;
 class FlashProvider extends AbstractProvider
 {
     /**
-     * Register Profiler.
-     *
-     * @param Container $container
+     * {@inheritDoc}
      */
     public function register(Container $container)
     {

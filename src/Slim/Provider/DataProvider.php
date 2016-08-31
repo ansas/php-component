@@ -22,9 +22,7 @@ use Pimple\Container;
 class DataProvider extends AbstractProvider
 {
     /**
-     * Register provider.
-     *
-     * @param Container $container
+     * {@inheritDoc}
      */
     public function register(Container $container)
     {

@@ -18,9 +18,7 @@ use Propel\Runtime\ServiceContainer\StandardServiceContainer;
 class PropelProvider extends AbstractProvider
 {
     /**
-     * Get default settings.
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public static function getDefaultSettings()
     {
@@ -33,9 +31,7 @@ class PropelProvider extends AbstractProvider
     }
 
     /**
-     * Register provider.
-     *
-     * @param Container $container
+     * {@inheritDoc}
      */
     public function register(Container $container)
     {

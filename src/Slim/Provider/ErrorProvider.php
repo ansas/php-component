@@ -22,9 +22,7 @@ use Pimple\Container;
 class ErrorProvider extends AbstractProvider
 {
     /**
-     * Register Error Service Provider.
-     *
-     * @param Container $container
+     * {@inheritDoc}
      */
     public function register(Container $container)
     {

@@ -25,9 +25,7 @@ use Pimple\Container;
 class LoggerProvider extends AbstractProvider
 {
     /**
-     * Get default settings.
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public static function getDefaultSettings()
     {
@@ -39,9 +37,7 @@ class LoggerProvider extends AbstractProvider
     }
 
     /**
-     * Register Profiler.
-     *
-     * @param Container $container
+     * {@inheritDoc}
      */
     public function register(Container $container)
     {

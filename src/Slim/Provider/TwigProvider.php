@@ -25,9 +25,7 @@ use Slim\Views\TwigExtension;
 class TwigProvider extends AbstractProvider
 {
     /**
-     * Get default settings.
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public static function getDefaultSettings()
     {
@@ -47,9 +45,7 @@ class TwigProvider extends AbstractProvider
     }
 
     /**
-     * Register provider.
-     *
-     * @param Container $container
+     * {@inheritDoc}
      */
     public function register(Container $container)
     {

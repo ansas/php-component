@@ -33,9 +33,7 @@ use Pimple\Container;
 class ConsoleLoggerProvider extends AbstractProvider
 {
     /**
-     * Get default settings.
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public static function getDefaultSettings()
     {
@@ -47,9 +45,7 @@ class ConsoleLoggerProvider extends AbstractProvider
     }
 
     /**
-     * Register Profiler.
-     *
-     * @param Container $container
+     * {@inheritDoc}
      */
     public function register(Container $container)
     {

@@ -22,9 +22,7 @@ use Pimple\Container;
 class PdoProvider extends AbstractProvider
 {
     /**
-     * Register Profiler.
-     *
-     * @param Container $container
+     * {@inheritDoc}
      */
     public function register(Container $container)
     {
