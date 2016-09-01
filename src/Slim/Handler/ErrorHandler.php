@@ -46,7 +46,7 @@ class ErrorHandler extends AbstractHandler
             $response = $this->renderTemplate($request, $response, '_error');
         } else {
             $handler  = $this->container['defaultErrorHandler'];
-            $response = $handler($request, $response);
+            $response = $handler($request, $response, $e);
         }
 
         return $response;
