@@ -12,6 +12,7 @@ namespace Ansas\Slim\Http;
 
 use Slim\Http\Environment;
 use Slim\Http\Request;
+use Slim\Route;
 
 /**
  * Class ExtendedRequest
@@ -31,6 +32,18 @@ class ExtendedRequest extends Request
     public static function createFromEnvironment(Environment $environment)
     {
         return parent::createFromEnvironment($environment);
+    }
+
+    /**
+     * Get current route.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return Route|null
+     */
+    public function getCurrentRoute()
+    {
+        return $this->getAttribute('route');
     }
 
     /**

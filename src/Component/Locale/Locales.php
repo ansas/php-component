@@ -11,6 +11,7 @@
 namespace Ansas\Component\Locale;
 
 use Ansas\Util\Text;
+use Exception;
 
 /**
  * Class Locales
@@ -194,17 +195,21 @@ class Locales
      * @param string|Locale $locale
      *
      * @return $this
+     * @throws Exception
      */
     public function setActive($locale)
     {
-        // Make sure locale is available (set it on list if not set yet)
-        $this->addLocale($locale);
+        $active = $this->findByLocale($locale);
+
+        if (!$active) {
+            throw new Exception(sprintf("Locale '%s' not in list.", $locale));
+        }
 
         // Mark as current locale
-        $this->active = $this->findByLocale($locale);
+        $this->active = $active;
 
         // Set as global default for other classes
-        \Locale::setDefault($this->active->getLocale());
+        \Locale::setDefault($active->getLocale());
 
         return $this;
     }

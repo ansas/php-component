@@ -42,16 +42,14 @@ class ErrorHandler extends AbstractHandler
         $this->logError($e);
 
         if ($this->view && !$this->settings['displayErrorDetails']) {
-            return $this->view->render(
-                $response->withStatus(500),
-                '_error' . $this->settings['view']['extension'],
-                ['error' => $e]
-            );
+            $response = $response->withStatus(500);
+            $response = $this->renderTemplate($request, $response, '_error');
+        } else {
+            $handler  = $this->container['defaultErrorHandler'];
+            $response = $handler($request, $response);
         }
 
-        $handler = $this->container['defaultErrorHandler'];
-
-        return $handler($request, $response, $e);
+        return $response;
     }
 
     /**

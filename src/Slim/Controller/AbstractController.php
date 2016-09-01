@@ -12,6 +12,7 @@ namespace Ansas\Slim\Controller;
 
 use Ansas\Component\Collection\Collection;
 use Ansas\Monolog\Profiler;
+use Ansas\Slim\Handler\TwigHandlerTrait;
 use Monolog\Logger;
 use PDO;
 use Slim\Container;
@@ -36,6 +37,8 @@ use Slim\Views\Twig;
  */
 abstract class AbstractController
 {
+    use TwigHandlerTrait;
+
     /**
      * @var Container Container
      */
@@ -80,38 +83,4 @@ abstract class AbstractController
         return $handler($request, $response);
     }
 
-    /**
-     * Redirect to specific route.
-     *
-     * @param  Response $response
-     * @param  string   $route  The route to redirect to
-     * @param  array    $params [optional] Route params
-     * @param  string   $suffix [optional] URL suffix like query string
-     *
-     * @return Response
-     */
-    public function redirectToRoute(Response $response, $route, $params = [], $suffix = '')
-    {
-        $url = $this->router->pathFor($route, $params) . $suffix;
-
-        return $response->withRedirect($url, 301);
-    }
-
-    /**
-     * Renders template with previous set data.
-     *
-     * @param  Response $response
-     * @param  string   $template The template to render
-     * @param  int      $status   [optional] Response status code
-     *
-     * @return Response
-     */
-    public function renderTemplate(Response $response, $template, $status = null)
-    {
-        if ($status) {
-            $response = $response->withStatus($status);
-        }
-
-        return $this->view->render($response, $template . $this->settings['view']['extension'], $this->data->all());
-    }
 }

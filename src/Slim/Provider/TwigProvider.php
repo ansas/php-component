@@ -40,6 +40,11 @@ class TwigProvider extends AbstractProvider
                 'debug'            => true,
                 'strict_variables' => false,
             ],
+            'global' => [
+                'router',
+                'request',
+                'response',
+            ],
             'extensions' => [],
         ];
     }
@@ -76,9 +81,6 @@ class TwigProvider extends AbstractProvider
                 $extension = is_callable($extension) ? $extension() : new $extension();
                 $view->addExtension($extension);
             }
-
-            // Make container available to template engine (global)
-            $view->getEnvironment()->addGlobal("c", $c);
 
             return $view;
         };

@@ -20,6 +20,8 @@ use Pimple\Container;
  */
 abstract class AbstractHandler
 {
+    use TwigHandlerTrait;
+
     /**
      * @var Container Container
      */

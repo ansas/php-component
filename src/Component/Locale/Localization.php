@@ -255,7 +255,7 @@ class Localization extends Locales
      *
      * @param string|Locale $locale
      *
-     * @return Locales
+     * @return $this
      */
     public function setDefault($locale)
     {

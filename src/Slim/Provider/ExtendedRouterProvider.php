@@ -24,9 +24,7 @@ use Pimple\Container;
 class ExtendedRouterProvider extends AbstractProvider
 {
     /**
-     * Register Provider.
-     *
-     * @param Container $container
+     * {@inheritDoc}
      */
     public function register(Container $container)
     {

@@ -12,8 +12,8 @@ namespace Ansas\Slim;
 
 use Ansas\Component\Locale\Localization;
 use FastRoute\RouteParser;
+use InvalidArgumentException;
 use Slim\Router;
-use Symfony\Component\Config\Definition\Exception\Exception;
 
 /**
  * Class ExtendedRouter
@@ -42,16 +42,23 @@ class ExtendedRouter extends Router
     /**
      * {@inheritdoc}
      */
-    public function pathFor($name, array $data = [], array $queryParams = [], $locale = null)
+    public function pathFor($name, array $data = [], array $queryParams = [], $lang = null)
     {
+        if (!$name) {
+            throw new InvalidArgumentException("Invalid empty data path name");
+        }
+
         $identifier = $this->getLanguageIdentifier();
         $locales = $this->getLocalization();
 
         if ($identifier && $locales) {
-            if ($locale) {
-                $locale = $locales->find($locale);
-            }
-            if (!$locale) {
+            $lang = $lang ?: $data[$identifier] ?? null;
+            if ($lang) {
+                $locale = $locales->find($lang);
+                if (!$locale) {
+                    throw new InvalidArgumentException(sprintf("Invalid data '%s' for URL argument '%s'", $lang, $identifier));
+                }
+            } else {
                 $locale = $locales->getActive();
             }
             $data[$identifier] = $locale->getLanguage();
