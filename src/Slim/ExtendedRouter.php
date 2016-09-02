@@ -106,11 +106,11 @@ class ExtendedRouter extends Router
     }
 
     /**
-     * @param Localization $localization
+     * @param Localization|null $localization
      *
      * @return $this
      */
-    public function setLocalization(Localization $localization)
+    public function setLocalization(Localization $localization = null)
     {
         $this->localization = $localization;
 

@@ -38,12 +38,13 @@ class ExtendedRouterProvider extends AbstractProvider
         $container['router'] = function ($c) {
             $routerCacheFile    = $c['settings']['routerCacheFile'] ?? false;
             $languageIdentifier = $c['settings']['locale']['identifier'] ?? null;
+            $locale             = $c['locale'] ?? null;
 
             $router = ExtendedRouter
                 ::create()
                 ->setCacheFile($routerCacheFile)
                 ->setLanguageIdentifier($languageIdentifier)
-                ->setLocalization($c['locale'])
+                ->setLocalization($locale)
             ;
 
             return $router;
