@@ -37,4 +37,16 @@ abstract class AbstractProvider implements ServiceProviderInterface
      * @param Container $container
      */
     abstract public function register(Container $container);
+
+    /**
+     * Merge provided $settings with default settings.
+     *
+     * @param array $settings
+     *
+     * @return array
+     */
+    public static function mergeWithDefaultSettings(array $settings)
+    {
+        return array_merge([], static::getDefaultSettings(), $settings);
+    }
 }

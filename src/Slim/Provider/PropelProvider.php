@@ -35,7 +35,10 @@ class PropelProvider extends AbstractProvider
      */
     public function register(Container $container)
     {
-        $settings = array_merge([], self::getDefaultSettings(), $container['settings']['database']);
+        // Append custom settings with missing params from default settings
+        $container['settings']['database'] = self::mergeWithDefaultSettings($container['settings']['database']);
+
+        $settings = $container['settings']['database'];
 
         $manager = new ConnectionManagerSingle();
         $manager->setConfiguration([

@@ -49,22 +49,26 @@ class ConsoleLoggerProvider extends AbstractProvider
      */
     public function register(Container $container)
     {
-        $config = array_merge([], self::getDefaultSettings(), $container['settings']['logger']);
+        // Append custom settings with missing params from default settings
+        $container['settings']['logger'] = self::mergeWithDefaultSettings($container['settings']['logger']);
 
         /**
          * Add dependency (DI).
          *
+         * @param Container $c
+         *
          * @return Logger
          */
-        $container['logger'] = function () use ($config) {
+        $container['logger'] = function (Container $c) {
+            $settings = $c['settings']['logger'];
 
             $loggerFormat     = "[%datetime%] %level_name% %message% %context% %extra%\n";
             $loggerTimeFormat = "Y-m-d H:i:s";
             $loggerTimeZone   = new DateTimeZone('Europe/Berlin');
 
-            $logger = new Logger($config['name']);
+            $logger = new Logger($settings['name']);
             $logger->pushProcessor(new ConsoleColorProcessor());
-            $logger->pushProcessor(new CleanupProcessor($config['trimPaths']));
+            $logger->pushProcessor(new CleanupProcessor($settings['trimPaths']));
             $logger->pushProcessor(new IntrospectionProcessor());
             $logger->pushProcessor(new ProcessIdProcessor());
             $logger->pushProcessor(new PsrLogMessageProcessor());
@@ -75,7 +79,7 @@ class ConsoleLoggerProvider extends AbstractProvider
             $formatter = new LineFormatter($loggerFormat, $loggerTimeFormat);
             $formatter->ignoreEmptyContextAndExtra(true);
 
-            $defaultHandler = new StreamHandler('php://stdout', $config['level'], $bubble = false);
+            $defaultHandler = new StreamHandler('php://stdout', $settings['level'], $bubble = false);
             $defaultHandler->setFormatter($formatter);
             $logger->pushHandler($defaultHandler);
 

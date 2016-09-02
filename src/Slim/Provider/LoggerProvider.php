@@ -41,16 +41,21 @@ class LoggerProvider extends AbstractProvider
      */
     public function register(Container $container)
     {
-        $config = array_merge([], self::getDefaultSettings(), $container['settings']['logger']);
+        // Append custom settings with missing params from default settings
+        $container['settings']['logger'] = self::mergeWithDefaultSettings($container['settings']['logger']);
 
         /**
          * Add dependency (DI).
          *
+         * @param Container $c
+         *
          * @return Logger
          */
-        $container['logger'] = function () use ($config) {
-            $logger = new Logger($config['name']);
-            $logger->pushHandler(new StreamHandler($config['path'], $config['level']));
+        $container['logger'] = function (Container $c) {
+            $settings = $c['settings']['logger'];
+
+            $logger = new Logger($settings['name']);
+            $logger->pushHandler(new StreamHandler($settings['path'], $settings['level']));
 
             return $logger;
         };

@@ -32,6 +32,7 @@ class TwigProvider extends AbstractProvider
         return [
             'engine'     => 'twig',
             'path'       => '.',
+            'extension'  => '.twig',
             'options'    => [
                 'autoescape'       => true,
                 'auto_reload'      => true,
@@ -40,10 +41,15 @@ class TwigProvider extends AbstractProvider
                 'debug'            => true,
                 'strict_variables' => false,
             ],
-            'global' => [
+            'global'     => [
                 'router',
                 'request',
                 'response',
+            ],
+            'status'     => [
+                404 => '_notfound',
+                405 => '_notallowed',
+                500 => '_error',
             ],
             'extensions' => [],
         ];
@@ -54,7 +60,8 @@ class TwigProvider extends AbstractProvider
      */
     public function register(Container $container)
     {
-        $settings = array_merge([], self::getDefaultSettings(), $container['settings']['view']);
+        // Append custom settings with missing params from default settings
+        $container['settings']['view'] = self::mergeWithDefaultSettings($container['settings']['view']);
 
         /**
          * Add dependency (DI).
@@ -63,9 +70,10 @@ class TwigProvider extends AbstractProvider
          *
          * @return Twig
          */
-        $container['view'] = function (Container $c) use ($settings) {
+        $container['view'] = function (Container $c) {
 
-            $path = rtrim($settings['path'], '/') . '/';
+            $settings = $c['settings']['view'];
+            $path     = rtrim($settings['path'], '/') . '/';
 
             $view = new Twig($path, $settings['options']);
             $view->addExtension(

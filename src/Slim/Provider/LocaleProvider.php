@@ -43,14 +43,19 @@ class LocaleProvider extends AbstractProvider
      */
     public function register(Container $container)
     {
-        $settings = array_merge([], self::getDefaultSettings(), $container['settings']['locale']);
+        // Append custom settings with missing params from default settings
+        $container['settings']['locale'] = self::mergeWithDefaultSettings($container['settings']['locale']);
 
         /**
          * Add dependency (DI).
          *
+         * @param Container $c
+         *
          * @return Localization
          */
-        $container['locale'] = function () use ($settings) {
+        $container['locale'] = function (Container $c) {
+            $settings = $c['settings']['locale'];
+
             $locale = Localization
                 ::create()
                 ->setPath($settings['path'])

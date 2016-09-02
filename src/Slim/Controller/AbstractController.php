@@ -55,6 +55,18 @@ abstract class AbstractController
     }
 
     /**
+     * Create new instance.
+     *
+     * @param Container $container
+     *
+     * @return static
+     */
+    public static function create(Container $container)
+    {
+        return new static($container);
+    }
+
+    /**
      * Magic getter for easier access to container.
      *
      * <code>$this->logger->info('hello world!');</code>

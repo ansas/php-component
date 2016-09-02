@@ -15,7 +15,7 @@ use Slim\Http\Response;
 use Slim\Views\Twig;
 
 /**
- * Class NotFoundHandler
+ * Class NotAllowedHandler
  *
  * @package Ansas\Slim\Handler
  * @author  Ansas Meyer <mail@ansas-meyer.de>
@@ -23,27 +23,28 @@ use Slim\Views\Twig;
  * @property array $settings
  * @property Twig  $view
  */
-class NotFoundHandler extends AbstractHandler
+class NotAllowedHandler extends AbstractHandler
 {
     /**
      * Invoke handler.
      *
      * @param  Request  $request  The most recent Request object
      * @param  Response $response The most recent Response object
+     * @param  string[] $methods  Allowed HTTP methods
      *
      * @return Response
      */
-    public function __invoke(Request $request, Response $response)
+    public function __invoke(Request $request, Response $response, array $methods)
     {
-        $code     = 404;
+        $code     = 405;
         $template = $this->settings['view']['status'][$code] ?? null;
         $isHtml   = stripos($request->getHeaderLine('Accept'), 'html') !== false;
 
         if ($template && $isHtml) {
             $response = $this->renderTemplate($request, $response, $template, $code);
         } else {
-            $handler  = $this->container['defaultNotFoundHandler'];
-            $response = $handler($request, $response);
+            $handler  = $this->container['defaultNotAllowedHandler'];
+            $response = $handler($request, $response, $methods);
         }
 
         return $response;

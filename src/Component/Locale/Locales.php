@@ -82,7 +82,7 @@ class Locales
     }
 
     /**
-     * Create new instance via static method.
+     * Create new instance.
      *
      * @param array|Locale[] $locales [optional] List of available locales.
      *

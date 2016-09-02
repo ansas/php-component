@@ -41,9 +41,12 @@ class ErrorHandler extends AbstractHandler
     {
         $this->logError($e);
 
-        if ($this->view && !$this->settings['displayErrorDetails']) {
-            $response = $response->withStatus(500);
-            $response = $this->renderTemplate($request, $response, '_error');
+        $code     = 500;
+        $template = $this->settings['view']['status'][$code] ?? null;
+        $isHtml   = stripos($request->getHeaderLine('Accept'), 'html') !== false;
+
+        if ($template && $isHtml && $this->view && !$this->settings['displayErrorDetails']) {
+            $response = $this->renderTemplate($request, $response, $template, $code);
         } else {
             $handler  = $this->container['defaultErrorHandler'];
             $response = $handler($request, $response, $e);
