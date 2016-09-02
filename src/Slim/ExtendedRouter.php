@@ -84,11 +84,11 @@ class ExtendedRouter extends Router
     /**
      * Set the language identifier string for building path names.
      *
-     * @param string $languageIdentifier
+     * @param string|null $languageIdentifier
      *
      * @return $this
      */
-    public function setLanguageIdentifier(string $languageIdentifier)
+    public function setLanguageIdentifier($languageIdentifier)
     {
         $this->languageIdentifier = $languageIdentifier;
 
