@@ -10,6 +10,7 @@
 
 namespace Ansas\Slim\Provider;
 
+use Exception;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
@@ -44,9 +45,16 @@ abstract class AbstractProvider implements ServiceProviderInterface
      * @param array $settings
      *
      * @return array
+     * @throws Exception
      */
-    public static function mergeWithDefaultSettings(array $settings)
+    public static function mergeWithDefaultSettings($settings)
     {
-        return array_merge([], static::getDefaultSettings(), $settings);
+        if (empty($settings)) {
+            return static::getDefaultSettings();
+        }
+        if (is_array($settings)) {
+            return array_merge(static::getDefaultSettings(), $settings);
+        }
+        throw new Exception("Argument must be an array.");
     }
 }
