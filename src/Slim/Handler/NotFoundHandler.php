@@ -25,6 +25,8 @@ use Slim\Views\Twig;
  */
 class NotFoundHandler extends AbstractHandler
 {
+    use TwigHandlerTrait;
+
     /**
      * Invoke handler.
      *

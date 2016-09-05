@@ -10,8 +10,6 @@
 
 namespace Ansas\Slim\Handler;
 
-use Pimple\Container;
-
 /**
  * Class AbstractHandler
  *
@@ -20,34 +18,5 @@ use Pimple\Container;
  */
 abstract class AbstractHandler
 {
-    use TwigHandlerTrait;
-
-    /**
-     * @var Container Container
-     */
-    protected $container;
-
-    /**
-     * AbstractHandler constructor.
-     *
-     * @param Container $container
-     */
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
-
-    /**
-     * Magic getter for easier access to container.
-     *
-     * <code>$this->logger->info('hello world!');</code>
-     *
-     * @param  string $name
-     *
-     * @return mixed|null
-     */
-    public function __get($name)
-    {
-        return $this->container[$name] ?? null;
-    }
+    use ContainerInjectTrait;
 }

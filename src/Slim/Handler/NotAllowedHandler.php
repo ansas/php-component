@@ -25,6 +25,8 @@ use Slim\Views\Twig;
  */
 class NotAllowedHandler extends AbstractHandler
 {
+    use TwigHandlerTrait;
+
     /**
      * Invoke handler.
      *

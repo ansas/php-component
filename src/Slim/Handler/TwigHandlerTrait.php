@@ -20,7 +20,7 @@ use Slim\Router;
 use Slim\Views\Twig;
 
 /**
- * Class TwigHandlerTrait
+ * Trait TwigHandlerTrait
  *
  * @package Ansas\Slim\Handler
  * @author  Ansas Meyer <mail@ansas-meyer.de>

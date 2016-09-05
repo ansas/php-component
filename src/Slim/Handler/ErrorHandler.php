@@ -28,6 +28,8 @@ use Throwable;
  */
 class ErrorHandler extends AbstractHandler
 {
+    use TwigHandlerTrait;
+
     /**
      * Invoke handler.
      *
