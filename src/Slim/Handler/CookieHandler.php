@@ -90,6 +90,26 @@ class CookieHandler extends Cookies
     }
 
     /**
+     * Refresh cookie (set response cookie only if request cookie exists)
+     *
+     * @param string       $name    Cookie name
+     * @param string|int   $expires [optional] Cookie expire value
+     *
+     * @return $this
+     */
+    public function refresh($name, $expires = null)
+    {
+        $name = $this->getFullName($name);
+
+        // Only set response cookie if request cookie was set
+        if (null !== $this->get($name)) {
+            $this->set($name, $this->get($name), $expires);
+        }
+
+        return $this;
+    }
+
+    /**
      * Set response cookie
      *
      * @param string       $name    Cookie name
@@ -131,9 +151,9 @@ class CookieHandler extends Cookies
             unset($this->responseCookies[$name]);
         }
 
-        // Only set response cookie if request cookie was set
-        if ($this->get($name)) {
-            // Set new response cookie with value to 'deleted' and timestamp '1' (1970-01-01 00:00:00 UTC)
+        // Set response cookie if request cookie was set
+        if (null !== $this->get($name)) {
+            // Note: timestamp '1' = '1970-01-01 00:00:00 UTC'
             $this->set($name, 'deleted', '1');
         }
 
