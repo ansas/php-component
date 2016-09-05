@@ -10,13 +10,11 @@
 
 namespace Ansas\Slim\Provider;
 
+use Ansas\Slim\Handler\FlashHandler;
 use Pimple\Container;
-use Slim\Flash\Messages;
 
 /**
  * Class FlashProvider
- *
- * <code>composer require slim/flash</code>
  *
  * @package Ansas\Slim\Provider
  * @author  Ansas Meyer <mail@ansas-meyer.de>
@@ -31,10 +29,12 @@ class FlashProvider extends AbstractProvider
         /**
          * Add dependency (DI).
          *
-         * @return Messages
+         * @param Container $c
+         *
+         * @return FlashHandler
          */
-        $container['flash'] = function () {
-            return new Messages();
+        $container['flash'] = function (Container $c) {
+            return new FlashHandler($c['cookie']);
         };
     }
 }
