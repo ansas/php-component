@@ -13,6 +13,7 @@ namespace Ansas\Slim\Controller;
 use Ansas\Component\Collection\Collection;
 use Ansas\Monolog\Profiler;
 use Ansas\Slim\Handler\ContainerInjectTrait;
+use Ansas\Slim\Handler\FlashHandler;
 use Ansas\Slim\Handler\TwigHandlerTrait;
 use Monolog\Logger;
 use PDO;
@@ -27,13 +28,14 @@ use Slim\Views\Twig;
  * @package Ansas\Slim\Controller
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  *
- * @property Collection $data
- * @property Logger     $logger
- * @property PDO        $pdo
- * @property Profiler   $profiler
- * @property Router     $router
- * @property array      $settings
- * @property Twig       $view
+ * @property Collection   $data
+ * @property FlashHandler $flash
+ * @property Logger       $logger
+ * @property PDO          $pdo
+ * @property Profiler     $profiler
+ * @property Router       $router
+ * @property array        $settings
+ * @property Twig         $view
  */
 abstract class AbstractController
 {

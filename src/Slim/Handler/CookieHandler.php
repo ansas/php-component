@@ -38,32 +38,6 @@ class CookieHandler extends Cookies
     }
 
     /**
-     * Set cookie name prefix.
-     *
-     * @param string $prefix
-     *
-     * @return $this
-     */
-    public function setPrefix(string $prefix)
-    {
-        $this->prefix = $prefix;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return $this
-     */
-    public function setDefaults(array $settings)
-    {
-        parent::setDefaults($settings);
-
-        return $this;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function get($name, $default = null)
@@ -92,8 +66,8 @@ class CookieHandler extends Cookies
     /**
      * Refresh cookie (set response cookie only if request cookie exists)
      *
-     * @param string       $name    Cookie name
-     * @param string|int   $expires [optional] Cookie expire value
+     * @param string     $name    Cookie name
+     * @param string|int $expires [optional] Cookie expire value
      *
      * @return $this
      */
@@ -104,6 +78,31 @@ class CookieHandler extends Cookies
         // Only set response cookie if request cookie was set
         if (null !== $this->get($name)) {
             $this->set($name, $this->get($name), $expires);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove response cookie.
+     *
+     * @param string $name Cookie name
+     *
+     * @return $this
+     */
+    public function remove($name)
+    {
+        $name = $this->getFullName($name);
+
+        // Delete existing response cookie
+        if (isset($this->responseCookies[$name])) {
+            unset($this->responseCookies[$name]);
+        }
+
+        // Set response cookie if request cookie was set
+        if (null !== $this->get($name)) {
+            // Note: timestamp '1' = '1970-01-01 00:00:00 UTC'
+            $this->set($name, 'deleted', '1');
         }
 
         return $this;
@@ -136,26 +135,40 @@ class CookieHandler extends Cookies
     }
 
     /**
-     * Remove response cookie.
+     * Set one default cookie property
      *
-     * @param string $name Cookie name
+     * @param string $key
+     * @param mixed  $value
      *
      * @return $this
      */
-    public function remove($name)
+    public function setDefault(string $key, $value)
     {
-        $name = $this->getFullName($name);
+        return $this->setDefaults([$key => $value]);
+    }
 
-        // Delete existing response cookie
-        if (isset($this->responseCookies[$name])) {
-            unset($this->responseCookies[$name]);
-        }
+    /**
+     * {@inheritdoc}
+     *
+     * @return $this
+     */
+    public function setDefaults(array $settings)
+    {
+        parent::setDefaults($settings);
 
-        // Set response cookie if request cookie was set
-        if (null !== $this->get($name)) {
-            // Note: timestamp '1' = '1970-01-01 00:00:00 UTC'
-            $this->set($name, 'deleted', '1');
-        }
+        return $this;
+    }
+
+    /**
+     * Set cookie name prefix.
+     *
+     * @param string $prefix
+     *
+     * @return $this
+     */
+    public function setPrefix(string $prefix)
+    {
+        $this->prefix = $prefix;
 
         return $this;
     }
