@@ -12,10 +12,10 @@ namespace Ansas\Slim\Controller;
 
 use Ansas\Component\Collection\Collection;
 use Ansas\Monolog\Profiler;
+use Ansas\Slim\Handler\ContainerInjectTrait;
 use Ansas\Slim\Handler\TwigHandlerTrait;
 use Monolog\Logger;
 use PDO;
-use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
@@ -37,48 +37,8 @@ use Slim\Views\Twig;
  */
 abstract class AbstractController
 {
+    use ContainerInjectTrait;
     use TwigHandlerTrait;
-
-    /**
-     * @var Container Container
-     */
-    protected $container;
-
-    /**
-     * AbstractController constructor.
-     *
-     * @param Container $container
-     */
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
-
-    /**
-     * Create new instance.
-     *
-     * @param Container $container
-     *
-     * @return static
-     */
-    public static function create(Container $container)
-    {
-        return new static($container);
-    }
-
-    /**
-     * Magic getter for easier access to container.
-     *
-     * <code>$this->logger->info('hello world!');</code>
-     *
-     * @param  string $name
-     *
-     * @return mixed|null
-     */
-    public function __get($name)
-    {
-        return $this->container[$name] ?? null;
-    }
 
     /**
      * Not found.
