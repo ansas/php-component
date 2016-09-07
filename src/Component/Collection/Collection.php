@@ -222,6 +222,16 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
+     * Check if collection is empty.
+     *
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return !$this->count();
+    }
+
+    /**
      * Get collection keys.
      *
      * @return array All item keys.
