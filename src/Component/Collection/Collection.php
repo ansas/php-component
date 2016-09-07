@@ -108,7 +108,6 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      * @param array $items [optional] The initial items
      *
      * @return static
-     *
      */
     public static function create(array $items = [])
     {

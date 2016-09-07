@@ -11,7 +11,6 @@
 namespace Ansas\Slim\Handler;
 
 use Ansas\Component\Collection\Collection;
-use Ansas\Util\Text;
 use Exception;
 use Slim\Container;
 use Slim\Http\Request;
@@ -69,7 +68,6 @@ trait TwigHandlerTrait
 
         foreach ($this->settings['view']['global'] as $key => $map) {
             $key = is_numeric($key) ? $map : $key;
-            $key = Text::toLower($key);
 
             switch ($key) {
                 case 'request':
