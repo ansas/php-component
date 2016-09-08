@@ -8,7 +8,9 @@
  * @link    https://github.com/ansas/php-component
  */
 
-namespace Ansas\Iterator;
+namespace Ansas\Component\Iterator;
+
+use SplFileInfo;
 
 /**
  * Class FileRegexIterator
@@ -16,7 +18,7 @@ namespace Ansas\Iterator;
  * Filters out files not matching the provided regex. This filter is based on filename only (directory names are not
  * considered).
  *
- * @package Ansas\Iterator
+ * @package Ansas\Component\Iterator
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class FileRegexIterator extends RegexIterator
@@ -28,6 +30,7 @@ class FileRegexIterator extends RegexIterator
      */
     public function accept()
     {
+        /** @var SplFileInfo $this */
         return !$this->isFile() || preg_match($this->regex, $this->getFilename());
     }
 }

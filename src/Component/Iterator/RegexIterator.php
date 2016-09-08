@@ -8,7 +8,7 @@
  * @link    https://github.com/ansas/php-component
  */
 
-namespace Ansas\Iterator;
+namespace Ansas\Component\Iterator;
 
 use Iterator;
 
@@ -19,7 +19,7 @@ use Iterator;
  *
  * The classes only purpose is to save the regex (regular expression) for usage in child classes.
  *
- * @package Ansas\Iterator
+ * @package Ansas\Component\Iterator
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class RegexIterator extends \RegexIterator

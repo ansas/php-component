@@ -10,8 +10,8 @@
 
 namespace Ansas\Util;
 
-use Ansas\Iterator\DirectoryRegexIterator;
-use Ansas\Iterator\FileRegexIterator;
+use Ansas\Component\Iterator\DirectoryRegexIterator;
+use Ansas\Component\Iterator\FileRegexIterator;
 use Exception;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
