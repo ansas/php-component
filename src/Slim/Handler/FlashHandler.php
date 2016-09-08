@@ -11,6 +11,7 @@
 namespace Ansas\Slim\Handler;
 
 use Ansas\Util\Text;
+use ArrayAccess;
 use ArrayIterator;
 use BadMethodCallException;
 use Countable;
@@ -26,21 +27,21 @@ use Slim\Interfaces\Http\CookiesInterface;
  *
  * @method $this setSuccess(string $message, $when = FlashHandler::NEXT) Set message for $key = 'success'.
  * @method $this addSuccess(string $message, $when = FlashHandler::NEXT) Add message for $key = 'success'.
- * @method $this deleteSuccess(string $message, $when = FlashHandler::NEXT) Delete message for $key = 'success'.
+ * @method $this removeSuccess($when = FlashHandler::NEXT) Delete message for $key = 'success'.
  *
  * @method $this setError(string $message, $when = FlashHandler::NEXT) Set message for $key = 'error'.
  * @method $this addError(string $message, $when = FlashHandler::NEXT) Add message for $key = 'error'.
- * @method $this deleteError(string $message, $when = FlashHandler::NEXT) Delete message for $key = 'error'.
+ * @method $this removeError($when = FlashHandler::NEXT) Delete message for $key = 'error'.
  *
  * @method $this setWarning(string $message, $when = FlashHandler::NEXT) Set message for $key = 'warning'.
  * @method $this addWarning(string $message, $when = FlashHandler::NEXT) Add message for $key = 'warning'.
- * @method $this deleteWarning(string $message, $when = FlashHandler::NEXT) Delete message for $key = 'warning'.
+ * @method $this removeWarning($when = FlashHandler::NEXT) Delete message for $key = 'warning'.
  *
  * @method $this setInfo(string $message, $when = FlashHandler::NEXT) Set message for $key = 'info'.
  * @method $this addInfo(string $message, $when = FlashHandler::NEXT) Add message for $key = 'info'.
- * @method $this deleteInfo(string $message, $when = FlashHandler::NEXT) Delete message for $key = 'info'.
+ * @method $this removeInfo($when = FlashHandler::NEXT) Delete message for $key = 'info'.
  */
-class FlashHandler implements IteratorAggregate, Countable
+class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
 {
     /**
      * Message will be available from now until deleted.
@@ -111,12 +112,11 @@ class FlashHandler implements IteratorAggregate, Countable
      */
     function __call($name, $args)
     {
-        $allowed = ['add', 'delete', 'set'];
+        $allowed = ['add', 'has', 'remove', 'set'];
 
-        foreach ($allowed as $prefix) {
-            if (0 === strpos($name, $prefix)) {
-                $key    = Text::toLower(substr($name, strlen($prefix)));
-                $method = $prefix . 'Message';
+        foreach ($allowed as $method) {
+            if (0 === strpos($name, $method)) {
+                $key = Text::toLower(substr($name, strlen($method)));
                 array_unshift($args, $key);
 
                 return call_user_func_array([$this, $method], $args);
@@ -135,7 +135,7 @@ class FlashHandler implements IteratorAggregate, Countable
      *
      * @return $this
      */
-    public function addMessage(string $key, string $message, $when = self::NEXT)
+    public function add(string $key, string $message, $when = self::NEXT)
     {
         if (!strlen($message)) {
             return $this;
@@ -146,7 +146,17 @@ class FlashHandler implements IteratorAggregate, Countable
 
         $merged[] = $message;
 
-        return $this->setMessage($key, $merged, $when);
+        return $this->set($key, $merged, $when);
+    }
+
+    /**
+     * Get all messages.
+     *
+     * @return string[]
+     */
+    public function all()
+    {
+        return array_merge($this->messages[self::DURABLE], $this->messages[self::NOW]);
     }
 
     /**
@@ -158,7 +168,7 @@ class FlashHandler implements IteratorAggregate, Countable
      */
     public function count()
     {
-        return count($this->getMessages());
+        return count($this->all());
     }
 
     /**
@@ -175,19 +185,18 @@ class FlashHandler implements IteratorAggregate, Countable
     }
 
     /**
-     * @param string $key
-     * @param int    $when [optional]
+     * Get message for specified $key (or $default value as default).
      *
-     * @return $this
+     * @param string $key
+     * @param string $default [optional]
+     *
+     * @return string|null
      */
-    public function deleteMessage(string $key, $when = self::NEXT)
+    public function get(string $key, string $default = null)
     {
-        $deleteWhen = $when == self::ALL ? self::$when : (array) $when;
-        foreach ($deleteWhen as $when) {
-            $this->setMessage($key, null, $when);
-        }
+        $messages = $this->all();
 
-        return $this;
+        return $messages[$key] ?? $default;
     }
 
     /**
@@ -199,34 +208,21 @@ class FlashHandler implements IteratorAggregate, Countable
      */
     public function getIterator()
     {
-        $messages = $this->getMessages();
+        $messages = $this->all();
 
         return new ArrayIterator($messages);
     }
 
     /**
-     * Get message for specified $key (or $default value as default).
+     * Check if message for specified $key exists.
      *
      * @param string $key
-     * @param string $default [optional]
      *
-     * @return string|null
+     * @return bool
      */
-    public function getMessage(string $key, string $default = null)
+    public function has(string $key)
     {
-        $messages = $this->getMessages();
-
-        return $messages[$key] ?? $default;
-    }
-
-    /**
-     * Get all messages.
-     *
-     * @return string[]
-     */
-    public function getMessages()
-    {
-        return array_merge($this->messages[self::DURABLE], $this->messages[self::NOW]);
+        return !!$this->get($key);
     }
 
     /**
@@ -251,6 +247,79 @@ class FlashHandler implements IteratorAggregate, Countable
             }
 
             $this->save();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Whether a offset exists.
+     *
+     * This method implements the ArrayAccess interface.
+     *
+     * @param mixed $offset
+     *
+     * @return bool
+     */
+    public function offsetExists($offset)
+    {
+        return $this->has($offset);
+    }
+
+    /**
+     * Offset to retrieve.
+     *
+     * This method implements the ArrayAccess interface.
+     *
+     * @param mixed $offset
+     *
+     * @return mixed
+     */
+    public function offsetGet($offset)
+    {
+        return $this->get($offset);
+    }
+
+    /**
+     * Offset to set.
+     *
+     * This method implements the ArrayAccess interface.
+     *
+     * @param mixed $offset
+     * @param mixed $value
+     *
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->set($offset, $value);
+    }
+
+    /**
+     * Offset to unset.
+     *
+     * This method implements the ArrayAccess interface.
+     *
+     * @param mixed $offset
+     *
+     * @return void
+     */
+    public function offsetUnset($offset)
+    {
+        $this->remove($offset);
+    }
+
+    /**
+     * @param string $key
+     * @param int    $when [optional]
+     *
+     * @return $this
+     */
+    public function remove(string $key, $when = self::NEXT)
+    {
+        $deleteWhen = $when == self::ALL ? self::$when : (array) $when;
+        foreach ($deleteWhen as $when) {
+            $this->set($key, null, $when);
         }
 
         return $this;
@@ -305,7 +374,7 @@ class FlashHandler implements IteratorAggregate, Countable
      *
      * @return $this
      */
-    public function setMessage(string $key, $message, $when = self::NEXT)
+    public function set(string $key, $message, $when = self::NEXT)
     {
         $this->validateWhen($when);
 
