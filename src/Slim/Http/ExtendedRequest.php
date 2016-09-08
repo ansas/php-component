@@ -36,6 +36,18 @@ class ExtendedRequest extends Request
     }
 
     /**
+     * Get "ACCEPT_LANGUAGE" header.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return string|null
+     */
+    public function getAcceptLanguage()
+    {
+        return $this->getHeaderLine('ACCEPT_LANGUAGE') ?: null;
+    }
+
+    /**
      * Get current route.
      *
      * Note: This method is not part of the PSR-7 standard.
@@ -78,7 +90,7 @@ class ExtendedRequest extends Request
     public function getReferrer()
     {
         /** @noinspection SpellCheckingInspection */
-        return $this->headers->get('HTTP_REFERER');
+        return $this->getHeaderLine('HTTP_REFERER') ?: null;
     }
 
     /**
@@ -86,7 +98,7 @@ class ExtendedRequest extends Request
      *
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @return string|null
+     * @return string
      */
     public function getRequestUri()
     {
@@ -100,18 +112,6 @@ class ExtendedRequest extends Request
     }
 
     /**
-     * Get "ACCEPT_LANGUAGE" header.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @return string|null
-     */
-    public function getAcceptLanguage()
-    {
-        return $this->headers->get('ACCEPT_LANGUAGE');
-    }
-
-    /**
      * Get "HTTP_USER_AGENT" header.
      *
      * Note: This method is not part of the PSR-7 standard.
@@ -120,6 +120,6 @@ class ExtendedRequest extends Request
      */
     public function getUserAgent()
     {
-        return $this->headers->get('HTTP_USER_AGENT');
+        return $this->getHeaderLine('HTTP_USER_AGENT') ?: null;
     }
 }
