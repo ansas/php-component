@@ -12,6 +12,7 @@ namespace Ansas\Slim\Http;
 
 use Slim\Http\Environment;
 use Slim\Http\Request;
+use Slim\Http\Uri;
 use Slim\Route;
 
 /**
@@ -81,7 +82,37 @@ class ExtendedRequest extends Request
     }
 
     /**
-     * Get User Agent.
+     * Get Request URI.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return string|null
+     */
+    public function getRequestUri()
+    {
+        /** @var Uri $uri */
+        $uri = $this->getUri();
+
+        $path  = $uri->getBasePath() . '/' . ltrim($uri->getPath(), '/');
+        $query = $uri->getQuery();
+
+        return $path . ($query ? '?' . $query : '');
+    }
+
+    /**
+     * Get "ACCEPT_LANGUAGE" header.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return string|null
+     */
+    public function getAcceptLanguage()
+    {
+        return $this->headers->get('ACCEPT_LANGUAGE');
+    }
+
+    /**
+     * Get "HTTP_USER_AGENT" header.
      *
      * Note: This method is not part of the PSR-7 standard.
      *

@@ -127,19 +127,6 @@ class FlashHandler implements IteratorAggregate, Countable
     }
 
     /**
-     * Create new instance.
-     *
-     * @param CookiesInterface $cookie
-     * @param string           $cookieKey [optional]
-     *
-     * @return static
-     */
-    public static function create(CookiesInterface $cookie, string $cookieKey = 'flash')
-    {
-        return new static($cookie, $cookieKey);
-    }
-
-    /**
      * Add a message to $key (result for $key will always be an array).
      *
      * @param string $key
@@ -150,6 +137,10 @@ class FlashHandler implements IteratorAggregate, Countable
      */
     public function addMessage(string $key, string $message, $when = self::NEXT)
     {
+        if (!strlen($message)) {
+            return $this;
+        }
+
         $merged = $this->messages[$when][$key] ?? [];
         $merged = (array) $merged;
 
@@ -168,6 +159,19 @@ class FlashHandler implements IteratorAggregate, Countable
     public function count()
     {
         return count($this->getMessages());
+    }
+
+    /**
+     * Create new instance.
+     *
+     * @param CookiesInterface $cookie
+     * @param string           $cookieKey [optional]
+     *
+     * @return static
+     */
+    public static function create(CookiesInterface $cookie, string $cookieKey = 'flash')
+    {
+        return new static($cookie, $cookieKey);
     }
 
     /**
@@ -226,46 +230,6 @@ class FlashHandler implements IteratorAggregate, Countable
     }
 
     /**
-     * Reset messages and build array structure.
-     *
-     * @return $this
-     */
-    public function reset()
-    {
-        $this->messages = [];
-
-        foreach (self::$when as $when) {
-            $this->messages[$when] = [];
-        }
-
-        return $this;
-    }
-
-    /**
-     * Set / unset massage.
-     *
-     * @param string $key
-     * @param mixed  $message
-     * @param int    $when [optional]
-     *
-     * @return $this
-     */
-    public function setMessage(string $key, $message, $when = self::NEXT)
-    {
-        $this->validateWhen($when);
-
-        if (null == $message) {
-            unset($this->messages[$when][$key]);
-        } else {
-            $this->messages[$when][$key] = $message;
-        }
-
-        $this->save();
-
-        return $this;
-    }
-
-    /**
      * Load messages from cookie.
      *
      * @return $this
@@ -293,6 +257,22 @@ class FlashHandler implements IteratorAggregate, Countable
     }
 
     /**
+     * Reset messages and build array structure.
+     *
+     * @return $this
+     */
+    public function reset()
+    {
+        $this->messages = [];
+
+        foreach (self::$when as $when) {
+            $this->messages[$when] = [];
+        }
+
+        return $this;
+    }
+
+    /**
      * Save messages to cookie.
      *
      * @return $this
@@ -311,6 +291,32 @@ class FlashHandler implements IteratorAggregate, Countable
             $this->cookie->set($this->cookieKey, $messages);
         } else {
             $this->cookie->remove($this->cookieKey);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set / unset massage.
+     *
+     * @param string $key
+     * @param mixed  $message
+     * @param int    $when [optional]
+     *
+     * @return $this
+     */
+    public function setMessage(string $key, $message, $when = self::NEXT)
+    {
+        $this->validateWhen($when);
+
+        if (null == $message) {
+            if (isset($this->messages[$when][$key])) {
+                unset($this->messages[$when][$key]);
+                $this->save();
+            }
+        } elseif ($message) {
+            $this->messages[$when][$key] = $message;
+            $this->save();
         }
 
         return $this;
