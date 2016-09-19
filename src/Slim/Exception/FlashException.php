@@ -40,12 +40,12 @@ class FlashException extends Exception
     protected $key;
 
     /**
-     * Create new exception
+     * Create new exception.
      *
-     * @param string $message
-     * @param string $key [optional]
+     * @param string $message [optional]
+     * @param string $key     [optional]
      */
-    public function __construct(string $message, string $key = self::ERROR)
+    public function __construct(string $message = "", string $key = self::ERROR)
     {
         parent::__construct($message);
         $this->key = $key;

@@ -60,4 +60,14 @@ trait ContainerInjectTrait
     {
         return new static($container);
     }
+
+    /**
+     * Get Container.
+     *
+     * @return ContainerInterface
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
 }
