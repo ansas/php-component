@@ -36,18 +36,6 @@ class ExtendedRequest extends Request
     }
 
     /**
-     * Get "ACCEPT_LANGUAGE" header.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @return string|null
-     */
-    public function getAcceptLanguage()
-    {
-        return $this->getHeaderLine('ACCEPT_LANGUAGE') ?: null;
-    }
-
-    /**
      * Get current route.
      *
      * Note: This method is not part of the PSR-7 standard.
@@ -57,6 +45,36 @@ class ExtendedRequest extends Request
     public function getCurrentRoute()
     {
         return $this->getAttribute('route');
+    }
+
+    /**
+     * Get full path (incl. basePath) but without query string.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return string
+     */
+    public function getFullPath()
+    {
+        /** @var Uri $uri */
+        $uri = $this->getUri();
+
+        return rtrim($uri->getBasePath(), '/') . '/' . ltrim($uri->getPath(), '/');
+    }
+
+    /**
+     * Get full url (incl. basePath and path) but without query string.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return string
+     */
+    public function getFullUrl()
+    {
+        /** @var Uri $uri */
+        $uri = $this->getUri();
+
+        return rtrim($uri->getBaseUrl(), '/') . '/' . ltrim($uri->getPath(), '/');
     }
 
     /**
@@ -90,7 +108,7 @@ class ExtendedRequest extends Request
     public function getReferrer()
     {
         /** @noinspection SpellCheckingInspection */
-        return $this->getHeaderLine('HTTP_REFERER') ?: null;
+        return $this->getHeaderLine('HTTP_REFERER');
     }
 
     /**
@@ -98,17 +116,29 @@ class ExtendedRequest extends Request
      *
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @return string
+     * @return string|null
      */
     public function getRequestUri()
     {
         /** @var Uri $uri */
         $uri = $this->getUri();
 
-        $path  = $uri->getBasePath() . '/' . ltrim($uri->getPath(), '/');
+        $path  = $this->getFullPath();
         $query = $uri->getQuery();
 
         return $path . ($query ? '?' . $query : '');
+    }
+
+    /**
+     * Get "ACCEPT_LANGUAGE" header.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return string|null
+     */
+    public function getAcceptLanguage()
+    {
+        return $this->getHeaderLine('ACCEPT_LANGUAGE');
     }
 
     /**
@@ -120,6 +150,6 @@ class ExtendedRequest extends Request
      */
     public function getUserAgent()
     {
-        return $this->getHeaderLine('HTTP_USER_AGENT') ?: null;
+        return $this->getHeaderLine('HTTP_USER_AGENT');
     }
 }
