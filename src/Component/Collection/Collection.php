@@ -28,6 +28,18 @@ use Serializable;
  */
 class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializable
 {
+    /** Sort collection by keys (ascending order) */
+    const SORT_BY_KEYS_ASC = 1;
+
+    /** Sort collection by keys (descending order) */
+    const SORT_BY_KEYS_DESC = 2;
+
+    /** Sort collection by values (ascending order) */
+    const SORT_BY_VALUES_ASC = 4;
+
+    /** Sort collection by values (descending order) */
+    const SORT_BY_VALUES_DESC = 8;
+
     /**
      * @var array Holds complete collection data
      */
@@ -103,18 +115,6 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
-     * Create new instance.
-     *
-     * @param array $items [optional] The initial items
-     *
-     * @return static
-     */
-    public static function create(array $items = [])
-    {
-        return new static($items);
-    }
-
-    /**
      * Adds item to collection for specified key
      * (converts item to array if key already exists).
      *
@@ -183,6 +183,18 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     public function count()
     {
         return count($this->data);
+    }
+
+    /**
+     * Create new instance.
+     *
+     * @param array $items [optional] The initial items
+     *
+     * @return static
+     */
+    public static function create(array $items = [])
+    {
+        return new static($items);
     }
 
     /**
@@ -378,6 +390,34 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     public function set($key, $value)
     {
         $this->data[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Sort collection.
+     *
+     * @param int $sortBy    Sort by flag (see self::SORT_ constants)
+     * @param int $sortFlags Sort flags (see PHP SORT_ sonstants)
+     *
+     * @return $this
+     * @throws Exception
+     */
+    public function sort($sortBy = self::SORT_BY_KEYS_ASC, $sortFlags = SORT_REGULAR)
+    {
+        $sortFunctions = [
+            self::SORT_BY_KEYS_ASC    => 'ksort',
+            self::SORT_BY_KEYS_DESC   => 'krsort',
+            self::SORT_BY_VALUES_ASC  => 'asort',
+            self::SORT_BY_VALUES_DESC => 'arsort',
+        ];
+
+        if (!isset($sortFunctions[$sortBy])) {
+            throw new Exception("");
+        }
+
+        $function = $sortFunctions[$sortBy];
+        $function($this->data, $sortFlags);
 
         return $this;
     }
