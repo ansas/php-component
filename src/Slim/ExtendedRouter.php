@@ -44,6 +44,20 @@ class ExtendedRouter extends Router
      */
     public function pathFor($name, array $data = [], array $queryParams = [], $lang = null)
     {
+        $url = $this->relativePathFor($name, $data, $queryParams, $lang);
+
+        if ($this->basePath) {
+            $url = $this->basePath . $url;
+        }
+
+        return $url;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function relativePathFor($name, array $data = [], array $queryParams = [], $lang = null)
+    {
         if (!$name) {
             throw new InvalidArgumentException("Invalid empty data path name");
         }
@@ -64,7 +78,7 @@ class ExtendedRouter extends Router
             $data[$identifier] = $locale->getLanguage();
         }
 
-        return parent::pathFor($name, $data, $queryParams);
+        return parent::relativePathFor($name, $data, $queryParams);
     }
 
     /**
