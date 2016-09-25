@@ -98,8 +98,12 @@ class SwiftMailerProvider extends AbstractProvider
             $message = Swift_Message
                 ::newInstance()
                 ->setFrom($settings['from']['email'], $settings['from']['name'])
-//                ->setBcc('test@preigu.com')
             ;
+
+            $bcc = $settings['bcc'] ?? null;
+            if ($bcc) {
+                $message->setBcc($bcc);
+            }
 
             return $message;
         });
