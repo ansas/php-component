@@ -26,8 +26,22 @@ class ExtendedRouterProvider extends AbstractProvider
     /**
      * {@inheritDoc}
      */
+    public static function getDefaultSettings()
+    {
+        return [
+            'languageIdentifier'  => 'lang',
+            'omitDefaultLanguage' => false,
+        ];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function register(Container $container)
     {
+        // Append custom settings with missing params from default settings
+        $container['settings']['router'] = self::mergeWithDefaultSettings($container['settings']['router']);
+
         /**
          * Add dependency (DI).
          *
@@ -36,15 +50,16 @@ class ExtendedRouterProvider extends AbstractProvider
          * @return ExtendedRouter
          */
         $container['router'] = function ($c) {
-            $routerCacheFile    = $c['settings']['routerCacheFile'] ?? false;
-            $languageIdentifier = $c['settings']['locale']['identifier'] ?? null;
-            $locale             = $c['locale'] ?? null;
+            $locale    = $c['locale'] ?? null;
+            $cacheFile = $c['settings']['routerCacheFile'] ?? false;
+            $settings  = $c['settings']['router'];
 
             $router = ExtendedRouter
                 ::create()
-                ->setCacheFile($routerCacheFile)
-                ->setLanguageIdentifier($languageIdentifier)
+                ->setCacheFile($cacheFile)
+                ->setLanguageIdentifier($settings['languageIdentifier'])
                 ->setLocalization($locale)
+                ->setOmitDefaultLanguage($settings['omitDefaultLanguage'])
             ;
 
             return $router;

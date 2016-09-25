@@ -34,7 +34,7 @@ class LocaleProvider extends AbstractProvider
             'path'      => '.',
             'domain'    => 'default',
             'default'   => 'de_DE',
-            'available' => [],
+            'available' => ['de_DE'],
         ];
     }
 
@@ -56,14 +56,18 @@ class LocaleProvider extends AbstractProvider
         $container['locale'] = function (Container $c) {
             $settings = $c['settings']['locale'];
 
+            // Create localization object
             $locale = Localization
                 ::create()
                 ->setPath($settings['path'])
                 ->setDomain($settings['domain'])
-                ->setDefault($settings['default'])
                 ->addLocales($settings['available'])
                 ->findAvailableLocales()
             ;
+
+            // Set default locale (after setting all available locales!)
+            // Note: locale will be added if not already set
+            $locale->setDefault($settings['default']);
 
             return $locale;
         };

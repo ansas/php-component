@@ -23,9 +23,20 @@ use Slim\Router;
  */
 class ExtendedRouter extends Router
 {
+    /**
+     * @var string Language identifier for localized path (routes)
+     */
     protected $languageIdentifier;
 
+    /**
+     * @var Localization Localization data
+     */
     protected $localization;
+
+    /**
+     * @var bool Flag if default language is to be removed from path
+     */
+    protected $omitDefaultLanguage;
 
     /**
      * Create new instance.
@@ -37,6 +48,34 @@ class ExtendedRouter extends Router
     public static function create(RouteParser $parser = null)
     {
         return new static($parser);
+    }
+
+    /**
+     * Get the language identifier.
+     *
+     * @return string|null
+     */
+    public function getLanguageIdentifier()
+    {
+        return $this->languageIdentifier;
+    }
+
+    /**
+     * @return Localization|null
+     */
+    public function getLocalization()
+    {
+        return $this->localization;
+    }
+
+    /**
+     * Flag if default language is to be removed from path.
+     *
+     * @return bool
+     */
+    public function isOmitDefaultLanguage()
+    {
+        return (bool) $this->omitDefaultLanguage;
     }
 
     /**
@@ -62,23 +101,42 @@ class ExtendedRouter extends Router
             throw new InvalidArgumentException("Invalid empty data path name");
         }
 
+        // Get values needed for localized paths
         $identifier = $this->getLanguageIdentifier();
-        $locales = $this->getLocalization();
+        $locales    = $this->getLocalization();
 
-        if ($identifier && $locales) {
-            $lang = $lang ?: $data[$identifier] ?? null;
-            if ($lang) {
-                $locale = $locales->find($lang);
-                if (!$locale) {
-                    throw new InvalidArgumentException(sprintf("Invalid data '%s' for URL argument '%s'", $lang, $identifier));
-                }
-            } else {
-                $locale = $locales->getActive();
-            }
-            $data[$identifier] = $locale->getLanguage();
+        // Return default behavior if no localized path is applicable
+        if (!$identifier || !$locales) {
+            return parent::relativePathFor($name, $data, $queryParams);
         }
 
-        return parent::relativePathFor($name, $data, $queryParams);
+        // determine locale to use for path
+        $locale = $locales->getActive();
+        $lang   = $lang ?: $data[$identifier] ?? null;
+        if ($lang) {
+            $locale = $locales->find($lang);
+            if (!$locale) {
+                throw new InvalidArgumentException(sprintf("Invalid data '%s' for URL argument '%s'",
+                    $lang,
+                    $identifier));
+            }
+        }
+
+        // Set language identifier for path
+        // Note: Add slash as prefix as this is normally part of the identifier (in optional language mode)
+        $data[$identifier] = '/' . $locale->getLanguage();
+
+        $path = parent::relativePathFor($name, $data, $queryParams);
+
+        // Cut out localization part (identifier) for default language if wanted
+        if ($this->isOmitDefaultLanguage() && $locale == $locales->getDefault()) {
+            $path = preg_replace('/\/' . $locale->getLanguage() . '(\/|$)/', '/', $path);
+        }
+
+        // Sanitize url (remove prior set slash) if duplicate
+        $path = str_replace('//', '/', $path);
+
+        return $path;
     }
 
     /**
@@ -110,16 +168,8 @@ class ExtendedRouter extends Router
     }
 
     /**
-     * Get the language identifier.
+     * Set Localization.
      *
-     * @return string|null
-     */
-    public function getLanguageIdentifier()
-    {
-        return $this->languageIdentifier;
-    }
-
-    /**
      * @param Localization|null $localization [optional]
      *
      * @return $this
@@ -132,10 +182,16 @@ class ExtendedRouter extends Router
     }
 
     /**
-     * @return Localization|null
+     * Set flag if default language is to be removed from path.
+     *
+     * @param bool $omitDefaultLanguage [optional]
+     *
+     * @return $this
      */
-    public function getLocalization()
+    public function setOmitDefaultLanguage($omitDefaultLanguage = true)
     {
-        return $this->localization;
+        $this->omitDefaultLanguage = $omitDefaultLanguage;
+
+        return $this;
     }
 }
