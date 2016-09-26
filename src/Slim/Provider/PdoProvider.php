@@ -24,8 +24,23 @@ class PdoProvider extends AbstractProvider
     /**
      * {@inheritDoc}
      */
+    public static function getDefaultSettings()
+    {
+        return [
+            'dsn'      => '',
+            'user'     => '',
+            'password' => '',
+        ];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function register(Container $container)
     {
+        // Append custom settings with missing params from default settings
+        $container['settings']['database'] = self::mergeWithDefaultSettings($container['settings']['database']);
+
         /**
          * Add dependency (DI).
          *
@@ -43,8 +58,6 @@ class PdoProvider extends AbstractProvider
             $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            $c['logger']->debug("PDO loaded");
 
             return $pdo;
         };

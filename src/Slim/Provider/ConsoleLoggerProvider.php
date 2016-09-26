@@ -93,8 +93,6 @@ class ConsoleLoggerProvider extends AbstractProvider
             $errorHandler->registerErrorHandler($levelMap = [], $callPrevious = false);
             $errorHandler->registerExceptionHandler($levelMap = [], $callPrevious = false);
 
-            $logger->debug("Logger loaded");
-
             return $logger;
         };
     }

@@ -10,8 +10,11 @@
 
 namespace Ansas\Slim\Provider;
 
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Pimple\Container;
 use Propel\Runtime\Connection\ConnectionManagerSingle;
+use Propel\Runtime\Connection\ConnectionWrapper;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ServiceContainer\StandardServiceContainer;
 
@@ -24,9 +27,16 @@ class PropelProvider extends AbstractProvider
     {
         return [
             'adapter'    => 'mysql',
-            'classname'  => 'Propel\\Runtime\\Connection\\ConnectionWrapper',
+            'classname'  => null,
             'connection' => 'default',
             'version'    => '2.0.0-dev',
+            'dsn'        => '',
+            'user'       => '',
+            'password'   => '',
+            'logger'     => [
+                'path'  => './propel.log',
+                'level' => Logger::DEBUG,
+            ],
         ];
     }
 
@@ -40,9 +50,20 @@ class PropelProvider extends AbstractProvider
 
         $settings = $container['settings']['database'];
 
+        $logLevel  = $settings['logger']['level'] ?? null;
+        $logPath   = $settings['logger']['path'] ?? null;
+        $className = $settings['classname'] ?? null;
+
+        if (!$className) {
+            $className = 'Propel\\Runtime\\Connection\\ConnectionWrapper';
+            if ($logLevel == Logger::DEBUG) {
+                $className = 'Propel\\Runtime\\Connection\\ProfilerConnectionWrapper';
+            }
+        }
+
         $manager = new ConnectionManagerSingle();
         $manager->setConfiguration([
-            'classname' => $settings['classname'],
+            'classname' => $className,
             'dsn'       => $settings['dsn'],
             'user'      => $settings['user'],
             'password'  => $settings['password'],
@@ -55,5 +76,18 @@ class PropelProvider extends AbstractProvider
         $serviceContainer->setAdapterClass($settings['connection'], $settings['adapter']);
         $serviceContainer->setConnectionManager($settings['connection'], $manager);
         $serviceContainer->setDefaultDatasource($settings['connection']);
+
+        if ($logPath && $logLevel) {
+            $logger = new Logger('defaultLogger');
+            $logger->pushHandler(new StreamHandler($logPath, $logLevel));
+
+            $serviceContainer->setLogger('defaultLogger', $logger);
+
+            if ($logLevel == Logger::DEBUG) {
+                /** @var ConnectionWrapper $con */
+                $con = Propel::getConnection();
+                $con->useDebug(true);
+            }
+        }
     }
 }
