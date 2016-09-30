@@ -14,6 +14,7 @@ use Ansas\Component\Collection\Collection;
 use Ansas\Monolog\Profiler;
 use Ansas\Slim\Handler\ContainerInjectTrait;
 use Ansas\Slim\Handler\FlashHandler;
+use Ansas\Slim\Handler\RedirectToRouteTrait;
 use Ansas\Slim\Handler\TwigHandlerTrait;
 use Monolog\Logger;
 use PDO;
@@ -40,6 +41,7 @@ use Slim\Views\Twig;
 abstract class AbstractController
 {
     use ContainerInjectTrait;
+    use RedirectToRouteTrait;
     use TwigHandlerTrait;
 
     /**

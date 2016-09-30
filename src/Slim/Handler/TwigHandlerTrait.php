@@ -33,24 +33,6 @@ use Slim\Views\Twig;
 trait TwigHandlerTrait
 {
     /**
-     * Redirect to specific route.
-     *
-     * @param  Response $response
-     * @param  string   $route       The route to redirect to
-     * @param  array    $data        [optional] Route params
-     * @param  array    $queryParams [optional] Query string params
-     * @param  string   $suffix      [optional] URL suffix like query string
-     *
-     * @return Response
-     */
-    public function redirectToRoute(Response $response, $route, array $data = [], array $queryParams = [], $suffix = '')
-    {
-        $url = $this->router->pathFor($route, $data, $queryParams) . $suffix;
-
-        return $response->withRedirect($url, 301);
-    }
-
-    /**
      * Renders template with previous set data.
      *
      * @param Request  $request
