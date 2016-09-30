@@ -37,6 +37,10 @@ class PropelProvider extends AbstractProvider
                 'path'  => './propel.log',
                 'level' => Logger::DEBUG,
             ],
+            'settings'   => [
+                'charset' => null,
+                'queries' => [],
+            ],
         ];
     }
 
@@ -67,6 +71,7 @@ class PropelProvider extends AbstractProvider
             'dsn'       => $settings['dsn'],
             'user'      => $settings['user'],
             'password'  => $settings['password'],
+            'settings'  => $settings['settings'],
         ]);
         $manager->setName($settings['connection']);
 
