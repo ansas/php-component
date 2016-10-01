@@ -14,12 +14,12 @@ use Twig_Extension;
 use Twig_SimpleFilter;
 
 /**
- * Class PhpFunctions
+ * Class AntiSpam
  *
  * @package Ansas\Twig\Extension
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
-class PhpFunctions extends Twig_Extension
+class AntiSpam extends Twig_Extension
 {
     /**
      * Returns a list of filters to add to the existing list.
@@ -29,10 +29,7 @@ class PhpFunctions extends Twig_Extension
     public function getFilters()
     {
         return [
-            new Twig_SimpleFilter('ucfirst', 'ucfirst'),
-            new Twig_SimpleFilter('gettype', 'gettype'),
-            new Twig_SimpleFilter('strlen', 'strlen'),
-            new Twig_SimpleFilter('count', 'count'),
+            new Twig_SimpleFilter('entities', [$this, '_encodeEntities'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -43,6 +40,27 @@ class PhpFunctions extends Twig_Extension
      */
     public function getName()
     {
-        return 'phpfunctions';
+        return 'antiSpam';
+    }
+
+    /**
+     * Returns a string converted to html entities.
+     *
+     * @see http://goo.gl/LPhtJ
+     *
+     * @param  string $string Value to be encoded
+     *
+     * @return string
+     */
+    public function _encodeEntities($string)
+    {
+        $string = mb_convert_encoding($string, 'UTF-32', 'UTF-8');
+        $t      = unpack("N*", $string);
+        $t      = array_map(function ($n) {
+            return "&#$n;";
+        },
+            $t);
+
+        return implode("", $t);
     }
 }
