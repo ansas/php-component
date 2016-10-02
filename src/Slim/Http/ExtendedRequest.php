@@ -116,17 +116,13 @@ class ExtendedRequest extends Request
      *
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @return string|null
+     * @deprecated Use <code>getRequestTarget()</code> instead.
+     *
+     * @return string
      */
     public function getRequestUri()
     {
-        /** @var Uri $uri */
-        $uri = $this->getUri();
-
-        $path  = $this->getFullPath();
-        $query = $uri->getQuery();
-
-        return $path . ($query ? '?' . $query : '');
+        return $this->getRequestTarget();
     }
 
     /**

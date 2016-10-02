@@ -18,6 +18,7 @@ use Ansas\Slim\Handler\RedirectToRouteTrait;
 use Ansas\Slim\Handler\TwigHandlerTrait;
 use Monolog\Logger;
 use PDO;
+use Slim\Collection as SlimCollection;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
@@ -29,14 +30,14 @@ use Slim\Views\Twig;
  * @package Ansas\Slim\Controller
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  *
- * @property Collection   $data
- * @property FlashHandler $flash
- * @property Logger       $logger
- * @property PDO          $pdo
- * @property Profiler     $profiler
- * @property Router       $router
- * @property array        $settings
- * @property Twig         $view
+ * @property Collection     $data
+ * @property FlashHandler   $flash
+ * @property Logger         $logger
+ * @property PDO            $pdo
+ * @property Profiler       $profiler
+ * @property Router         $router
+ * @property SlimCollection $settings
+ * @property Twig           $view
  */
 abstract class AbstractController
 {
