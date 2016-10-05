@@ -105,6 +105,11 @@ class SwiftMailerProvider extends AbstractProvider
                 $message->setBcc($bcc);
             }
 
+            $returnPath = $settings['returnPath'] ?? null;
+            if ($returnPath) {
+                $message->setReturnPath($returnPath);
+            }
+
             return $message;
         });
     }
