@@ -32,7 +32,7 @@ trait ContainerInjectTrait
      */
     public function __construct(ContainerInterface $container)
     {
-        $this->container = $container;
+        $this->setContainer($container);
     }
 
     /**
@@ -69,5 +69,19 @@ trait ContainerInjectTrait
     public function getContainer()
     {
         return $this->container;
+    }
+
+    /**
+     * Set Container.
+     *
+     * @param ContainerInterface $container
+     *
+     * @return $this
+     */
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
+
+        return $this;
     }
 }
