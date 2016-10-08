@@ -114,7 +114,7 @@ class CollectionOverride
     /**
      * Restore collection to previous status before last override() call if available.
      *
-     * @return $this
+     * @return bool Collection restored
      */
     public function restore()
     {
@@ -122,9 +122,11 @@ class CollectionOverride
         if ($this->overrides) {
             $old = array_pop($this->overrides);
             $this->apply($old, true);
+
+            return true;
         }
 
-        return $this;
+        return false;
     }
 
     /**
