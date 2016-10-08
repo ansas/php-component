@@ -17,7 +17,6 @@ use Ansas\Slim\Handler\NotFoundHandler;
 use Ansas\Slim\Http\ExtendedRequest;
 use Exception;
 use Slim\Http\Response;
-use Slim\Route;
 
 /**
  * Class LanguageSwitch

@@ -19,7 +19,7 @@ use Traversable;
  * Manipulation class for any Collection that implements Traversable.
  *
  * The injected Collection can be manipulated using override() and restore() methods. This class is designed to
- * overwrite the original injected object in order to make changes globally affective.
+ * overwrite the original injected object in order to make changes globally effective.
  *
  * If you do not want to change the original collection you must clone it before injecting it. You can use the get()
  * helper method for retrieving the Collection at any time.
@@ -30,12 +30,12 @@ use Traversable;
 class CollectionOverride
 {
     /**
-     * @var Traversable
+     * @var Traversable Collection to override (manipulate).
      */
     protected $collection;
 
     /**
-     * @var array
+     * @var array Restore points (applied overrides).
      */
     protected $overrides;
 
@@ -47,6 +47,7 @@ class CollectionOverride
     public function __construct(Traversable $collection)
     {
         $this->collection = $collection;
+        $this->overrides = [];
     }
 
     /**
@@ -72,6 +73,8 @@ class CollectionOverride
     }
 
     /**
+     * Override collection with provided $new data.
+     *
      * @param Traversable|array $new
      *
      * @return $this
@@ -97,6 +100,20 @@ class CollectionOverride
     }
 
     /**
+     * Make changes (overrides) to collection permanent by deleting restore points.
+     *
+     * @return $this
+     */
+    public function persist()
+    {
+        $this->overrides = [];
+
+        return $this;
+    }
+
+    /**
+     * Restore collection to previous status before last override() call if available.
+     *
      * @return $this
      */
     public function restore()
@@ -120,12 +137,15 @@ class CollectionOverride
     {
         $old = $this->collection;
 
+        // Delete old values
+        // Note: make sure not to overwrite / detatch original object to make changes be globally effective
         if ($purge) {
             foreach ($old as $key => $value) {
                 unset($old[$key]);
             }
         }
 
+        // Set new values
         foreach ($new as $key => $value) {
             $old[$key] = $value;
         }
