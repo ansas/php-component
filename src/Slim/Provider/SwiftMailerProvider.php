@@ -15,6 +15,7 @@ use Pimple\Container;
 use Swift_Mailer;
 use Swift_MailTransport;
 use Swift_Message;
+use Swift_NullTransport;
 use Swift_SmtpTransport;
 
 /**
@@ -35,16 +36,12 @@ class SwiftMailerProvider extends AbstractProvider
     public static function getDefaultSettings()
     {
         return [
-            'from'       => [
+            'from'      => [
                 'name'  => 'me',
                 'email' => 'me@localhost',
             ],
-            'transport'  => "mail",  // mail|smtp
-            'host'       => "localhost",
-            'port'       => "25",
-            'encryption' => "tls",
-            'username'   => "",
-            'password'   => "",
+            'transport' => "mail",  // mail|null|smtp
+            'options'   => [],
         ];
     }
 
@@ -72,14 +69,18 @@ class SwiftMailerProvider extends AbstractProvider
                 case 'mail':
                     $transport = Swift_MailTransport::newInstance();
                     break;
+                case 'null':
+                    $transport = Swift_NullTransport::newInstance();
+                    break;
                 case 'smtp':
+                    $options   = $settings['options'];
                     $transport = Swift_SmtpTransport
                         ::newInstance()
-                        ->setHost($settings['host'])
-                        ->setPort($settings['port'])
-                        ->setEncryption($settings['encryption'])
-                        ->setUsername($settings['username'])
-                        ->setPassword($settings['password'])
+                        ->setHost($options['host'] ?? 'localhost')
+                        ->setPort($options['port'] ?? '25')
+                        ->setEncryption($options['encryption'] ?? 'tls')
+                        ->setUsername($options['username'] ?? '')
+                        ->setPassword($options['password'] ?? '')
                     ;
                     break;
                 default:
