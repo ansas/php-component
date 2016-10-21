@@ -164,7 +164,7 @@ class CollectionOverride
     protected function merge(array $old, array $new)
     {
         foreach ($new as $key => $value) {
-            if (is_array($value)) {
+            if (isset($old[$key]) && is_array($old[$key]) && is_array($value)) {
                 $old[$key] = $this->merge($old[$key], $value);
             } else {
                 $old[$key] = $value;
