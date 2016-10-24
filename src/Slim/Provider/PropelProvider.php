@@ -34,7 +34,7 @@ class PropelProvider extends AbstractProvider
             'user'       => '',
             'password'   => '',
             'logger'     => [
-                'path'  => './propel.log',
+                'path'  => null,
                 'level' => Logger::DEBUG,
             ],
             'settings'   => [
