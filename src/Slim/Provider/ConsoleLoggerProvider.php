@@ -69,7 +69,7 @@ class ConsoleLoggerProvider extends AbstractProvider
             $logger = new Logger($settings['name']);
             $logger->pushProcessor(new ConsoleColorProcessor());
             $logger->pushProcessor(new CleanupProcessor($settings['trimPaths']));
-            $logger->pushProcessor(new IntrospectionProcessor());
+            $logger->pushProcessor(new IntrospectionProcessor(Logger::WARNING));
             $logger->pushProcessor(new ProcessIdProcessor());
             $logger->pushProcessor(new PsrLogMessageProcessor());
 
