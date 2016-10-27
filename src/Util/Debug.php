@@ -25,7 +25,7 @@ class Debug
      */
     public static function isCli()
     {
-        return PHP_SAPI === 'cli-server';
+        return substr(PHP_SAPI, 0, 3) == 'cli';
     }
 
     /**
