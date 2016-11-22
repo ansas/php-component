@@ -39,6 +39,7 @@ class ConsoleLoggerProvider extends AbstractProvider
     {
         return [
             'name'      => 'console',
+            'color'     => true,
             'level'     => Logger::DEBUG,
             'trimPaths' => [],
         ];
@@ -67,7 +68,9 @@ class ConsoleLoggerProvider extends AbstractProvider
             $loggerTimeZone   = new DateTimeZone('Europe/Berlin');
 
             $logger = new Logger($settings['name']);
-            $logger->pushProcessor(new ConsoleColorProcessor());
+            if ($settings['color']) {
+                $logger->pushProcessor(new ConsoleColorProcessor());
+            }
             $logger->pushProcessor(new CleanupProcessor($settings['trimPaths']));
             $logger->pushProcessor(new IntrospectionProcessor(Logger::WARNING));
             $logger->pushProcessor(new ProcessIdProcessor());
