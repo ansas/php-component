@@ -10,9 +10,12 @@
 
 namespace Ansas\Slim\Http;
 
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Uri;
+use Slim\Interfaces\Http\HeadersInterface;
 use Slim\Route;
 
 /**
@@ -23,6 +26,30 @@ use Slim\Route;
  */
 class ExtendedRequest extends Request
 {
+    /**
+     * {@inheritdoc}
+     *
+     * This method overrides "invalid request method" handling to force methodNotAllowed handler instead of throwing an
+     * (uncaught) exception.
+     */
+    public function __construct(
+        $method,
+        UriInterface $uri,
+        HeadersInterface $headers,
+        array $cookies,
+        array $serverParams,
+        StreamInterface $body,
+        array $uploadedFiles
+    ) {
+        // Get method or set to UNKNOWN if not determinable
+        $method = is_string($method) && $method ? strtoupper($method) : "UNKNOWN";
+
+        // Hack: make every method valid so logic uses methodNotAllowed handler instead of throwing (uncaught) exception
+        $this->validMethods[$method] = 1;
+
+        parent::__construct($method, $uri, $headers, $cookies, $serverParams, $body, $uploadedFiles);
+    }
+
     /**
      * {@inheritdoc}
      *
