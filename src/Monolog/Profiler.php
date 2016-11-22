@@ -730,7 +730,7 @@ class Profiler
 
         // Get start time of lap
         $lapStart     = $lap > 0 ? $lap - 1 : $lap;
-        $timeLapStart = array_slice($this->getLaps(), $lapStart, 1)[0];
+        $timeLapStart = $this->timeLapStart($lapStart);
 
         // Get stop time of lap
         $lapStop = $lapStart + 1;
@@ -741,6 +741,35 @@ class Profiler
         }
 
         return $timeLapStop - $timeLapStart;
+    }
+
+    /**
+     * Get lap start time (if started).
+     *
+     * Lap number must be existing lap:
+     * - positive number starting with 1 gets lap time from beginning (1 = first lap)
+     * - negative number starting with -1 gets lap time from end (-1 = last / current lap)
+     *
+     * @param int $lap [optional] Lap number from beginning (+) or end (-), default: -1 (last lap)
+     *
+     * @return float|null
+     * @throws Exception
+     */
+    public function timeLapStart(int $lap = -1)
+    {
+        if (!$this->isStarted()) {
+            return null;
+        }
+
+        if ($lap == 0 || abs($lap) > $this->countLaps()) {
+            throw new Exception("Lap must be an existing lap number");
+        }
+
+        // Get start time of lap
+        $lapStart     = $lap > 0 ? $lap - 1 : $lap;
+        $timeLapStart = array_slice($this->getLaps(), $lapStart, 1)[0];
+
+        return $timeLapStart;
     }
 
     /**
