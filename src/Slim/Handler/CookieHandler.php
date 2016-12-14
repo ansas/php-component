@@ -56,11 +56,22 @@ class CookieHandler extends Cookies
      */
     public function getFullName($name)
     {
-        if (false === strpos($name, $this->prefix)) {
-            return $this->prefix . $name;
+        $prefix = $this->getPrefix();
+        if (strlen($prefix) && false === strpos($name, $prefix)) {
+            return $prefix . $name;
         }
 
         return $name;
+    }
+
+    /**
+     * Get cookie name prefix.
+     *
+     * @return string
+     */
+    public function getPrefix()
+    {
+        return (string) $this->prefix;
     }
 
     /**
