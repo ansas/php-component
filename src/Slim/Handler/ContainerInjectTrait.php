@@ -46,7 +46,7 @@ trait ContainerInjectTrait
      */
     public function __get($name)
     {
-        return $this->container[$name] ?? null;
+        return isset($this->container[$name]) ? $this->container[$name] : null;
     }
 
     /**

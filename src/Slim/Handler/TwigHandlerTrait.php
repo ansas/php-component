@@ -60,7 +60,7 @@ trait TwigHandlerTrait
                     $value = $response;
                     break;
                 default:
-                    $value = $this->container[$key] ?? null;
+                    $value = isset($this->container[$key]) ? $this->container[$key] : null;
                     break;
             }
 

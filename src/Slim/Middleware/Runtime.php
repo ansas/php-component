@@ -38,7 +38,7 @@ class Runtime
     public function __invoke(Request $request, Response $response, callable $next)
     {
         $server      = $request->getServerParams();
-        $requestTime = $server['REQUEST_TIME_FLOAT'] ?? microtime(true);
+        $requestTime = isset($server['REQUEST_TIME_FLOAT']) ? $server['REQUEST_TIME_FLOAT'] : microtime(true);
 
         // Call next middleware
         $response = $next($request, $response);

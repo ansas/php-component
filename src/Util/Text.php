@@ -40,7 +40,7 @@ class Text
      *
      * @return bool
      */
-    public static function isLower(string $string)
+    public static function isLower($string)
     {
         return ctype_lower($string);
     }
@@ -52,7 +52,7 @@ class Text
      *
      * @return bool
      */
-    public static function isUpper(string $string)
+    public static function isUpper($string)
     {
         return ctype_upper($string);
     }
@@ -66,7 +66,7 @@ class Text
      * @return string
      * @throws Exception
      */
-    public static function toCase(string $string, $case)
+    public static function toCase($string, $case)
     {
         switch ($case) {
             case self::UPPER:
@@ -91,7 +91,7 @@ class Text
      *
      * @return string
      */
-    public static function toLower(string $string)
+    public static function toLower($string)
     {
         return self::toCase($string, self::LOWER);
     }
@@ -104,7 +104,7 @@ class Text
      *
      * @return string
      */
-    public static function toRegex(string $string, $modifiers = 'u')
+    public static function toRegex($string, $modifiers = 'u')
     {
         // Check if string is already a regular expression
         if (substr($string, 0, 1) == '/') {
@@ -122,7 +122,7 @@ class Text
      *
      * @return string
      */
-    public static function toUpper(string $string)
+    public static function toUpper($string)
     {
         return self::toCase($string, self::UPPER);
     }

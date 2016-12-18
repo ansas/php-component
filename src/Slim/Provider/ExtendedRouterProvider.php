@@ -50,8 +50,8 @@ class ExtendedRouterProvider extends AbstractProvider
          * @return ExtendedRouter
          */
         $container['router'] = function ($c) {
-            $locale    = $c['locale'] ?? null;
-            $cacheFile = $c['settings']['routerCacheFile'] ?? false;
+            $locale    = isset($c['locale']) ? $c['locale'] : null;
+            $cacheFile = isset($c['settings']['routerCacheFile']) ? $c['settings']['routerCacheFile'] : false;
             $settings  = $c['settings']['router'];
 
             $router = ExtendedRouter

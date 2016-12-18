@@ -112,7 +112,7 @@ class ExtendedRouter extends Router
 
         // determine locale to use for path
         $locale = $locales->getActive();
-        $lang   = $lang ?: $data[$identifier] ?? null;
+        $lang   = $lang ?: (isset($data[$identifier]) ? $data[$identifier] : null);
         if ($lang) {
             $locale = $locales->find($lang);
             if (!$locale) {

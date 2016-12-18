@@ -41,7 +41,7 @@ class Locale
      *
      * @throws Exception
      */
-    public function __construct(string $locale)
+    public function __construct($locale)
     {
         $this->locale = Locale::sanitizeLocale($locale);
 

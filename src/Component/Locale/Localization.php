@@ -196,10 +196,10 @@ class Localization extends Locales
         $locale = Locale::sanitizeLocale($locale);
 
         if ($key) {
-            return $this->maps[$locale][$key] ?? null;
+            return isset($this->maps[$locale][$key]) ? $this->maps[$locale][$key] : null;
         }
 
-        return $this->maps[$locale] ?? null;
+        return isset($this->maps[$locale]) ? $this->maps[$locale] : null;
     }
 
     /**
@@ -280,7 +280,7 @@ class Localization extends Locales
      *
      * @return $this
      */
-    public function setDomain(string $domain)
+    public function setDomain($domain)
     {
         $this->domain = $domain;
 
@@ -294,7 +294,7 @@ class Localization extends Locales
      *
      * @return $this
      */
-    public function setPath(string $path)
+    public function setPath($path)
     {
         $this->path = realpath($path);
 

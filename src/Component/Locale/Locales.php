@@ -166,7 +166,7 @@ class Locales
         // Get sanitized locale
         $locale = Locale::sanitizeLocale($locale);
 
-        return $this->available[$locale] ?? null;
+        return isset($this->available[$locale]) ? $this->available[$locale] : null;
     }
 
     /**
