@@ -63,6 +63,18 @@ class ExtendedRequest extends Request
     }
 
     /**
+     * Get "ACCEPT_LANGUAGE" header.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return string|null
+     */
+    public function getAcceptLanguage()
+    {
+        return $this->getHeaderLine('ACCEPT_LANGUAGE');
+    }
+
+    /**
      * Get current route.
      *
      * Note: This method is not part of the PSR-7 standard.
@@ -105,7 +117,19 @@ class ExtendedRequest extends Request
     }
 
     /**
-     * Get request content type.
+     * Retrieve the host component of the URI.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return string
+     */
+    public function getHost()
+    {
+        return $this->getUri()->getHost();
+    }
+
+    /**
+     * Get request ip.
      *
      * Note: This method is not part of the PSR-7 standard.
      *
@@ -113,16 +137,66 @@ class ExtendedRequest extends Request
      */
     public function getIp()
     {
-        $serverParams = $this->getServerParams();
-        $keys         = ['X_FORWARDED_FOR', 'HTTP_X_FORWARDED_FOR', 'CLIENT_IP', 'REMOTE_ADDR'];
+        $keys = ['X_FORWARDED_FOR', 'HTTP_X_FORWARDED_FOR', 'CLIENT_IP', 'REMOTE_ADDR'];
 
         foreach ($keys as $key) {
-            if (isset($serverParams[$key])) {
-                return $serverParams[$key];
+            $ip = $this->getServerParam($key);
+
+            if (!$ip) {
+                continue;
             }
+
+            $ip = preg_replace('/,.*$/u', '', $ip);
+            $ip = trim($ip);
+
+            return $ip;
         }
 
         return null;
+    }
+
+    /**
+     * Fetch filtered associative array of body and query string parameters.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param array|string $filter Array or comma separated list
+     *
+     * @return array
+     */
+    public function getParamsWith($filter)
+    {
+        // Convert $filter to array if necessary
+        if (!is_array($filter)) {
+            $filter = preg_split("/, */", $filter, -1, PREG_SPLIT_NO_EMPTY);
+        }
+
+        $params = $this->getParams();
+        $filter = array_flip($filter);
+
+        return array_intersect_key($params, $filter);
+    }
+
+    /**
+     * Fetch filtered associative array of body and query string parameters.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param array|string $filter Array or comma separated list
+     *
+     * @return array
+     */
+    public function getParamsWithout($filter)
+    {
+        // Convert $filter to array if necessary
+        if (!is_array($filter)) {
+            $filter = preg_split("/, */", $filter, -1, PREG_SPLIT_NO_EMPTY);
+        }
+
+        $params = array_keys($this->getParams());
+        $filter = array_merge(array_diff($params, $filter), array_diff($filter, $params));
+
+        return $this->getParamsWith($filter);
     }
 
     /**
@@ -153,18 +227,6 @@ class ExtendedRequest extends Request
     }
 
     /**
-     * Get "ACCEPT_LANGUAGE" header.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @return string|null
-     */
-    public function getAcceptLanguage()
-    {
-        return $this->getHeaderLine('ACCEPT_LANGUAGE');
-    }
-
-    /**
      * Get "HTTP_USER_AGENT" header.
      *
      * Note: This method is not part of the PSR-7 standard.
@@ -174,5 +236,24 @@ class ExtendedRequest extends Request
     public function getUserAgent()
     {
         return $this->getHeaderLine('HTTP_USER_AGENT');
+    }
+
+    /**
+     * Returns an instance with the provided host.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param string $host
+     *
+     * @return static
+     */
+    public function withHost($host)
+    {
+        $uri = $this->getUri()->withHost($host);
+
+        /** @var static $clone */
+        $clone = $this->withUri($uri);
+
+        return $clone;
     }
 }
