@@ -23,12 +23,27 @@ class File
     /**
      * Copy a (remote) file.
      *
+     * @param string $file
+     * @param int    $mode
+     *
+     * @throws Exception
+     */
+    public static function chmod($file, $mode)
+    {
+        if (!@chmod($file, $mode)) {
+            throw new Exception(sprintf("Cannot chmod %s to %s.", $file, $mode));
+        }
+    }
+
+    /**
+     * Copy a (remote) file.
+     *
      * @param string $pathOld
      * @param string $pathNew
      *
      * @throws Exception
      */
-    public static function copy(string $pathOld, string $pathNew)
+    public static function copy($pathOld, $pathNew)
     {
         if (!@copy($pathOld, $pathNew)) {
             throw new Exception(sprintf("Cannot copy %s to %s.", $pathOld, $pathNew));
@@ -42,7 +57,7 @@ class File
      *
      * @throws Exception
      */
-    public static function delete(string $file)
+    public static function delete($file)
     {
         if (!is_file($file)) {
             return;
@@ -63,7 +78,7 @@ class File
      *
      * @throws Exception
      */
-    public static function move(string $pathOld, string $pathNew)
+    public static function move($pathOld, $pathNew)
     {
         if (!is_file($pathOld)) {
             throw new Exception(sprintf("Old file %s is not a file.", $pathOld));
