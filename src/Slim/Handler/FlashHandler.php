@@ -25,20 +25,20 @@ use Slim\Interfaces\Http\CookiesInterface;
  * @package Ansas\Slim\Middleware
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  *
- * @method $this setSuccess(string $message, $when = FlashHandler::NEXT) Set message for $key = 'success'.
- * @method $this addSuccess(string $message, $when = FlashHandler::NEXT) Add message for $key = 'success'.
+ * @method $this setSuccess($message, $when = FlashHandler::NEXT) Set message for $key = 'success'.
+ * @method $this addSuccess($message, $when = FlashHandler::NEXT) Add message for $key = 'success'.
  * @method $this removeSuccess($when = FlashHandler::NEXT) Delete message for $key = 'success'.
  *
- * @method $this setError(string $message, $when = FlashHandler::NEXT) Set message for $key = 'error'.
- * @method $this addError(string $message, $when = FlashHandler::NEXT) Add message for $key = 'error'.
+ * @method $this setError($message, $when = FlashHandler::NEXT) Set message for $key = 'error'.
+ * @method $this addError($message, $when = FlashHandler::NEXT) Add message for $key = 'error'.
  * @method $this removeError($when = FlashHandler::NEXT) Delete message for $key = 'error'.
  *
- * @method $this setWarning(string $message, $when = FlashHandler::NEXT) Set message for $key = 'warning'.
- * @method $this addWarning(string $message, $when = FlashHandler::NEXT) Add message for $key = 'warning'.
+ * @method $this setWarning($message, $when = FlashHandler::NEXT) Set message for $key = 'warning'.
+ * @method $this addWarning($message, $when = FlashHandler::NEXT) Add message for $key = 'warning'.
  * @method $this removeWarning($when = FlashHandler::NEXT) Delete message for $key = 'warning'.
  *
- * @method $this setInfo(string $message, $when = FlashHandler::NEXT) Set message for $key = 'info'.
- * @method $this addInfo(string $message, $when = FlashHandler::NEXT) Add message for $key = 'info'.
+ * @method $this setInfo($message, $when = FlashHandler::NEXT) Set message for $key = 'info'.
+ * @method $this addInfo($message, $when = FlashHandler::NEXT) Add message for $key = 'info'.
  * @method $this removeInfo($when = FlashHandler::NEXT) Delete message for $key = 'info'.
  */
 class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
@@ -93,7 +93,7 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      * @param CookiesInterface $cookie
      * @param string           $cookieKey [optional]
      */
-    public function __construct(CookiesInterface $cookie, string $cookieKey = 'flash')
+    public function __construct(CookiesInterface $cookie, $cookieKey = 'flash')
     {
         $this->cookie    = $cookie;
         $this->cookieKey = $cookieKey;
@@ -135,13 +135,13 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      *
      * @return $this
      */
-    public function add(string $key, string $message, $when = self::NEXT)
+    public function add(string $key, $message, $when = self::NEXT)
     {
         if (!strlen($message)) {
             return $this;
         }
 
-        $merged = $this->messages[$when][$key] ?? [];
+        $merged = isset($this->messages[$when][$key]) ? $this->messages[$when][$key] : [];
         $merged = (array) $merged;
 
         $merged[] = $message;
@@ -179,7 +179,7 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      *
      * @return static
      */
-    public static function create(CookiesInterface $cookie, string $cookieKey = 'flash')
+    public static function create(CookiesInterface $cookie, $cookieKey = 'flash')
     {
         return new static($cookie, $cookieKey);
     }
@@ -192,11 +192,11 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      *
      * @return string|null
      */
-    public function get(string $key, string $default = null)
+    public function get(string $key, $default = null)
     {
         $messages = $this->all();
 
-        return $messages[$key] ?? $default;
+        return isset($messages[$key]) ? $messages[$key] : $default;
     }
 
     /**
@@ -220,7 +220,7 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      *
      * @return bool
      */
-    public function has(string $key)
+    public function has($key)
     {
         return !!$this->get($key);
     }
@@ -315,7 +315,7 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      *
      * @return $this
      */
-    public function remove(string $key, $when = self::NEXT)
+    public function remove($key, $when = self::NEXT)
     {
         $deleteWhen = $when == self::ALL ? self::$when : (array) $when;
         foreach ($deleteWhen as $when) {
@@ -374,7 +374,7 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      *
      * @return $this
      */
-    public function set(string $key, $message, $when = self::NEXT)
+    public function set($key, $message, $when = self::NEXT)
     {
         $this->validateWhen($when);
 

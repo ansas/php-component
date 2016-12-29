@@ -153,7 +153,7 @@ class CookieHandler extends Cookies
      *
      * @return $this
      */
-    public function setDefault(string $key, $value)
+    public function setDefault($key, $value)
     {
         return $this->setDefaults([$key => $value]);
     }
@@ -177,7 +177,7 @@ class CookieHandler extends Cookies
      *
      * @return $this
      */
-    public function setPrefix(string $prefix)
+    public function setPrefix($prefix)
     {
         $this->prefix = $prefix;
 

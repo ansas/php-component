@@ -215,7 +215,7 @@ class ConfigHandler
      *
      * @return $this
      */
-    public function setKey(string $key)
+    public function setKey($key)
     {
         $this->key = $key;
 
@@ -229,7 +229,7 @@ class ConfigHandler
      *
      * @return $this
      */
-    public function setPath(string $path)
+    public function setPath($path)
     {
         $this->path = realpath($path);
 
@@ -243,7 +243,7 @@ class ConfigHandler
      *
      * @return $this
      */
-    public function setSuffix(string $suffix)
+    public function setSuffix($suffix)
     {
         $this->suffix = $suffix;
 

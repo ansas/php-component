@@ -38,7 +38,7 @@ class NotFoundHandler extends AbstractHandler
     public function __invoke(Request $request, Response $response)
     {
         $code     = 404;
-        $template = $this->settings['view']['status'][$code] ?? null;
+        $template = isset($this->settings['view']['status'][$code]) ? $this->settings['view']['status'][$code] : null;
         $isHtml   = stripos($request->getHeaderLine('Accept'), 'html') !== false;
 
         if ($template && $isHtml) {
