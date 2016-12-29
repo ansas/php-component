@@ -143,8 +143,6 @@ class CsvReader implements IteratorAggregate
      */
     public function getIterator()
     {
-        $this->reset();
-
         $header = $this->getHeader();
 
         while ($data = $this->getNextDataSet()) {
@@ -163,7 +161,12 @@ class CsvReader implements IteratorAggregate
      */
     public function fetchArray()
     {
-        yield from $this->getIterator();
+        foreach ($this->getIterator() as $set) {
+            yield $set;
+        }
+
+        // Note: "pure" PHP 7 syntax:
+        // yield from $this->getIterator();
     }
 
     /**
@@ -209,7 +212,7 @@ class CsvReader implements IteratorAggregate
      *
      * @return $this
      */
-    public function setDelimiter(string $delimiter)
+    public function setDelimiter($delimiter)
     {
         $this->delimiter = $delimiter;
 
@@ -223,7 +226,7 @@ class CsvReader implements IteratorAggregate
      *
      * @return $this
      */
-    public function setEnclosure(string $enclosure)
+    public function setEnclosure($enclosure)
     {
         $this->enclosure = $enclosure;
 
@@ -237,7 +240,7 @@ class CsvReader implements IteratorAggregate
      *
      * @return $this
      */
-    public function setEscape(string $escape)
+    public function setEscape($escape)
     {
         $this->escape = $escape;
 
