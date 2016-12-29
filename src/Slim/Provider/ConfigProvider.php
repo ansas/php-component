@@ -31,7 +31,8 @@ class ConfigProvider extends AbstractProvider
         return [
             'path'   => '.',
             'key'    => 'settings',
-            'suffix' => '.php',
+            'format' => 'php',
+            'suffix' => null, // defaults to ".{$format}"
         ];
     }
 
@@ -56,6 +57,7 @@ class ConfigProvider extends AbstractProvider
             $config = ConfigHandler
                 ::create($c['settings'])
                 ->setPath($settings['path'])
+                ->setFormat($settings['format'])
                 ->setSuffix($settings['suffix'])
                 ->setKey($settings['key'])
             ;

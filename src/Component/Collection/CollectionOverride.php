@@ -94,7 +94,7 @@ class CollectionOverride
 
         // Override collection with new data
         $merged = $this->merge($old, $new);
-        $this->apply($merged, false);
+        $this->apply($merged, $purge = false);
 
         return $this;
     }
@@ -121,7 +121,7 @@ class CollectionOverride
         // Restore settings before last override and delete override from stash
         if ($this->overrides) {
             $old = array_pop($this->overrides);
-            $this->apply($old, true);
+            $this->apply($old, $purge = true);
 
             return true;
         }
@@ -140,7 +140,7 @@ class CollectionOverride
         $old = $this->collection;
 
         // Delete old values
-        // Note: make sure not to overwrite / detatch original object to make changes be globally effective
+        // Note: make sure not to overwrite / detach original object to make changes be globally effective
         if ($purge) {
             foreach ($old as $key => $value) {
                 unset($old[$key]);

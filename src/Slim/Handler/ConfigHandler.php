@@ -17,6 +17,8 @@ use Traversable;
 /**
  * Class ConfigHandler
  *
+ * Currently supports PHP and JSON format for overriding config.
+ *
  * @package Ansas\Slim\Handler
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
@@ -26,6 +28,16 @@ class ConfigHandler
      * @var CollectionOverride Handler for manipulating config (settings)
      */
     protected $handler;
+
+    /**
+     * @var string Format of config files
+     */
+    protected $format;
+
+    /**
+     * @var string Container key to config in override files
+     */
+    protected $key;
 
     /**
      * @var string Path to config override files
@@ -38,9 +50,12 @@ class ConfigHandler
     protected $suffix;
 
     /**
-     * @var string Container key to config in override files
+     * @var string[] Valid / supported formats
      */
-    protected $key;
+    protected static $validFormats = [
+        'php',
+        'json',
+    ];
 
     /**
      * CollectionOverride constructor.
@@ -84,6 +99,21 @@ class ConfigHandler
         }
 
         return $result;
+    }
+
+    /**
+     * Returns the format of the override files.
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function getFormat()
+    {
+        if (null === $this->format) {
+            throw new Exception("Value for 'format' must be set");
+        }
+
+        return $this->format;
     }
 
     /**
@@ -153,6 +183,7 @@ class ConfigHandler
     public function overwrite($identifier, $force = true)
     {
         $path   = $this->getPath();
+        $format = $this->getFormat();
         $suffix = $this->getSuffix();
         $key    = $this->getKey();
         $file   = "{$path}/{$identifier}{$suffix}";
@@ -165,7 +196,11 @@ class ConfigHandler
             return $this;
         }
 
-        $data = require $file;
+        if ($format == 'json') {
+            $data = json_decode(file_get_contents($file), $assoc = true);
+        } else {
+            $data = require $file;
+        }
 
         if (!isset($data[$key])) {
             throw new Exception("Could not override config: Key {$key} does not exist in file {$file}");
@@ -209,6 +244,33 @@ class ConfigHandler
     }
 
     /**
+     * Set format of the override files.
+     *
+     * @param string $format
+     *
+     * @return $this
+     * @throws Exception
+     */
+    public function setFormat($format)
+    {
+        if ($format) {
+            $format = strtolower($format);
+
+            if (!in_array($format, static::$validFormats)) {
+                throw new Exception("Format {$format} is not supported");
+            }
+
+            $this->format = $format;
+
+            if (!$this->suffix) {
+                $this->setSuffix(".{$format}");
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Set container key to config (settings).
      *
      * @param string $key
@@ -217,7 +279,9 @@ class ConfigHandler
      */
     public function setKey($key)
     {
-        $this->key = $key;
+        if ($key) {
+            $this->key = $key;
+        }
 
         return $this;
     }
@@ -231,7 +295,9 @@ class ConfigHandler
      */
     public function setPath($path)
     {
-        $this->path = realpath($path);
+        if ($path) {
+            $this->path = realpath($path);
+        }
 
         return $this;
     }
@@ -245,7 +311,9 @@ class ConfigHandler
      */
     public function setSuffix($suffix)
     {
-        $this->suffix = $suffix;
+        if ($suffix) {
+            $this->suffix = $suffix;
+        }
 
         return $this;
     }
