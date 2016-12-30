@@ -24,6 +24,14 @@ use Psr\Http\Message\ServerRequestInterface;
 class AllowProxyRequest
 {
     /**
+     * @var array Supported schemes with default ports
+     */
+    protected static $validSchemes = [
+        'http'  => 80,
+        'https' => 443,
+    ];
+
+    /**
      * Execute the middleware.
      *
      * @param ServerRequestInterface $request
@@ -40,35 +48,31 @@ class AllowProxyRequest
             $scheme = $request->getHeaderLine('X-Forwarded-Proto');
             $scheme = trim($scheme);
             $scheme = strtolower($scheme);
-            if (in_array($scheme, ['http', 'https'])) {
-                $uri = $uri->withScheme($scheme);
-            }
-        }
 
-        if ($request->hasHeader('X-Forwarded-Port')) {
-            $port = $request->getHeaderLine('X-Forwarded-Port');
-            $port = preg_replace('/,.*$/u', '', $port);
-
-            $port = (int) $port;
-            if ($port) {
-                $uri = $uri->withPort($port);
-            }
+            $uri = $uri->withScheme($scheme);
         }
 
         if ($request->hasHeader('X-Forwarded-Host')) {
             $host = $request->getHeaderLine('X-Forwarded-Host');
             $host = preg_replace('/,.*$/u', '', $host);
             list($host, $port) = array_pad(explode(':', $host, 2), 2, null);
-
             $host = trim($host);
-            if ($host) {
-                $uri = $uri->withHost($host);
+            $port = (int) $port;
+
+            if (!$port) {
+                $scheme = $uri->getScheme();
+                $port   = static::$validSchemes[$scheme];
             }
 
+            $uri = $uri->withHost($host)->withPort($port);
+        }
+
+        if ($request->hasHeader('X-Forwarded-Port')) {
+            $port = $request->getHeaderLine('X-Forwarded-Port');
+            $port = preg_replace('/,.*$/u', '', $port);
             $port = (int) $port;
-            if ($port) {
-                $uri = $uri->withPort($port);
-            }
+
+            $uri = $uri->withPort($port);
         }
 
         $request = $request->withUri($uri);
