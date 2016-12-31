@@ -61,6 +61,11 @@ class CsvReader implements IteratorAggregate
     protected $ignoreMalformed = false;
 
     /**
+     * @var bool Append row columns to fit header columns
+     */
+    protected $appendRowsColumns = false;
+
+    /**
      * CsvToArray constructor.
      *
      * @param string|SplFileInfo|SplFileObject $file
@@ -151,13 +156,18 @@ class CsvReader implements IteratorAggregate
         $header = $this->getHeader();
 
         while ($data = $this->getNextDataSet()) {
-            if (count($header) != count($data)) {
+            $headerColumns = count($header);
+            $dataColumns   = count($data);
+
+            if ($headerColumns > $dataColumns && $this->appendRowsColumns) {
+                $data = array_pad($data, $headerColumns, '');
+            } elseif ($headerColumns != $dataColumns) {
                 if ($this->ignoreMalformed) {
                     continue;
                 }
-
                 throw new Exception("Count mismatch in line {$this->getLineNumber()}");
             }
+
             $set = array_combine($header, $data);
             yield $set;
         }
@@ -208,8 +218,22 @@ class CsvReader implements IteratorAggregate
     public function reset()
     {
         $this->header = null;
-        $this->line = 0;
+        $this->line   = 0;
         $this->file->rewind();
+
+        return $this;
+    }
+
+    /**
+     * Set mode to append row columns to fit header columns lines (or not).
+     *
+     * @param bool $appendRowsColumns
+     *
+     * @return $this
+     */
+    public function setAppendRowsColumns($appendRowsColumns)
+    {
+        $this->appendRowsColumns = (bool) $appendRowsColumns;
 
         return $this;
     }
