@@ -20,7 +20,7 @@ use SplTempFileObject;
 /**
  * Class CsvReader
  *
- * @package Ansas\Component\Csv
+ * @package Ansas\Component\File
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class CsvReader implements IteratorAggregate
@@ -54,6 +54,11 @@ class CsvReader implements IteratorAggregate
      * @var string CSV escape
      */
     protected $escape = "\\";
+
+    /**
+     * @var bool Ignore malformed lines
+     */
+    protected $ignoreMalformed = false;
 
     /**
      * CsvToArray constructor.
@@ -147,6 +152,10 @@ class CsvReader implements IteratorAggregate
 
         while ($data = $this->getNextDataSet()) {
             if (count($header) != count($data)) {
+                if ($this->ignoreMalformed) {
+                    continue;
+                }
+
                 throw new Exception("Count mismatch in line {$this->getLineNumber()}");
             }
             $set = array_combine($header, $data);
@@ -259,6 +268,20 @@ class CsvReader implements IteratorAggregate
     public function setHeader(array $header)
     {
         $this->header = $header;
+
+        return $this;
+    }
+
+    /**
+     * Set mode to ignore malformed lines (or not).
+     *
+     * @param bool $ignoreMalformed
+     *
+     * @return $this
+     */
+    public function setIgnoreMalformed($ignoreMalformed)
+    {
+        $this->ignoreMalformed = (bool) $ignoreMalformed;
 
         return $this;
     }
