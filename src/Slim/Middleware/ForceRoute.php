@@ -37,7 +37,7 @@ class ForceRoute
      * @param string     $path
      * @param array|null $params
      */
-    public function __construct(string $path, array $params = null)
+    public function __construct($path, array $params = null)
     {
         $this->path   = DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR);
         $this->params = $params;
