@@ -115,7 +115,7 @@ class Period
      * @return array
      * @throws Exception If unable to determine the period.
      */
-    public function getPeriod(string $period, $mode = self::DAYS_ONLY)
+    public function getPeriod($period, $mode = self::DAYS_ONLY)
     {
         $date = new DateTime('today', $this->getTimezoneFrom());
 
@@ -228,7 +228,7 @@ class Period
      *
      * @return array
      */
-    public function getPeriodWithTime(string $period)
+    public function getPeriodWithTime($period)
     {
         return $this->getPeriod($period, self::DAYS_AND_TIME);
     }

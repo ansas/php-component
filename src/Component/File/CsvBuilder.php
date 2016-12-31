@@ -143,6 +143,22 @@ class CsvBuilder
     }
 
     /**
+     * Add data (row) to CSV.
+     *
+     * @param array[] $rows
+     *
+     * @return $this
+     */
+    public function setData(array $rows)
+    {
+        foreach ($rows as $data) {
+            $this->addData($data);
+        }
+
+        return $this;
+    }
+
+    /**
      * Set CSV delimiter string.
      *
      * @param string $delimiter
