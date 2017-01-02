@@ -125,7 +125,31 @@ class ExtendedRequest extends Request
      */
     public function getHost()
     {
-        return $this->getUri()->getHost();
+        return mb_strtolower($this->getUri()->getHost());
+    }
+
+    /**
+     * Retrieve the host component of the URI.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return string
+     */
+    public function getHostAce()
+    {
+        return idn_to_ascii($this->getHost());
+    }
+
+    /**
+     * Retrieve the host component of the URI.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return string
+     */
+    public function getHostIdn()
+    {
+        return idn_to_utf8($this->getHost());
     }
 
     /**
