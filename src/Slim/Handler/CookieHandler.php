@@ -124,7 +124,7 @@ class CookieHandler extends Cookies
      *
      * @param string       $name    Cookie name
      * @param string|array $value   Cookie value, or cookie properties
-     * @param string|int   $expires [optional] Cookie expire value
+     * @param string|int   $expires [optional] Cookie expire value (special: null = default, 0 = session, 1 = expired)
      *
      * @return $this
      */
