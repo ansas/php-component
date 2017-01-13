@@ -31,6 +31,7 @@ class PhpFunctions extends Twig_Extension
         return [
             new Twig_SimpleFilter('ucfirst', 'ucfirst'),
             new Twig_SimpleFilter('gettype', 'gettype'),
+            new Twig_SimpleFilter('getclass', 'get_class'),
             new Twig_SimpleFilter('strlen', 'strlen'),
             new Twig_SimpleFilter('count', 'count'),
         ];

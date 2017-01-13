@@ -10,6 +10,7 @@
 
 namespace Ansas\Slim\Handler;
 
+use Ansas\Util\Debug;
 use Monolog\Logger;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -48,13 +49,18 @@ class ErrorHandler extends AbstractHandler
         $isHtml   = stripos($request->getHeaderLine('Accept'), 'html') !== false;
 
         if ($template && $isHtml && $this->view && !$this->settings['displayErrorDetails']) {
-            $response = $this->renderTemplate($request, $response, $template, $code);
-        } else {
-            $handler  = $this->container['defaultErrorHandler'];
-            $response = $handler($request, $response, $e);
+            try {
+                $this->data->set('exception', $e);
+
+                return $this->renderTemplate($request, $response, $template, $code);
+            } catch (Throwable $e2) {
+                $this->logError($e2);
+            }
         }
 
-        return $response;
+        $handler  = $this->container['defaultErrorHandler'];
+
+        return $handler($request, $response, $e);
     }
 
     /**
