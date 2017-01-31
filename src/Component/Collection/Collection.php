@@ -164,6 +164,38 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
+     * Get collection as array.
+     *
+     * @return array
+     */
+    public function asArray()
+    {
+        return $this->all();
+    }
+
+    /**
+     * Get collection as json string.
+     *
+     * @param int $options [optional] JSON_ constants bitmask (e. g. JSON_PRETTY_PRINT)
+     *
+     * @return string
+     */
+    public function asJson($options = 0)
+    {
+        return json_encode($this->all(), $options);
+    }
+
+    /**
+     * Get collection as object.
+     *
+     * @return object
+     */
+    public function asObject()
+    {
+        return (object) $this->all();
+    }
+
+    /**
      * Clears the collection (remove all items).
      *
      * @return $this
