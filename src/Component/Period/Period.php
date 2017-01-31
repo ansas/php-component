@@ -191,10 +191,14 @@ class Period
                 break;
 
             default :
-                if (preg_match('/^last(\d+)(Days)?$/u', $period, $found)) {
+                if (preg_match('/^last(\d+)(?:Days)?$/u', $period, $found)) {
                     $days = $found[1];
                     $max  = clone $date;
                     $min  = clone $date->modify("-{$days} day");
+                } elseif (preg_match('/^(?:before|-)(\d+)(?:Days)?$/u', $period, $found)) {
+                    $days = $found[1];
+                    $min  = clone $date->modify("-{$days} day");
+                    $max  = clone $date;
                 } else {
                     throw new Exception("Period {$period} not supported");
                 }
