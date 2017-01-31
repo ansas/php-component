@@ -10,50 +10,21 @@
 
 namespace Ansas\Component\File;
 
-use Exception;
-
 /**
  * Class CsvBuilder
  *
  * @package Ansas\Component\File
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
-class CsvBuilder
+class CsvBuilder extends CsvBuilderBase
 {
-    /**
-     * @var array CSV header
-     */
-    protected $header;
-
     /**
      * @var array[] CSV data
      */
     protected $data;
 
     /**
-     * @var string CSV delimiter
-     */
-    protected $delimiter = ";";
-
-    /**
-     * @var string CSV enclosure
-     */
-    protected $enclosure = "\"";
-
-    /**
-     * @var string CSV escape
-     */
-    protected $escape = "\\";
-
-    /**
-     * @var string CSV newline
-     */
-    protected $newline = "\n";
-
-    /**
      * Constructor.
-     *
-     * @throws Exception
      */
     public function __construct()
     {
@@ -108,7 +79,7 @@ class CsvBuilder
         // Build header
         $columns = array_keys($this->header);
         $columns = $this->sanitizeColumns($columns);
-        $csv .= join($this->delimiter, $columns) . $this->newline;
+        $csv .= $this->buildRow($columns);
 
         foreach ($this->data as $data) {
             $columns = [];
@@ -116,7 +87,7 @@ class CsvBuilder
                 $columns[] = isset($data[$key]) ? $data[$key] : $default;
             }
             $columns = $this->sanitizeColumns($columns);
-            $csv .= join($this->delimiter, $columns) . $this->newline;
+            $csv .= $this->buildRow($columns);
         }
 
         return $csv;
@@ -133,105 +104,6 @@ class CsvBuilder
     }
 
     /**
-     * Return CSV header as array.
-     *
-     * @return array
-     */
-    public function getHeader()
-    {
-        return $this->header;
-    }
-
-    /**
-     * Add data (row) to CSV.
-     *
-     * @param array[] $rows
-     *
-     * @return $this
-     */
-    public function setData(array $rows)
-    {
-        foreach ($rows as $data) {
-            $this->addData($data);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Set CSV delimiter string.
-     *
-     * @param string $delimiter
-     *
-     * @return $this
-     */
-    public function setDelimiter($delimiter)
-    {
-        $this->delimiter = $delimiter;
-
-        return $this;
-    }
-
-    /**
-     * Set CSV enclosure string.
-     *
-     * @param string $enclosure
-     *
-     * @return $this
-     */
-    public function setEnclosure($enclosure)
-    {
-        $this->enclosure = $enclosure;
-
-        return $this;
-    }
-
-    /**
-     * Set CSV escape string.
-     *
-     * @param string $escape
-     *
-     * @return $this
-     */
-    public function setEscape($escape)
-    {
-        $this->escape = $escape;
-
-        return $this;
-    }
-
-    /**
-     * Set CSV headers.
-     *
-     * @param array $header
-     *
-     * @return $this
-     */
-    public function setHeader(array $header)
-    {
-        if (is_numeric(key($header))) {
-            $header = array_fill_keys($header, '');
-        }
-        $this->header = $header;
-
-        return $this;
-    }
-
-    /**
-     * Set newline string.
-     *
-     * @param string $newline
-     *
-     * @return $this
-     */
-    public function setNewline($newline)
-    {
-        $this->newline = $newline;
-
-        return $this;
-    }
-
-    /**
      * Add columns to header (if necessary).
      *
      * @param array $keys
@@ -243,28 +115,5 @@ class CsvBuilder
                 $this->header[$key] = '';
             }
         }
-    }
-
-    /* Add columns to header (if necessary).
-    *
-    * @param array $keys
-    */
-    protected function sanitizeColumns(array $columns)
-    {
-        if (!$this->enclosure) {
-            return $columns;
-        }
-
-        foreach ($columns as &$column) {
-            if (false !== strpos($column, $this->delimiter)
-                || false !== strpos($column, $this->enclosure)
-                || false !== strpos($column, $this->newline)
-            ) {
-                $column = str_replace($this->enclosure, $this->escape . $this->enclosure, $column);
-                $column = $this->enclosure . $column . $this->enclosure;
-            }
-        }
-
-        return $columns;
     }
 }

@@ -23,7 +23,7 @@ use SplTempFileObject;
  * @package Ansas\Component\File
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
-class CsvReader implements IteratorAggregate
+class CsvReader extends CsvBase implements IteratorAggregate
 {
     /**
      * @var SplFileObject CSV file handle
@@ -39,21 +39,6 @@ class CsvReader implements IteratorAggregate
      * @var int CSV line
      */
     protected $line;
-
-    /**
-     * @var string CSV delimiter
-     */
-    protected $delimiter = ";";
-
-    /**
-     * @var string CSV enclosure
-     */
-    protected $enclosure = "\"";
-
-    /**
-     * @var string CSV escape
-     */
-    protected $escape = "\\";
 
     /**
      * @var bool Ignore malformed lines
@@ -234,48 +219,6 @@ class CsvReader implements IteratorAggregate
     public function setAppendRowsColumns($appendRowsColumns)
     {
         $this->appendRowsColumns = (bool) $appendRowsColumns;
-
-        return $this;
-    }
-
-    /**
-     * Set CSV delimiter string.
-     *
-     * @param string $delimiter
-     *
-     * @return $this
-     */
-    public function setDelimiter($delimiter)
-    {
-        $this->delimiter = $delimiter;
-
-        return $this;
-    }
-
-    /**
-     * Set CSV enclosure string.
-     *
-     * @param string $enclosure
-     *
-     * @return $this
-     */
-    public function setEnclosure($enclosure)
-    {
-        $this->enclosure = $enclosure;
-
-        return $this;
-    }
-
-    /**
-     * Set CSV escape string.
-     *
-     * @param string $escape
-     *
-     * @return $this
-     */
-    public function setEscape($escape)
-    {
-        $this->escape = $escape;
 
         return $this;
     }
