@@ -224,6 +224,21 @@ class ExtendedRequest extends Request
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @see https://github.com/slimphp/Slim/pull/2153
+     */
+    public function getParsedBody()
+    {
+        // Hack: Fixes bug with empty body
+        if (!$this->getBody()) {
+            return null;
+        }
+
+        return parent::getParsedBody();
+    }
+
+    /**
      * Get Referrer.
      *
      * Note: This method is not part of the PSR-7 standard.
