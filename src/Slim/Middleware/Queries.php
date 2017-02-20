@@ -10,21 +10,22 @@
 
 namespace Ansas\Slim\Middleware;
 
+use Propel\Runtime\Propel;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 /**
- * Class Runtime
+ * Class Queries
  *
- * Middleware to add script execution time (runtime) to response header.
+ * Middleware to add propel queries executed to response header.
  *
  * @package Ansas\Slim\Middleware
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
-class Runtime
+class Queries
 {
     /** HTTP response header name */
-    const HEADER = 'X-App-Runtime';
+    const HEADER = 'X-App-Queries';
 
     /**
      * Execute the middleware.
@@ -37,27 +38,13 @@ class Runtime
      */
     public function __invoke(Request $request, Response $response, callable $next)
     {
-        $requestTime = $request->getServerParam('REQUEST_TIME_FLOAT', microtime(true));
+        // Enable propel debug mode so that queries are counted
+        $con = Propel::getConnection();
+        $con->useDebug(true);
 
         /** @var Response $response */
         $response = $next($request, $response);
 
-        $executionTime = microtime(true) - $requestTime;
-
-        return $response->withHeader(self::HEADER, $this->readableTime($executionTime));
-    }
-
-    /**
-     * @param float $time
-     * @param int   $decimals [optional]
-     *
-     * @return string
-     */
-    protected function readableTime($time, $decimals = 3)
-    {
-        $decimals = (int) $decimals;
-        $unit     = 'sec';
-
-        return sprintf("%.{$decimals}f %s", $time, $unit);
+        return $response->withHeader(self::HEADER, $con->getQueryCount());
     }
 }
