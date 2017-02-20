@@ -22,7 +22,7 @@ use Pimple\Container;
 class ExtendedRequestProvider extends AbstractProvider
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function register(Container $container)
     {

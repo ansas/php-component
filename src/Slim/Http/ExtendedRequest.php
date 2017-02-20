@@ -27,7 +27,7 @@ use Slim\Route;
 class ExtendedRequest extends Request
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * This method overrides "invalid request method" handling to force methodNotAllowed handler instead of throwing an
      * (uncaught) exception.
@@ -51,7 +51,7 @@ class ExtendedRequest extends Request
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * This method override just fixes the wrong return type "self" instead of "static"
      *

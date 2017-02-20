@@ -52,7 +52,7 @@ class Filesystem extends Twig_Cache_Filesystem
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function write($key, $content)
     {

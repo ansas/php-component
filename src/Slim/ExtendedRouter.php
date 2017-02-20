@@ -79,7 +79,7 @@ class ExtendedRouter extends Router
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function pathFor($name, array $data = [], array $queryParams = [], $lang = null)
     {
@@ -93,7 +93,7 @@ class ExtendedRouter extends Router
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function relativePathFor($name, array $data = [], array $queryParams = [], $lang = null)
     {
@@ -140,7 +140,7 @@ class ExtendedRouter extends Router
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * This method override just fixes the wrong return type "self" instead of "$this"
      *

@@ -38,7 +38,7 @@ class CookieHandler extends Cookies
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get($name, $default = null)
     {
@@ -159,7 +159,7 @@ class CookieHandler extends Cookies
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return $this
      */
