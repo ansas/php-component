@@ -10,6 +10,8 @@
 
 namespace Ansas\Util;
 
+use Exception;
+
 /**
  * Class Debug
  *
@@ -31,16 +33,20 @@ class Debug
     /**
      * Print (dump) variable.
      *
-     * @param      $data
-     * @param null $description
+     * @param        $data
+     * @param string $description [optional]
+     * @param string $function    [optional]
      */
-    public static function dump($data, $description = null)
+    public static function dump($data, $description = null, $function = 'print_r')
     {
+        if (!in_array($function, ['print_r', 'var_dump'])) {
+            throw new Exception("dump type {$function} not supported");
+        }
         if (self::isCli()) {
             if ($description) {
                 echo $description . ":\n";
             }
-            print_r($data);
+            $function($data);
             if (is_scalar($data)) {
                 echo "\n\n";
             }
@@ -49,7 +55,7 @@ class Debug
             if ($description) {
                 echo $description . ":\n";
             }
-            print_r($data);
+            $function($data);
             echo "</pre>\n";
         }
     }
