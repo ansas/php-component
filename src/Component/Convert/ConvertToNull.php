@@ -57,7 +57,7 @@ trait ConvertToNull
 
         if (is_array($value)) {
             foreach ($value as $subKey => $subValue) {
-                $value[$subKey] = $this->convertToNull($subValue, $considerNull);
+                $value[$subKey] = $this->convertToNull($subValue, $considerNull, $trim);
             }
 
             return $value;
