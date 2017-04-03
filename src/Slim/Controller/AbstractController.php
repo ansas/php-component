@@ -59,5 +59,4 @@ abstract class AbstractController
 
         return $handler($request, $response);
     }
-
 }
