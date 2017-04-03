@@ -208,7 +208,7 @@ class Ean
 
         // Calculate (check digit)
         $checkDigit = 11 - ($sum % 11);
-        $checkDigit = $checkDigit == 10 ? "X" : $checkDigit == 11 ? 0 : $checkDigit;
+        $checkDigit = $checkDigit == 10 ? "X" : ($checkDigit == 11 ? 0 : $checkDigit);
 
         return $isbn . $checkDigit;
     }
