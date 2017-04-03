@@ -24,12 +24,18 @@ class CsvBuilder extends CsvBuilderBase
     protected $data;
 
     /**
+     * @var string CSV data (built)
+     */
+    protected $csv;
+
+    /**
      * Constructor.
      */
     public function __construct()
     {
         $this->header = [];
         $this->data   = [];
+        $this->csv    = null;
     }
 
     /**
@@ -53,11 +59,7 @@ class CsvBuilder extends CsvBuilderBase
     }
 
     /**
-     * Add data (row) to CSV.
-     *
-     * @param array $data
-     *
-     * @return $this
+     * @inheritdoc
      */
     public function addData(array $data)
     {
@@ -68,29 +70,29 @@ class CsvBuilder extends CsvBuilderBase
     }
 
     /**
-     * Return built CSV string.
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getCsv()
     {
-        $csv = "";
+        if (null == $this->csv) {
+            $this->csv = "";
 
-        // Build header
-        $columns = array_keys($this->header);
-        $columns = $this->sanitizeColumns($columns);
-        $csv .= $this->buildRow($columns);
-
-        foreach ($this->data as $data) {
-            $columns = [];
-            foreach ($this->header as $key => $default) {
-                $columns[] = isset($data[$key]) ? $data[$key] : $default;
-            }
+            // Build header
+            $columns = array_keys($this->header);
             $columns = $this->sanitizeColumns($columns);
-            $csv .= $this->buildRow($columns);
+            $this->csv     .= $this->buildRow($columns);
+
+            foreach ($this->data as $data) {
+                $columns = [];
+                foreach ($this->header as $key => $default) {
+                    $columns[] = isset($data[$key]) ? $data[$key] : $default;
+                }
+                $columns = $this->sanitizeColumns($columns);
+                $this->csv     .= $this->buildRow($columns);
+            }
         }
 
-        return $csv;
+        return $this->csv;
     }
 
     /**
@@ -101,6 +103,14 @@ class CsvBuilder extends CsvBuilderBase
     public function getData()
     {
         return $this->data;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSize()
+    {
+        strlen($this->getCsv());
     }
 
     /**

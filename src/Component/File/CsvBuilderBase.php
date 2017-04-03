@@ -50,6 +50,20 @@ abstract class CsvBuilderBase extends CsvBase
     abstract public function addData(array $data);
 
     /**
+     * Return size of build CSV in byte.
+     *
+     * @return int
+     */
+    abstract public function getSize();
+
+    /**
+     * Return built CSV string.
+     *
+     * @return string
+     */
+    abstract public function getCsv();
+
+    /**
      * @return callable|null
      */
     public function getCallback()

@@ -55,11 +55,7 @@ class CsvBuilderStream extends CsvBuilderBase
     }
 
     /**
-     * Add data (row) to CSV.
-     *
-     * @param array $data
-     *
-     * @return $this
+     * @inheritdoc
      */
     public function addData(array $data)
     {
@@ -80,6 +76,14 @@ class CsvBuilderStream extends CsvBuilderBase
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getCsv()
+    {
+        return $this->getStream()->__toString();
+    }
+
+    /**
      * @return int
      */
     public function getLines()
@@ -88,7 +92,7 @@ class CsvBuilderStream extends CsvBuilderBase
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getSize()
     {
