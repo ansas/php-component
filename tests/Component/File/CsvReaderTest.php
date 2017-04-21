@@ -11,7 +11,7 @@
 namespace Ansas\Component\Csv;
 
 use Ansas\Component\File\CsvReader;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class CsvReaderTest
@@ -19,7 +19,7 @@ use PHPUnit_Framework_TestCase;
  * @package Ansas\Component\Csv
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
-class CsvReaderTest extends PHPUnit_Framework_TestCase
+class CsvReaderTest extends TestCase
 {
     public function testCreateFromString()
     {
