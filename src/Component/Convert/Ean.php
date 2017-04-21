@@ -128,6 +128,27 @@ class Ean
     }
 
     /**
+     * Convert isbn13 to isbn13 (ean).
+     *
+     * @param string $isbn    isbn13
+     * @param mixed  $onError [optional] string to return if value is not specified type.
+     *
+     * @return mixed
+     */
+    public static function fromIsbn13($isbn, $onError = null)
+    {
+        // Sanitize
+        $isbn = preg_replace('/[^0-9]/', '', $isbn);
+
+        // Validate
+        if (strlen($isbn) != 13) {
+            return $onError;
+        }
+
+        return $isbn;
+    }
+
+    /**
      * Convert isbn13 to isbn10.
      *
      * @param string $ean     isbn13
