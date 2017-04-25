@@ -268,6 +268,11 @@ class CsvReader extends CsvBase implements IteratorAggregate
         }
         $this->line++;
 
+        // TODO optimize!
+        if ($this->getEncoding()) {
+            $set = array_map("utf8_encode", $set);
+        }
+
         return $set;
     }
 }

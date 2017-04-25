@@ -29,6 +29,11 @@ class CsvBase
     protected $enclosure = "\"";
 
     /**
+     * @var string Output encoding (if not utf-8)
+     */
+    protected $encoding;
+
+    /**
      * @var string CSV escape
      */
     protected $escape = "\\";
@@ -47,6 +52,14 @@ class CsvBase
     public function getEnclosure()
     {
         return $this->enclosure;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEncoding()
+    {
+        return $this->encoding;
     }
 
     /**
@@ -81,6 +94,26 @@ class CsvBase
     public function setEnclosure($enclosure)
     {
         $this->enclosure = $enclosure;
+
+        return $this;
+    }
+
+    /**
+     * Set output decoding for CSV.
+     *
+     * @param string $encoding [optional] Set to 'null' for default UTF-8
+     *
+     * @return $this
+     */
+    public function setEncoding($encoding = null)
+    {
+        if (preg_match('/utf.?8/ui', $encoding)) {
+            $encoding = null;
+        } else {
+            $encoding = mb_strtoupper($encoding);
+        }
+
+        $this->encoding = $encoding;
 
         return $this;
     }

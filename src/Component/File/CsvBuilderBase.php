@@ -26,11 +26,6 @@ abstract class CsvBuilderBase extends CsvBase
     protected $callback = null;
 
     /**
-     * @var string Output encoding (if not utf-8)
-     */
-    protected $encoding;
-
-    /**
      * @var array CSV header
      */
     protected $header;
@@ -69,14 +64,6 @@ abstract class CsvBuilderBase extends CsvBase
     public function getCallback()
     {
         return $this->callback;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getEncoding()
-    {
-        return $this->encoding;
     }
 
     /**
@@ -139,26 +126,6 @@ abstract class CsvBuilderBase extends CsvBase
         foreach ($rows as $data) {
             $this->addData($data);
         }
-
-        return $this;
-    }
-
-    /**
-     * Set output decoding for CSV.
-     *
-     * @param string $encoding [optional] Set to 'null' for default UTF-8
-     *
-     * @return $this
-     */
-    public function setEncoding($encoding = null)
-    {
-        if (preg_match('/utf.?8/ui', $encoding)) {
-            $encoding = null;
-        } else {
-            $encoding = mb_strtoupper($encoding);
-        }
-
-        $this->encoding = $encoding;
 
         return $this;
     }
