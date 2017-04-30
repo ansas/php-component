@@ -110,7 +110,7 @@ class ConvertPrice
         $this->validatePriceFormat($format);
 
         if ($format == self::EURO) {
-            return $this->price / 100;
+            return round($this->price / 100, 2);
         }
 
         return $this->price;
