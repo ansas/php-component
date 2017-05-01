@@ -56,7 +56,7 @@ class Workday extends DateTime
 
         while ($done < $days) {
             $this->modify("+1 day");
-            if (!$this->isWeekend() && !$this->isHoliday()) {
+            if ($this->isWorkday()) {
                 $done++;
             }
         }
@@ -94,6 +94,14 @@ class Workday extends DateTime
     public function isWeekend()
     {
         return in_array($this->format(static::DAY_WEEKDAY_FORMAT), $this->weekend);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isWorkday()
+    {
+        return !$this->isWeekend() && !$this->isHoliday();
     }
 
     /**

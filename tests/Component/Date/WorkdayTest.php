@@ -47,7 +47,16 @@ class WorkdayTest extends TestCase
         $this->assertInstanceOf(Workday::class, $date);
     }
 
-    public function testWeekend()
+    public function testIsHoliday()
+    {
+        $date = new Workday("2017-04-30");
+        $this->assertEquals(false, $date->isHoliday(), $date->format($date::DAY_DATE_FORMAT));
+
+        $date->modify("+1 day");
+        $this->assertEquals(true, $date->isHoliday(), $date->format($date::DAY_DATE_FORMAT));
+    }
+
+    public function testIsWeekend()
     {
         $date = new Workday();
         for ($i = 0; $i < 7; $i++) {
@@ -56,13 +65,16 @@ class WorkdayTest extends TestCase
         }
     }
 
-    public function testHoliday()
+    public function testIsWorkday()
     {
         $date = new Workday("2017-04-30");
-        $this->assertEquals(false, $date->isHoliday(), $date->format($date::DAY_DATE_FORMAT));
+        $this->assertEquals(false, $date->isWorkday(), "Weekend");
 
         $date->modify("+1 day");
-        $this->assertEquals(true, $date->isHoliday(), $date->format($date::DAY_DATE_FORMAT));
+        $this->assertEquals(false, $date->isWorkday(), "Holiday");
+
+        $date->modify("+1 day");
+        $this->assertEquals(true, $date->isWorkday(), "Workday");
     }
 
     public function testAddWorkdays()
