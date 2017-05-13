@@ -41,14 +41,28 @@ class CsvReader extends CsvBase implements IteratorAggregate
     protected $line;
 
     /**
+     * @var array Malformed statistic
+     */
+    protected $malformedStatistic = [
+        'malformed' => 0,
+        'appended'  => 0,
+        'truncated' => 0,
+    ];
+
+    /**
      * @var bool Ignore malformed lines
      */
     protected $ignoreMalformed = false;
 
     /**
-     * @var bool Append row columns to fit header columns
+     * @var bool Append (add) row columns to fit header columns
      */
     protected $appendRowsColumns = false;
+
+    /**
+     * @var bool Truncate (remove) row columns to fit header columns
+     */
+    protected $truncateRowsColumns = false;
 
     /**
      * CsvToArray constructor.
@@ -146,11 +160,16 @@ class CsvReader extends CsvBase implements IteratorAggregate
 
             if ($headerColumns > $dataColumns && $this->appendRowsColumns) {
                 $data = array_pad($data, $headerColumns, '');
+                $this->malformedStatistic['appended']++;
+            } elseif ($headerColumns < $dataColumns && $this->truncateRowsColumns) {
+                $data = array_slice($data, 0, $headerColumns);
+                $this->malformedStatistic['truncated']++;
             } elseif ($headerColumns != $dataColumns) {
                 if ($this->ignoreMalformed) {
+                    $this->malformedStatistic['malformed']++;
                     continue;
                 }
-                throw new Exception("Count mismatch in line {$this->getLineNumber()}");
+                throw new Exception("Count mismatch in line {$this->getLineNumber()}, expected: {$headerColumns}, got: {$dataColumns}");
             }
 
             $set = array_combine($header, $data);
@@ -196,6 +215,16 @@ class CsvReader extends CsvBase implements IteratorAggregate
     }
 
     /**
+     * Get malformed statistic.
+     *
+     * @return array
+     */
+    public function getMalformedStatistic()
+    {
+        return $this->malformedStatistic;
+    }
+
+    /**
      * Reset file.
      *
      * @return $this
@@ -210,7 +239,7 @@ class CsvReader extends CsvBase implements IteratorAggregate
     }
 
     /**
-     * Set mode to append row columns to fit header columns lines (or not).
+     * Set mode to append (add) row columns to fit header columns lines (or not).
      *
      * @param bool $appendRowsColumns
      *
@@ -219,6 +248,20 @@ class CsvReader extends CsvBase implements IteratorAggregate
     public function setAppendRowsColumns($appendRowsColumns)
     {
         $this->appendRowsColumns = (bool) $appendRowsColumns;
+
+        return $this;
+    }
+
+    /**
+     * Set mode to truncate (remove) row columns to fit header columns lines (or not).
+     *
+     * @param bool $truncateRowsColumns
+     *
+     * @return $this
+     */
+    public function setTruncateRowsColumns($truncateRowsColumns)
+    {
+        $this->truncateRowsColumns = (bool) $truncateRowsColumns;
 
         return $this;
     }
