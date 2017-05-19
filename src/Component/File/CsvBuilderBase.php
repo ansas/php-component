@@ -175,10 +175,7 @@ abstract class CsvBuilderBase extends CsvBase
 
         $row = join($this->delimiter, $columns) . $this->newline;
 
-        // TODO optimize!
-        if ($this->getEncoding()) {
-            $row = utf8_decode($row);
-        }
+        $row = $this->convertEncoding($row);
 
         return $row;
     }
