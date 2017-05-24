@@ -180,6 +180,20 @@ class ExtendedRequest extends Request
     }
 
     /**
+     * Fetch associative array with merged (added or replaced values for keys) of body and query string parameters.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param array $params Params to be merged.
+     *
+     * @return array
+     */
+    public function getParamsMergedWith(array $params)
+    {
+        return array_merge($this->getParams(), $params);
+    }
+
+    /**
      * Fetch filtered associative array of body and query string parameters.
      *
      * Note: This method is not part of the PSR-7 standard.
