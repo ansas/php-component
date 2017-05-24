@@ -78,13 +78,15 @@ class FtpClient
     /**
      * Login to server.
      *
-     * @param string $user     [optional]
-     * @param string $password [optional]
+     * @param string $user                 [optional]
+     * @param string $password             [optional]
+     * @param int    $attempts             [optional]
+     * @param int    $sleepBetweenAttempts [optional]
      *
      * @return $this
      * @throws Exception
      */
-    public function login(string $user = null, string $password = null)
+    public function login(string $user = null, string $password = null, $attempts = 1, $sleepBetweenAttempts = 5)
     {
         if ($user) {
             $this->user = $user;
@@ -94,6 +96,12 @@ class FtpClient
         }
 
         if (!@ftp_login($this->ftp, $this->user, $this->password)) {
+            if (--$attempts > 0) {
+                sleep($sleepBetweenAttempts);
+
+                return $this->login($user, $password, $attempts, $sleepBetweenAttempts);
+            }
+
             throw new Exception(sprintf("Cannot login to host %s", $this->host));
         }
 
