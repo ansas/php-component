@@ -36,12 +36,15 @@ class Debug
      * @param        $data
      * @param string $description [optional]
      * @param string $function    [optional]
+     *
+     * @throws Exception
      */
     public static function dump($data, $description = null, $function = 'print_r')
     {
         if (!in_array($function, ['print_r', 'var_dump'])) {
             throw new Exception("dump type {$function} not supported");
         }
+
         if (self::isCli()) {
             if ($description) {
                 echo $description . ":\n";
@@ -51,7 +54,7 @@ class Debug
                 echo "\n\n";
             }
         } else {
-            echo "<pre>\n";
+            echo "<pre class=\"debug-dump\">";
             if ($description) {
                 echo $description . ":\n";
             }
@@ -68,6 +71,10 @@ class Debug
      */
     public static function separator($char = '=', $repeat = 50)
     {
-        echo str_repeat($char, $repeat) . (self::isCli() ? "\n" : "<br>\n");
+        if (self::isCli()) {
+            echo str_repeat($char, $repeat) . "\n";
+        } else {
+            echo "<div class=\"debug-separator\">" . str_repeat($char, $repeat) . "</div>\n";
+        }
     }
 }
