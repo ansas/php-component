@@ -14,9 +14,9 @@ use DateTime;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class CsvReaderTest
+ * Class WorkdayTest
  *
- * @package Ansas\Component\Csv
+ * @package Ansas\Component\Date
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class WorkdayTest extends TestCase
