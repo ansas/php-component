@@ -113,6 +113,7 @@ class PriceAggregate extends PriceBase
     {
         $percent = $this->sanitizePercent($price);
 
+        // Prepare new tax
         if (!$this->hasTaxPercent($percent)) {
             $this->perTaxRate[$percent] = [
                 'gross'   => 0,
@@ -122,12 +123,19 @@ class PriceAggregate extends PriceBase
             ksort($this->perTaxRate, SORT_NUMERIC);
         }
 
+        // Switch positive <> negative prices if we want to subtract price
         if ($operation == self::SUBTRACT) {
             $price->changeSign();
         }
 
-        $this->perTaxRate[$percent]['gross'] += $price->get('gross');
-        $this->perTaxRate[$percent]['net']   += $price->get('net');
+        // Add price
+        $this->perTaxRate[$percent]['gross'] = Price::round($this->perTaxRate[$percent]['gross'] + $price->get('gross'));
+        $this->perTaxRate[$percent]['net']   = Price::round($this->perTaxRate[$percent]['net'] + $price->get('net'));
+
+        // Remove tax block if price is now 0.00
+        if (0.00 == $this->perTaxRate[$percent]['gross']) {
+            unset($this->perTaxRate[$percent]);
+        }
 
         return $this;
     }
@@ -146,7 +154,7 @@ class PriceAggregate extends PriceBase
     }
 
     /**
-     * Add array to available locales.
+     * Add price.
      *
      * @param Price[] $prices
      * @param string  $operation [optional]
@@ -267,6 +275,43 @@ class PriceAggregate extends PriceBase
     public function isEmpty()
     {
         return $this->countTaxRates() == 0;
+    }
+
+    /**
+     * Subtract price.
+     *
+     * @param Price $price
+     *
+     * @return $this
+     */
+    public function subtractPrice(Price $price)
+    {
+        return $this->addPrice($price, self::SUBTRACT);
+    }
+
+    /**
+     * Subtract price.
+     *
+     * @param PriceAggregate $priceAggregate
+     *
+     * @return $this
+     */
+    public function subtractPriceAggregate(PriceAggregate $priceAggregate)
+    {
+        return $this->addPriceAggregate($priceAggregate, self::SUBTRACT);
+    }
+
+    /**
+     * Subtract price.
+     *
+     * @param Price[] $prices
+     *
+     * @return $this
+     * @throws InvalidArgumentException
+     */
+    public function subtractPrices($prices)
+    {
+        return $this->addPrices($prices, self::SUBTRACT);
     }
 
     /**

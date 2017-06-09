@@ -70,13 +70,6 @@ class PriceAggregateTest extends TestCase
     public function testAddPriceAggregate()
     {
         $price = Price::createFromArray(['gross' => 16.95, 'net' => 15.84, 'percent' => 7]);
-//        $price = Price
-//            ::create()
-//            ->setGross(16.95)
-//            ->setNet(15.84)
-//            ->setTaxPercent(7)
-//        ;
-        $this->assertEquals('{"gross":16.95,"net":15.84,"tax":1.11,"taxPercent":7,"taxRate":1.07}', $price->toJson());
 
         $priceAggregateIntermediate = new PriceAggregate();
         $priceAggregateIntermediate->addPrice($price);
@@ -86,5 +79,18 @@ class PriceAggregateTest extends TestCase
         $priceAggregate->addPriceAggregate($priceAggregateIntermediate);
 
         $this->assertEquals('{"gross":16.95,"net":15.84,"perTaxRate":{"7":{"gross":16.95,"net":15.84,"percent":7}}}', $priceAggregate->toJson());
+    }
+
+    public function testSubtractPriceAggregate()
+    {
+        $price = Price::createFromArray(['gross' => 16.95, 'net' => 15.84, 'percent' => 7]);
+        $this->assertEquals('{"gross":16.95,"net":15.84,"tax":1.11,"taxPercent":7,"taxRate":1.07}', $price->toJson());
+
+        $priceAggregateIntermediate = new PriceAggregate();
+        $priceAggregateIntermediate->addPrice($price);
+        $this->assertEquals('{"gross":16.95,"net":15.84,"perTaxRate":{"7":{"gross":16.95,"net":15.84,"percent":7}}}', $priceAggregateIntermediate->toJson());
+
+        $priceAggregateIntermediate->subtractPrice($price);
+        $this->assertEquals('{"gross":0,"net":0,"perTaxRate":[]}', $priceAggregateIntermediate->toJson());
     }
 }
