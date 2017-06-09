@@ -133,7 +133,7 @@ class PriceAggregate extends PriceBase
         $this->perTaxRate[$percent]['net']   = Price::round($this->perTaxRate[$percent]['net'] + $price->get('net'));
 
         // Remove tax block if price is now 0.00
-        if (0.00 == $this->perTaxRate[$percent]['gross']) {
+        if (0.00 == $this->perTaxRate[$percent]['gross'] && 0.00 == $this->perTaxRate[$percent]['net']) {
             unset($this->perTaxRate[$percent]);
         }
 
