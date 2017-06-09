@@ -46,27 +46,33 @@ abstract class PriceBase implements JsonSerializable
     }
 
     /**
+     * @param string $property [optional]
+     *
      * @return bool
      */
-    public function isNegative()
+    public function isNegative($property = 'gross')
     {
-        return $this->getGross() < 0;
+        return $this->get($property) < 0;
     }
 
     /**
+     * @param string $property [optional]
+     *
      * @return bool
      */
-    public function isPositive()
+    public function isPositive($property = 'gross')
     {
-        return $this->getGross() > 0;
+        return $this->get($property) > 0;
     }
 
     /**
+     * @param string $property [optional]
+     *
      * @return bool
      */
-    public function isZero()
+    public function isZero($property = 'gross')
     {
-        return $this->getGross() == 0;
+        return $this->get($property) == 0;
     }
 
     /**
