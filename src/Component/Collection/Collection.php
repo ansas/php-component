@@ -14,8 +14,10 @@ use ArrayAccess;
 use ArrayIterator;
 use Countable;
 use Exception;
+use InvalidArgumentException;
 use IteratorAggregate;
 use Serializable;
+use Traversable;
 
 /**
  * Class Collection
@@ -48,9 +50,9 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Collection constructor.
      *
-     * @param array $items [optional] The initial items
+     * @param array|Traversable $items [optional] The initial items
      */
-    public function __construct(array $items = [])
+    public function __construct($items = [])
     {
         $this->replace($items);
     }
@@ -115,6 +117,18 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
+     * Create new instance.
+     *
+     * @param array|Traversable $items [optional] The initial items
+     *
+     * @return static
+     */
+    public static function create($items = [])
+    {
+        return new static($items);
+    }
+
+    /**
      * Adds item to collection for specified key
      * (converts item to array if key already exists).
      *
@@ -128,6 +142,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
         if (!$this->has($key)) {
             $this->set($key, $value);
         } else {
+            $key = $this->normalizeKey($key);
+
             $this->data[$key]   = (array) $this->data[$key];
             $this->data[$key][] = $value;
         }
@@ -150,12 +166,17 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      * Appends specified items to collection
      * (overwrites existing keys).
      *
-     * @param  array $items The items to append / overwrite to collection.
+     * @param  array|Traversable $items The items to append / overwrite to collection.
      *
      * @return $this
+     * @throws InvalidArgumentException
      */
-    public function append(array $items)
+    public function append($items)
     {
+        if (!is_array($items) && !$items instanceof Traversable) {
+            throw new InvalidArgumentException("Argument must be an array of instance of Traversable");
+        }
+
         foreach ($items as $key => $value) {
             $this->set($key, $value);
         }
@@ -218,18 +239,6 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
-     * Create new instance.
-     *
-     * @param array $items [optional] The initial items
-     *
-     * @return static
-     */
-    public static function create(array $items = [])
-    {
-        return new static($items);
-    }
-
-    /**
      * Get specified collection item.
      *
      * @param  mixed $key     The item key.
@@ -239,7 +248,13 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      */
     public function get($key, $default = null)
     {
-        return $this->has($key) ? $this->data[$key] : $default;
+        if (!$this->has($key)) {
+            return $default;
+        }
+
+        $key = $this->normalizeKey($key);
+
+        return $this->data[$key];
     }
 
     /**
@@ -261,6 +276,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      */
     public function has($key)
     {
+        $key = $this->normalizeKey($key);
+
         return isset($this->data[$key]);
     }
 
@@ -343,7 +360,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      *
      * @param  mixed $key The item key.
      *
-     * @return $this
+     * @return void
      */
     public function offsetUnset($key)
     {
@@ -366,6 +383,10 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
             $keys = preg_split("/, */", $keys, -1, PREG_SPLIT_NO_EMPTY);
         }
 
+        foreach ($keys as $id => $key) {
+            $keys[$id] = $this->normalizeKey($key);
+        }
+
         // Compare filter items by provided keys and return new array
         return array_intersect_key($this->data, array_flip($keys));
     }
@@ -381,6 +402,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     public function remove($key, $remove = true)
     {
         if ($remove && $this->has($key)) {
+            $key = $this->normalizeKey($key);
             unset($this->data[$key]);
         }
 
@@ -390,15 +412,15 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Replaces the collection with the specified items.
      *
-     * @param array $items The items to replace collection with.
+     * @param array|Traversable $items The items to replace collection with.
      *
      * @return $this
      */
-    public function replace(array $items)
+    public function replace($items)
     {
-        $this->data = $items;
+        $this->data = [];
 
-        return $this;
+        return $this->append($items);
     }
 
     /**
@@ -421,6 +443,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      */
     public function set($key, $value)
     {
+        $key = $this->normalizeKey($key);
+
         $this->data[$key] = $value;
 
         return $this;
@@ -474,5 +498,19 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     public function values()
     {
         return array_values($this->data);
+    }
+
+    /**
+     * Normalize key.
+     *
+     * Useful in child classes to make keys upper case for example.
+     *
+     * @param string $key
+     *
+     * @return string
+     */
+    protected function normalizeKey($key)
+    {
+        return $key;
     }
 }
