@@ -11,6 +11,7 @@
 namespace Ansas\Slim\Handler;
 
 use Interop\Container\ContainerInterface;
+use Slim\Container;
 
 /**
  * Trait ContainerInjectTrait
@@ -64,7 +65,7 @@ trait ContainerInjectTrait
     /**
      * Get Container.
      *
-     * @return ContainerInterface
+     * @return ContainerInterface|Container
      */
     public function getContainer()
     {

@@ -16,6 +16,7 @@ use Ansas\Slim\Handler\ContainerInjectTrait;
 use Ansas\Slim\Handler\FlashHandler;
 use Ansas\Slim\Handler\RedirectToRouteTrait;
 use Ansas\Slim\Handler\TwigHandlerTrait;
+use Interop\Container\ContainerInterface;
 use Monolog\Logger;
 use PDO;
 use Slim\Collection as SlimCollection;
@@ -46,6 +47,15 @@ abstract class AbstractController
     use TwigHandlerTrait;
 
     /**
+     * @inheritdoc
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        $this->setContainer($container);
+        $this->registerDependencies();
+    }
+
+    /**
      * Not found.
      *
      * @param  Request  $request
@@ -58,5 +68,14 @@ abstract class AbstractController
         $handler = $this->container->get('notFoundHandler');
 
         return $handler($request, $response);
+    }
+
+    /**
+     * Method used to register non-global dependencies.
+     *
+     * @return void
+     */
+    protected function registerDependencies()
+    {
     }
 }
