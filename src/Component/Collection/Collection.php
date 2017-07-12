@@ -302,6 +302,24 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
+     * Check if specified collection item exists.
+     *
+     * @param mixed  $key      The item key.
+     * @param string $regex
+     * @param array  &$matches [optional]
+     *
+     * @return bool
+     */
+    public function matches($key, $regex, &$matches = [])
+    {
+        if (!$this->has($key)) {
+            return false;
+        }
+
+        return (bool) preg_match($regex, $this->get($key), $matches);
+    }
+
+    /**
      * Get specified collection item.
      *
      * @param  mixed $key The item key.
@@ -474,6 +492,25 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
 
         $function = $sortFunctions[$sortBy];
         $function($this->data, $sortFlags);
+
+        return $this;
+    }
+
+    /**
+     * Switch values of two keys.
+     *
+     * @param mixed $a
+     * @param mixed $b
+     *
+     * @return $this
+     */
+    public function switch ($a, $b)
+    {
+        $oldA = $this->get($a);
+        $oldB = $this->get($b);
+
+        $this->set($a, $oldB);
+        $this->set($b, $oldA);
 
         return $this;
     }

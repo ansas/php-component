@@ -24,10 +24,22 @@ class Text
      * Set case to upper
      */
     const UPPER = 'upper';
+
+    /**
+     * Set case to upper (first letter)
+     */
+    const UPPER_FIRST = 'upperFirst';
+
+    /**
+     * Set case to upper (first letter of every word)
+     */
+    const UPPER_WORDS = 'upperWords';
+
     /**
      * Set case to lower
      */
     const LOWER = 'lower';
+
     /**
      * Use case "as is"
      */
@@ -74,6 +86,12 @@ class Text
                 break;
             case self::LOWER:
                 $string = mb_strtolower($string);
+                break;
+            case self::UPPER_FIRST:
+                $string = mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1);
+                break;
+            case self::UPPER_WORDS:
+                $string = mb_convert_case($string, MB_CASE_TITLE);
                 break;
             case self::NONE:
                 break;
