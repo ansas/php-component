@@ -10,7 +10,7 @@
 
 namespace Ansas\Util;
 
-use Exception;
+use InvalidArgumentException;
 
 /**
  * Class Text
@@ -70,13 +70,34 @@ class Text
     }
 
     /**
+     * Convert string into bool value.
+     *
+     * @param string $string
+     *
+     * @return bool
+     * @throws InvalidArgumentException
+     */
+    public static function toBool($string)
+    {
+        if (!is_scalar($string)) {
+            throw new InvalidArgumentException("Value must be scalar");
+        }
+
+        if (!is_string($string)) {
+            return (bool) $string;
+        }
+
+        return !in_array(strtolower($string), ['false', 'off', '-', 'no', 'n', '0', '']);
+    }
+
+    /**
      * Convert case of a string.
      *
      * @param string $string
      * @param string $case
      *
      * @return string
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public static function toCase($string, $case)
     {
@@ -96,7 +117,7 @@ class Text
             case self::NONE:
                 break;
             default:
-                throw new Exception(sprintf("Cannot set case %s", $case));
+                throw new InvalidArgumentException("Cannot set case {$case}");
         }
 
         return $string;
