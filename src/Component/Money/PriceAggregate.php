@@ -125,6 +125,8 @@ class PriceAggregate extends PriceBase
 
         // Switch positive <> negative prices if we want to subtract price
         if ($operation == self::SUBTRACT) {
+            // Make sure original object is NOT changed
+            $price = clone $price;
             $price->changeSign();
         }
 

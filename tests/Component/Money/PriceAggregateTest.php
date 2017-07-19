@@ -83,14 +83,20 @@ class PriceAggregateTest extends TestCase
 
     public function testSubtractPriceAggregate()
     {
+        // Create price
         $price = Price::createFromArray(['gross' => 16.95, 'net' => 15.84, 'percent' => 7]);
         $this->assertEquals('{"gross":16.95,"net":15.84,"tax":1.11,"taxPercent":7,"taxRate":1.07}', $price->toJson());
 
+        // Add price to aggretate object
         $priceAggregateIntermediate = new PriceAggregate();
         $priceAggregateIntermediate->addPrice($price);
         $this->assertEquals('{"gross":16.95,"net":15.84,"perTaxRate":{"7":{"gross":16.95,"net":15.84,"percent":7}}}', $priceAggregateIntermediate->toJson());
 
+        // Subtract same price to aggretate object
         $priceAggregateIntermediate->subtractPrice($price);
         $this->assertEquals('{"gross":0,"net":0,"perTaxRate":[]}', $priceAggregateIntermediate->toJson());
+
+        // Make sure original object is not changed
+        $this->assertEquals('{"gross":16.95,"net":15.84,"tax":1.11,"taxPercent":7,"taxRate":1.07}', $price->toJson());
     }
 }
