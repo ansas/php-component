@@ -38,13 +38,16 @@ class Queries
      */
     public function __invoke(Request $request, Response $response, callable $next)
     {
-        // Enable propel debug mode so that queries are counted
-        $con = Propel::getConnection();
-        $con->useDebug(true);
-
         /** @var Response $response */
         $response = $next($request, $response);
 
-        return $response->withHeader(self::HEADER, $con->getQueryCount());
+
+        // Add header Enable propel debug mode so that queries are counted
+        $con = Propel::getConnection();
+        if (method_exists($con, 'getQueryCount')) {
+            $response = $response->withHeader(self::HEADER, $con->getQueryCount());
+        }
+
+        return $response;
     }
 }

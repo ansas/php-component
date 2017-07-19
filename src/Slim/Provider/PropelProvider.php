@@ -14,10 +14,17 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Pimple\Container;
 use Propel\Runtime\Connection\ConnectionManagerSingle;
-use Propel\Runtime\Connection\ConnectionWrapper;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ServiceContainer\StandardServiceContainer;
 
+/**
+ * Class PropelProvider
+ *
+ * <code>composer require propel/propel</code>
+ *
+ * @package Ansas\Slim\Provider
+ * @author  Ansas Meyer <mail@ansas-meyer.de>
+ */
 class PropelProvider extends AbstractProvider
 {
     /**
@@ -59,7 +66,7 @@ class PropelProvider extends AbstractProvider
         $className = $settings['classname'] ?? null;
 
         if (!$className) {
-            $className = 'Propel\\Runtime\\Connection\\ConnectionWrapper';
+            $className = 'Ansas\\Propel\\Runtime\\Connection\\ProductionConnectionWrapper';
             if ($logLevel == Logger::DEBUG) {
                 $className = 'Propel\\Runtime\\Connection\\ProfilerConnectionWrapper';
             }
@@ -87,12 +94,6 @@ class PropelProvider extends AbstractProvider
             $logger->pushHandler(new StreamHandler($logPath, $logLevel));
 
             $serviceContainer->setLogger('defaultLogger', $logger);
-
-            if ($logLevel == Logger::DEBUG) {
-                /** @var ConnectionWrapper $con */
-                $con = Propel::getConnection();
-                $con->useDebug(true);
-            }
         }
     }
 }
