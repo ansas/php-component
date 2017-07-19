@@ -180,7 +180,7 @@ class ConvertPrice
      * @return $this
      * @throws InvalidArgumentException
      */
-    private function validatePriceFormat($format)
+    protected function validatePriceFormat($format)
     {
         if (!in_array($format, self::$formats)) {
             throw new InvalidArgumentException('value of parameter $format not supported');
