@@ -68,11 +68,19 @@ class HtmlTest extends TestCase
         );
         $this->assertEquals(
             '<b>abc</b>',
-            Html::stripAttributes('< b title="abc" z-index=2 >abc</b>')
+            Html::stripAttributes('<b title>abc</b>')
+        );
+        $this->assertEquals(
+            '<b>abc</b>',
+            Html::stripAttributes('< b title="abc" z-index=2 title >abc</ b >')
         );
         $this->assertEquals(
             '<b>abc</b>',
             Html::stripAttributes('<' . "\n\n" . 'b title="abc"' . "\n\n" . 'z-index=2 ' . "\n\n" . '>abc</b>')
+        );
+        $this->assertEquals(
+            'There are »>bla< objects«. And there are »>blabla< bla objects« out there.',
+            Html::stripAttributes('There are »>bla< objects«. And there are »>blabla< bla objects« out there.')
         );
     }
 

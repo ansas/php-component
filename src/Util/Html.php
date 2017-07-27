@@ -51,7 +51,7 @@ class Html
      */
     public static function stripAttributes($html)
     {
-        return preg_replace('/<(\/?)[^a-z]*([a-z]+)[^>]*(\/?)>/uis', '<$1$2$3>', $html);
+        return preg_replace('/<(\/?)\s*([a-z]+)(?:\s+[a-z]+(?:=[^>]*)?)*\s*(\/?)>/uis', '<$1$2$3>', $html);
     }
 
     /**
