@@ -102,6 +102,18 @@ class PriceAggregate extends PriceBase
     }
 
     /**
+     * Create new instance.
+     *
+     * @param Price $price
+     *
+     * @return static
+     */
+    public static function createFromPrice(Price $price)
+    {
+        return new static([$price]);
+    }
+
+    /**
      * Add price.
      *
      * @param Price  $price
