@@ -428,6 +428,30 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
+     * Removes empty collection items.
+     *
+     * @param array $considerEmpty [optional]
+     *
+     * @return $this
+     */
+    public function removeEmpty($considerEmpty = [''])
+    {
+        foreach ($this->all() as $key => $value) {
+            if (!is_scalar($value)) {
+                continue;
+            }
+            foreach ($considerEmpty as $empty) {
+                if ($value === $empty) {
+                    $this->remove($key);
+                    break;
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Replaces the collection with the specified items.
      *
      * @param array|Traversable $items The items to replace collection with.
