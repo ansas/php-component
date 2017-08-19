@@ -487,7 +487,11 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     {
         $key = $this->normalizeKey($key);
 
-        $this->data[$key] = $value;
+        if (null === $key) {
+            $this->data[] = $value;
+        } else {
+            $this->data[$key] = $value;
+        }
 
         return $this;
     }
