@@ -51,6 +51,18 @@ class CollectionIterator implements IteratorAggregate, Countable
     }
 
     /**
+     * Create new instance.
+     *
+     * @param Traversable $iterator
+     *
+     * @return static
+     */
+    public static function create(Traversable $iterator)
+    {
+        return new static($iterator);
+    }
+
+    /**
      * Returns the number of elements.
      *
      * This method implements the Countable interface.
@@ -69,7 +81,7 @@ class CollectionIterator implements IteratorAggregate, Countable
      */
     public function getIndex()
     {
-        return $this->position;
+        return (int) $this->position;
     }
 
     /**
@@ -96,7 +108,7 @@ class CollectionIterator implements IteratorAggregate, Countable
      */
     public function getTotal()
     {
-        return $this->positions;
+        return (int) $this->positions;
     }
 
     /**
