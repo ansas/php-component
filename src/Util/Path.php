@@ -10,10 +10,12 @@
 
 namespace Ansas\Util;
 
+use Ansas\Component\Exception\IOException;
 use Ansas\Component\Iterator\DirectoryRegexIterator;
 use Ansas\Component\Iterator\FileRegexIterator;
 use Exception;
 use FilesystemIterator;
+use InvalidArgumentException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -33,7 +35,7 @@ class Path
      *
      * @param string $path
      *
-     * @throws Exception
+     * @throws IOException
      */
     public static function chdir(string $path)
     {
@@ -41,7 +43,7 @@ class Path
             return;
         }
 
-        throw new Exception(sprintf("Cannot change to path %s.", $path));
+        throw new IOException(sprintf("Cannot change to path %s.", $path));
     }
 
     /**
@@ -51,7 +53,7 @@ class Path
      * @param int    $mode      [optional]
      * @param bool   $recursive [optional]
      *
-     * @throws Exception
+     * @throws IOException
      */
     public static function create(string $path, int $mode = 0777, bool $recursive = true)
     {
@@ -63,7 +65,7 @@ class Path
             return;
         }
 
-        throw new Exception(sprintf("Cannot create path %s.", $path));
+        throw new IOException(sprintf("Cannot create path %s.", $path));
     }
 
     /**
@@ -72,7 +74,7 @@ class Path
      * @param string $path
      * @param bool   $recursive [optional] Path::RECURSIVE
      *
-     * @throws Exception
+     * @throws IOException
      */
     public static function delete(string $path, bool $recursive = false)
     {
@@ -86,7 +88,7 @@ class Path
             return;
         }
 
-        throw new Exception(sprintf("Cannot delete path %s.", $path));
+        throw new IOException(sprintf("Cannot delete path %s.", $path));
     }
 
     /**
@@ -160,21 +162,21 @@ class Path
      *
      * @param $path
      *
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     protected static function validatePath($path)
     {
         if (!$path) {
-            throw new Exception("Path must not be empty.");
+            throw new InvalidArgumentException("Path must not be empty.");
         }
         if ($path == DIRECTORY_SEPARATOR) {
-            throw new Exception("Path must not be root path.");
+            throw new InvalidArgumentException("Path must not be root path.");
         }
         if ($path == '.' || $path == '..') {
-            throw new Exception("Path must not be dot path.");
+            throw new InvalidArgumentException("Path must not be dot path.");
         }
         if (!is_dir($path)) {
-            throw new Exception("Path must be an existing path.");
+            throw new InvalidArgumentException("Path must be an existing path.");
         }
     }
 }

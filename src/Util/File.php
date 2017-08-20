@@ -10,7 +10,7 @@
 
 namespace Ansas\Util;
 
-use Exception;
+use Ansas\Component\Exception\IOException;
 
 /**
  * Class File
@@ -26,12 +26,12 @@ class File
      * @param string $file
      * @param int    $mode
      *
-     * @throws Exception
+     * @throws IOException
      */
     public static function chmod($file, $mode)
     {
         if (!@chmod($file, $mode)) {
-            throw new Exception(sprintf("Cannot chmod %s to %s.", $file, $mode));
+            throw new IOException(sprintf("Cannot chmod %s to %s.", $file, $mode));
         }
     }
 
@@ -41,12 +41,12 @@ class File
      * @param string $pathOld
      * @param string $pathNew
      *
-     * @throws Exception
+     * @throws IOException
      */
     public static function copy($pathOld, $pathNew)
     {
         if (!@copy($pathOld, $pathNew)) {
-            throw new Exception(sprintf("Cannot copy %s to %s.", $pathOld, $pathNew));
+            throw new IOException(sprintf("Cannot copy %s to %s.", $pathOld, $pathNew));
         }
     }
 
@@ -55,7 +55,7 @@ class File
      *
      * @param string $file
      *
-     * @throws Exception
+     * @throws IOException
      */
     public static function delete($file)
     {
@@ -67,7 +67,7 @@ class File
             return;
         }
 
-        throw new Exception(sprintf("Cannot delete %s.", $file));
+        throw new IOException(sprintf("Cannot delete %s.", $file));
     }
 
     /**
@@ -76,16 +76,16 @@ class File
      * @param string $pathOld
      * @param string $pathNew
      *
-     * @throws Exception
+     * @throws IOException
      */
     public static function move($pathOld, $pathNew)
     {
         if (!is_file($pathOld)) {
-            throw new Exception(sprintf("Old file %s is not a file.", $pathOld));
+            throw new IOException(sprintf("Old file %s is not a file.", $pathOld));
         }
 
         if (!@rename($pathOld, $pathNew)) {
-            throw new Exception(sprintf("Cannot rename %s to %s.", $pathOld, $pathNew));
+            throw new IOException(sprintf("Cannot rename %s to %s.", $pathOld, $pathNew));
         }
     }
 
@@ -95,13 +95,13 @@ class File
      * @param string   $file
      * @param int|null $time
      *
-     * @throws Exception
+     * @throws IOException
      */
     public static function touch(string $file, int $time = null)
     {
         $touch = $time ? @touch($file, $time) : @touch($file);
         if (true !== $touch) {
-            throw new Exception(sprintf("Cannot touch %s.", $file));
+            throw new IOException(sprintf("Cannot touch %s.", $file));
         }
     }
 
@@ -111,7 +111,7 @@ class File
      * @param string      $file
      * @param string|null $pathToExtractTo
      *
-     * @throws Exception
+     * @throws IOException
      */
     public static function unzip(string $file, string $pathToExtractTo = null)
     {
@@ -123,7 +123,7 @@ class File
         exec($call, $output, $returnCode);
 
         if ($returnCode != 0) {
-            throw new Exception("Cannot unzip %s: %s", $file, join("\n", $output));
+            throw new IOException("Cannot unzip %s: %s", $file, join("\n", $output));
         }
     }
 }
