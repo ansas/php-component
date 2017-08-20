@@ -20,5 +20,5 @@ use RuntimeException;
  */
 class IOException extends RuntimeException
 {
-
+    use CreateFromExceptionTrait;
 }

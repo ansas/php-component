@@ -13,12 +13,22 @@ namespace Ansas\Component\Exception;
 use Exception;
 
 /**
- * Class SkipException
+ * Trait CreateFromExceptionTrait
+ *
+ * Create new Exception from another default exception class by static method
  *
  * @package Ansas\Component\Exception
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
-class SkipException extends Exception
+trait CreateFromExceptionTrait
 {
-    use CreateFromExceptionTrait;
+    /**
+     * Create new instance.
+     *
+     * @return static
+     */
+    public static function createFromException(Exception $e)
+    {
+        return new static($e->getMessage(), $e->getCode(), $e->getPrevious());
+    }
 }

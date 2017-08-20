@@ -20,5 +20,5 @@ use Exception;
  */
 class ThrottleException extends Exception
 {
-
+    use CreateFromExceptionTrait;
 }
