@@ -215,6 +215,23 @@ class PriceAggregate extends PriceBase
     }
 
     /**
+     * @param float $factor
+     *
+     * @return $this
+     */
+    public function changeToFactor($factor)
+    {
+        $perTaxRate = $this->getPerTaxRate();
+        $this->perTaxRate = [];
+
+        foreach ($perTaxRate as $price) {
+            $this->addPrice($price->changeToFactor($factor));
+        }
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function countTaxRates()

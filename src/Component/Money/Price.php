@@ -219,17 +219,24 @@ class Price extends PriceBase
      */
     public function changeSign()
     {
-        $properties = [
+        return $this->changeToFactor(-1);
+    }
+
+    /**
+     * @param float $factor
+     *
+     * @return $this
+     */
+    public function changeToFactor($factor)
+    {
+        $this->needed([
             'gross',
             'net',
-            'tax',
-        ];
+        ]);
 
-        $this->needed($properties);
-
-        foreach ($properties as $property) {
-            $this->set($property, $this->get($property) * -1);
-        }
+        $this->set('gross', $this->get('gross') * $factor);
+        $this->set('net', $this->get('net') * $factor);
+        $this->set('tax', $this->get('gross') - $this->get('net'));
 
         return $this;
     }
@@ -285,9 +292,8 @@ class Price extends PriceBase
                 $value = strtolower($value);
 
                 if (!in_array($value, [static::GROSS, static::NET])) {
-                    throw new InvalidArgumentException("taxPercent invalid");
+                    throw new InvalidArgumentException("defaultType invalid");
                 }
-
                 break;
 
             case 'taxPercent':

@@ -63,11 +63,26 @@ class PriceTest extends TestCase
         $this->assertEquals(static::$json, Price::createFromArray(['tax' => 19, 'percent' => 19])->toJson());
     }
 
-    public function testSignChange()
+    public function testChangeSign()
     {
         $this->assertEquals(-119, Price::create(119)->setNet(100)->changeSign()->getGross());
         $this->assertEquals(119, Price::create(-119)->setNet(-100)->changeSign()->getGross());
         $this->assertEquals(0, Price::create(0)->setNet(0)->changeSign()->getGross());
+    }
+
+    public function testChangeToFactor()
+    {
+        foreach ([1, -1, 0.5, 2] as $factor) {
+            $price = Price
+                ::create(119)
+                ->setNet(100)
+                ->changeToFactor($factor)
+            ;
+
+            $this->assertEquals(round(119 * $factor, $price->getRoundPrecision()), $price->getGross());
+            $this->assertEquals(round(100 * $factor, $price->getRoundPrecision()), $price->getNet());
+            $this->assertEquals(round(19 * $factor, $price->getRoundPrecision()), $price->getTax());
+        }
     }
 
     public function testToString()
