@@ -397,10 +397,11 @@ class Profiler
      *
      * @param string $message [optional]
      * @param array  $context [optional]
+     * @param mixed  $level   [optional]
      *
      * @return $this
      */
-    public function note($message = 'Note', $context = [])
+    public function note($message = 'Note', $context = [], $level = null)
     {
         // Check if method was called only with $context
         if (is_array($message)) {
@@ -424,7 +425,7 @@ class Profiler
         }
 
         // Log
-        $this->logger->log($this->level, $message, $context);
+        $this->logger->log($level ?: $this->level, $message, $context);
 
         return $this;
     }
