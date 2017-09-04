@@ -70,6 +70,27 @@ class Text
     }
 
     /**
+     * Remove links in text.
+     *
+     * This method can remove these types:
+     * - <code>http://test.de</code> (with every protocol)
+     * - <code>//test.de</code> (without protocol)
+     * - <code>www.test.de</code> (with www subdomain)
+     * - <code>www.test.de/test/test.htm?test=1&test2=2</code> (with path, file and param suffix)
+     *
+     * @param string $text
+     * @param string $replaceWith [optional]
+     *
+     * @return string
+     */
+    public static function stripLinks($text, $replaceWith = '')
+    {
+        $text = preg_replace('/(?:(?:\S+:)?\/\/|www\.)[^\s\.]+\.\w+\S+/u', $replaceWith, $text);
+
+        return $text;
+    }
+
+    /**
      * Convert string into bool value.
      *
      * @param string $string
