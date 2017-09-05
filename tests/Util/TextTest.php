@@ -61,5 +61,10 @@ class TextTest extends TestCase
             'First [...] LAST',
             Text::stripLinks('First https://test.de?test LAST', '[...]')
         );
+
+        $this->assertEquals(
+            '<b>[...]</b>',
+            Text::stripLinks('<b>www.test.de</b>', '[...]')
+        );
     }
 }

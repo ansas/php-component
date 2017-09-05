@@ -85,7 +85,7 @@ class Text
      */
     public static function stripLinks($text, $replaceWith = '')
     {
-        $text = preg_replace('/(?:(?:\S+:)?\/\/|www\.)[^\s\.]+\.\w+\S+/u', $replaceWith, $text);
+        $text = preg_replace('/(?:(?:\S+:)?\/\/|www\.)[^\s\.]+\.\w+[^\s<]+/u', $replaceWith, $text);
 
         return $text;
     }
