@@ -60,6 +60,11 @@ class CsvReader extends CsvBase implements IteratorAggregate
     protected $appendRowsColumns = false;
 
     /**
+     * @var bool Skip empty rows
+     */
+    protected $skipEmptyLines = false;
+
+    /**
      * @var bool Truncate (remove) row columns to fit header columns
      */
     protected $truncateRowsColumns = false;
@@ -253,6 +258,22 @@ class CsvReader extends CsvBase implements IteratorAggregate
     }
 
     /**
+     * Set mode to skip empty rows (or not).
+     *
+     * Note: If empty rows are not skipped (default) reader stops on blank lines.
+     *
+     * @param bool $skipEmptyLines
+     *
+     * @return $this
+     */
+    public function setSkipEmptyLines($skipEmptyLines)
+    {
+        $this->skipEmptyLines = (bool) $skipEmptyLines;
+
+        return $this;
+    }
+
+    /**
      * Set mode to truncate (remove) row columns to fit header columns lines (or not).
      *
      * @param bool $truncateRowsColumns
@@ -307,6 +328,10 @@ class CsvReader extends CsvBase implements IteratorAggregate
         $set = $this->file->fgetcsv($this->delimiter, $this->enclosure, $this->escape);
 
         if (1 === count($set) && null === $set[0]) {
+            if ($this->skipEmptyLines && !$this->file->eof()) {
+                return $this->getNextDataSet();
+            }
+
             return null;
         }
         $this->line++;
