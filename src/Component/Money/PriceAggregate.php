@@ -11,6 +11,7 @@
 namespace Ansas\Component\Money;
 
 use InvalidArgumentException;
+use LogicException;
 use Traversable;
 
 /**
@@ -193,6 +194,37 @@ class PriceAggregate extends PriceBase
     }
 
     /**
+     * Adjust gross and net value (on lowest tax rate) to new value if within tolerance.
+     *
+     * @param string $property
+     * @param float  $new
+     * @param float  $tolerance [optional]
+     *
+     * @return $this
+     */
+    public function adjustRoundingError($property, $new, $tolerance = 0.01)
+    {
+        $this->validateProperty($property);
+
+        $old  = $this->get($property);
+        $diff = Price::round($new - $old);
+
+        if (abs($diff) <= abs($tolerance)) {
+            $price = Price
+                ::create()
+                ->setGross($diff)
+                ->setNet($diff)
+                ->setTax(0)
+                ->setTaxPercent(key($this->perTaxRate))
+            ;
+
+            $this->addPrice($price);
+        }
+
+        return $this;
+    }
+
+    /**
      * @inheritdoc
      */
     public function toArray()
@@ -221,7 +253,7 @@ class PriceAggregate extends PriceBase
      */
     public function changeToFactor($factor)
     {
-        $perTaxRate = $this->getPerTaxRate();
+        $perTaxRate       = $this->getPerTaxRate();
         $this->perTaxRate = [];
 
         foreach ($perTaxRate as $price) {
@@ -309,6 +341,47 @@ class PriceAggregate extends PriceBase
     }
 
     /**
+     * @param string $property
+     * @param float  $value
+     *
+     * @return $this
+     * @throws LogicException
+     */
+    public function set(string $property, $value)
+    {
+        $this->validateProperty($property);
+
+        $old = $this->get($property);
+        if (!$old) {
+            throw new LogicException("Property {$property} is not set or 0");
+        }
+
+        $this->changeToFactor($value / $old);
+
+        return $this;
+    }
+
+    /**
+     * @param float $value
+     *
+     * @return $this
+     */
+    public function setGross(float $value)
+    {
+        return $this->set('gross', $value);
+    }
+
+    /**
+     * @param float $value
+     *
+     * @return $this
+     */
+    public function setNet(float $value)
+    {
+        return $this->set('net', $value);
+    }
+
+    /**
      * Subtract price.
      *
      * @param Price $price
@@ -357,5 +430,20 @@ class PriceAggregate extends PriceBase
         }
 
         return (string) Price::round($value);
+    }
+
+    /**
+     * @param string $property
+     *
+     * @return $this
+     * @throws InvalidArgumentException
+     */
+    protected function validateProperty(string $property)
+    {
+        if (!in_array($property, ['gross', 'net'])) {
+            throw new InvalidArgumentException("Property {$property} does not exist");
+        }
+
+        return $this;
     }
 }
