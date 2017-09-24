@@ -11,7 +11,6 @@
 namespace Ansas\Component\Money;
 
 use InvalidArgumentException;
-use LogicException;
 use Traversable;
 
 /**
@@ -345,18 +344,15 @@ class PriceAggregate extends PriceBase
      * @param float  $value
      *
      * @return $this
-     * @throws LogicException
      */
     public function set(string $property, $value)
     {
         $this->validateProperty($property);
 
         $old = $this->get($property);
-        if (!$old) {
-            throw new LogicException("Property {$property} is not set or 0");
+        if ($old) {
+            $this->changeToFactor($value / $old);
         }
-
-        $this->changeToFactor($value / $old);
 
         return $this;
     }
