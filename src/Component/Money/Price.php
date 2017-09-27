@@ -44,6 +44,11 @@ class Price extends PriceBase
     ];
 
     /**
+     * @var bool round prices (or not)
+     */
+    protected $roundPrices = true;
+
+    /**
      * @var string Default price type (gross or net) for __toString and getPrice()
      */
     protected $defaultType;
@@ -194,7 +199,12 @@ class Price extends PriceBase
 
         $this->validateProperty($property, true);
 
-        return $this->{$property};
+        $value = $this->{$property};
+        if (is_numeric($value) && $this->getRoundPrices()) {
+            $value = static::round($value);
+        }
+
+        return $value;
     }
 
     /**
@@ -258,6 +268,14 @@ class Price extends PriceBase
     }
 
     /**
+     * @return bool
+     */
+    public function getRoundPrices()
+    {
+        return $this->get('roundPrices');
+    }
+
+    /**
      * @return float
      */
     public function getTaxPercent()
@@ -301,7 +319,7 @@ class Price extends PriceBase
                     throw new InvalidArgumentException("taxPercent invalid");
                 }
 
-                $this->{'taxRate'} = static::round($value / 100 + 1);
+                $this->{'taxRate'} = $value / 100 + 1;
                 break;
 
             case 'taxRate':
@@ -309,15 +327,13 @@ class Price extends PriceBase
                     throw new InvalidArgumentException("taxRate invalid");
                 }
 
-                $this->{'taxPercent'} = static::round($value * 100 - 100);
+                $this->{'taxPercent'} = $value * 100 - 100;
                 break;
         }
 
+        $this->{$property} = $value;
         if (is_numeric($value)) {
-            $this->{$property} = static::round($value);
             $this->calculate($calculateMissing);
-        } else {
-            $this->{$property} = $value;
         }
 
         return $this;
@@ -353,6 +369,18 @@ class Price extends PriceBase
     public function setNet(float $value, $calculateMissing = true)
     {
         return $this->set('net', $value, $calculateMissing);
+    }
+
+    /**
+     * @param bool $round
+     *
+     * @return $this
+     */
+    public function setRoundPrices($round)
+    {
+        $this->roundPrices = (bool) $round;
+
+        return $this;
     }
 
     /**

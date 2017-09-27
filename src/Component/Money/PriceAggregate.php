@@ -143,11 +143,11 @@ class PriceAggregate extends PriceBase
         }
 
         // Add price
-        $this->perTaxRate[$percent]['gross'] = Price::round($this->perTaxRate[$percent]['gross'] + $price->get('gross'));
-        $this->perTaxRate[$percent]['net']   = Price::round($this->perTaxRate[$percent]['net'] + $price->get('net'));
+        $this->perTaxRate[$percent]['gross'] += $price->get('gross');
+        $this->perTaxRate[$percent]['net']   += $price->get('net');
 
         // Remove tax block if price is now 0.00
-        if (0.00 == $this->perTaxRate[$percent]['gross'] && 0.00 == $this->perTaxRate[$percent]['net']) {
+        if (!Price::round($this->perTaxRate[$percent]['gross']) && !Price::round($this->perTaxRate[$percent]['net'])) {
             unset($this->perTaxRate[$percent]);
         }
 
@@ -252,11 +252,10 @@ class PriceAggregate extends PriceBase
      */
     public function changeToFactor($factor)
     {
-        $perTaxRate       = $this->getPerTaxRate();
-        $this->perTaxRate = [];
-
-        foreach ($perTaxRate as $price) {
-            $this->addPrice($price->changeToFactor($factor));
+        foreach (array_keys($this->perTaxRate) as $percent) {
+            foreach (['gross', 'net'] as $property) {
+                $this->perTaxRate[$percent][$property] *= $factor;
+            }
         }
 
         return $this;
