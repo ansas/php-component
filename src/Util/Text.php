@@ -94,6 +94,7 @@ class Text
      * - <code>//test.de</code> (without protocol)
      * - <code>www.test.de</code> (with www subdomain)
      * - <code>www.test.de/test/test.htm?test=1&test2=2</code> (with path, file and param suffix)
+     * - <code>test.de/sub</code> (with path)
      *
      * @param string $text
      * @param string $replaceWith [optional]
@@ -102,7 +103,8 @@ class Text
      */
     public static function stripLinks($text, $replaceWith = '')
     {
-        $text = preg_replace('/(?:(?:\S+:)?\/\/|www\.)[^\s\.]+\.\w+[^\s<]+/u', $replaceWith, $text);
+        $text = preg_replace('/(?:(?:[^\s\:>]+:)?\/\/|www\.)[^\s\.]+\.\w+[^\s<]+/u', $replaceWith, $text);
+        $text = preg_replace('/[^\s\.>]+\.[^\s\/><]+\/[^\s<]+/u', $replaceWith, $text);
 
         return $text;
     }

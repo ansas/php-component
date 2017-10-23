@@ -96,6 +96,11 @@ class TextTest extends TestCase
         );
 
         $this->assertEquals(
+            'at: ',
+            Text::stripLinks('at: test.de/sub')
+        );
+
+        $this->assertEquals(
             'Der Link: ',
             Text::stripLinks('Der Link: www.test.de/test/test.htm?test=1&test2=2')
         );
@@ -108,6 +113,16 @@ class TextTest extends TestCase
         $this->assertEquals(
             '<b>[...]</b>',
             Text::stripLinks('<b>www.test.de</b>', '[...]')
+        );
+
+        $this->assertEquals(
+            '<b>[...]</b>',
+            Text::stripLinks('<b>//www.test.de</b>', '[...]')
+        );
+
+        $this->assertEquals(
+            '<b>[...]</b>',
+            Text::stripLinks('<b>https://www.test.de</b>', '[...]')
         );
     }
 }
