@@ -81,7 +81,7 @@ class Text
      */
     public static function stripEmails($text, $replaceWith = '')
     {
-        $text = preg_replace('/[^@\s]+@[^@\s]+\.[^@\s]+/u', $replaceWith, $text);
+        $text = preg_replace('/[^@\s>]+@[^@\s<>]+\.[^@\s<]+/u', $replaceWith, $text);
 
         return $text;
     }
@@ -104,7 +104,27 @@ class Text
     public static function stripLinks($text, $replaceWith = '')
     {
         $text = preg_replace('/(?:(?:[^\s\:>]+:)?\/\/|www\.)[^\s\.]+\.\w+[^\s<]+/u', $replaceWith, $text);
-        $text = preg_replace('/[^\s\.>]+\.[^\s\/><]+\/[^\s<]+/u', $replaceWith, $text);
+        $text = preg_replace('/[^\s\.>]+\.[^\s\/<>]+\/[^\s<]+/u', $replaceWith, $text);
+
+        return $text;
+    }
+
+    /**
+     * Remove socials in text.
+     *
+     * This method can remove these types:
+     * - <code>@test</code> (twitter)
+     * - <code>facebook.com/test</code> (facebook)
+     *
+     * @param string $text
+     * @param string $replaceWith [optional]
+     *
+     * @return string
+     */
+    public static function stripSocials($text, $replaceWith = '')
+    {
+        $text = preg_replace('/(?<=\s|^|>)@[^\s<]+/u', $replaceWith, $text);
+        $text = preg_replace('/(?:[^\s>]+\.)?facebook.com\/[^\s<]+/u', $replaceWith, $text);
 
         return $text;
     }

@@ -43,6 +43,11 @@ class TextTest extends TestCase
         );
 
         $this->assertEquals(
+            '<b>[...]</b>',
+            Text::stripEmails('<b>test@test.de</b>', '[...]')
+        );
+
+        $this->assertEquals(
             'Email: [...]',
             Text::stripEmails('Email: test@test.de', '[...]')
         );
@@ -123,6 +128,49 @@ class TextTest extends TestCase
         $this->assertEquals(
             '<b>[...]</b>',
             Text::stripLinks('<b>https://www.test.de</b>', '[...]')
+        );
+    }
+
+    public function testStripSocials()
+    {
+        $this->assertEquals(
+            '',
+            Text::stripSocials('')
+        );
+
+        $this->assertEquals(
+            '',
+            Text::stripSocials('', '[...]')
+        );
+
+        $this->assertEquals(
+            'test ',
+            Text::stripSocials('test @test')
+        );
+
+        $this->assertEquals(
+            ' ',
+            Text::stripSocials(' @test')
+        );
+
+        $this->assertEquals(
+            'test@test',
+            Text::stripSocials('test@test')
+        );
+
+        $this->assertEquals(
+            'Twitter: [...] etc.',
+            Text::stripSocials('Twitter: @test etc.', '[...]')
+        );
+
+        $this->assertEquals(
+            '',
+            Text::stripSocials('facebook.com/test')
+        );
+
+        $this->assertEquals(
+            '<u>at: </u>[...]<b>now</b>',
+            Text::stripSocials('<u>at: </u>facebook.com/test<b>now</b>', '[...]')
         );
     }
 }
