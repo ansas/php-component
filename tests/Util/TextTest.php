@@ -20,6 +20,49 @@ use PHPUnit\Framework\TestCase;
  */
 class TextTest extends TestCase
 {
+    public function testStripEmails()
+    {
+        $this->assertEquals(
+            '',
+            Text::stripEmails('')
+        );
+
+        $this->assertEquals(
+            '',
+            Text::stripEmails('', '[...]')
+        );
+
+        $this->assertEquals(
+            '',
+            Text::stripEmails('test@test.de')
+        );
+
+        $this->assertEquals(
+            '',
+            Text::stripEmails('<test@test.de>')
+        );
+
+        $this->assertEquals(
+            'Email: [...]',
+            Text::stripEmails('Email: test@test.de', '[...]')
+        );
+
+        $this->assertEquals(
+            'First [...] LAST',
+            Text::stripEmails('First <test@test.de> LAST', '[...]')
+        );
+
+        $this->assertEquals(
+            'First test@test LAST',
+            Text::stripEmails('First test@test LAST', '[...]')
+        );
+
+        $this->assertEquals(
+            'First LAST',
+            Text::stripEmails('First LAST', '[...]')
+        );
+    }
+
     public function testStripLinks()
     {
         $this->assertEquals(

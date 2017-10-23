@@ -70,6 +70,23 @@ class Text
     }
 
     /**
+     * Remove emails in text.
+     *
+     * The email must atleast contain an @ and have a second-level domain.
+     *
+     * @param string $text
+     * @param string $replaceWith [optional]
+     *
+     * @return string
+     */
+    public static function stripEmails($text, $replaceWith = '')
+    {
+        $text = preg_replace('/[^@\s]+@[^@\s]+\.[^@\s]+/u', $replaceWith, $text);
+
+        return $text;
+    }
+
+    /**
      * Remove links in text.
      *
      * This method can remove these types:
