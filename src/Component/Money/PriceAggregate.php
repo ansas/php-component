@@ -252,6 +252,12 @@ class PriceAggregate extends PriceBase
      */
     public function changeToFactor($factor)
     {
+        if (!$factor) {
+            $this->perTaxRate = [];
+
+            return $this;
+        }
+
         foreach (array_keys($this->perTaxRate) as $percent) {
             foreach (['gross', 'net'] as $property) {
                 $this->perTaxRate[$percent][$property] *= $factor;
