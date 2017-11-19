@@ -110,7 +110,26 @@ class Text
     }
 
     /**
-     * Remove socials in text.
+     * Remove phone numbers in text. (ALPHA!)
+     *
+     * This method can remove these types:
+     * - <code>0541 123456</code> (twitter)
+     * - <code>+49 (0) 541 / 123 - 456</code> (facebook)
+     *
+     * @param string $text
+     * @param string $replaceWith [optional]
+     *
+     * @return string
+     */
+    public static function stripPhones($text, $replaceWith = '')
+    {
+        $text = preg_replace('/(?:\+\s?)?\d[\d\s\(\)\/\-]+\d{3,}[\d\s\(\)\/\-]+\d/u', $replaceWith, $text);
+
+        return $text;
+    }
+
+    /**
+     * Remove social hints in text.
      *
      * This method can remove these types:
      * - <code>@test</code> (twitter)

@@ -131,6 +131,50 @@ class TextTest extends TestCase
         );
     }
 
+
+    public function testStripPhones()
+    {
+        $this->assertEquals(
+            '',
+            Text::stripPhones('')
+        );
+
+        $this->assertEquals(
+            '',
+            Text::stripPhones('', '[...]')
+        );
+
+        $this->assertEquals(
+            '',
+            Text::stripPhones('+49 541 123456')
+        );
+
+        $this->assertEquals(
+            '',
+            Text::stripPhones('0049 (0)541 1234-56')
+        );
+
+        $this->assertEquals(
+            'Tel.: ',
+            Text::stripPhones("Tel.: 0541\t123456")
+        );
+
+        $this->assertEquals(
+            '123 + 123 = 246',
+            Text::stripPhones('123 + 123 = 246')
+        );
+
+        $this->assertEquals(
+            '(+123)',
+            Text::stripPhones('(+123)')
+        );
+
+        $this->assertEquals(
+            'Phone: <b>[...]</b>',
+            Text::stripPhones("Phone: <b>+49 (0) 541 / 123 - 456</b>", '[...]')
+        );
+    }
+
     public function testStripSocials()
     {
         $this->assertEquals(
