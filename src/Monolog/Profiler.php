@@ -361,11 +361,12 @@ class Profiler
      *
      * @param string $message [optional]
      * @param array  $context [optional]
+     * @param mixed  $level   [optional]
      *
      * @return $this
      * @throws Exception
      */
-    public function lap($message = 'Lap', $context = [])
+    public function lap($message = 'Lap', $context = [], $level = null)
     {
         // Check if method was called only with $context
         if (is_array($message)) {
@@ -384,7 +385,7 @@ class Profiler
         $this->laps[] = $this->timeCurrent();
 
         // Log
-        $this->note($message, $context);
+        $this->note($message, $context, $level);
 
         return $this;
     }
