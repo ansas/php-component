@@ -22,6 +22,18 @@ abstract class PriceBase implements JsonSerializable
     abstract public function get($property);
 
     /**
+     * @param string $property [optional]
+     *
+     * @return int
+     */
+    public function getDirection($property = 'gross')
+    {
+        $property = $this->get($property);
+
+        return $property > 0 ? 1 : ($property < 0 ? -1 : 0);
+    }
+
+    /**
      * @return float
      */
     public function getGross()
