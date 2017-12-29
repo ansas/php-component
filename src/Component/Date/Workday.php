@@ -18,16 +18,16 @@ class Workday extends DateTime
     const DAY_WEEKDAY_FORMAT = 'N';
 
     protected $holidays = [
-        "2017-01-01" => "Neujahrstag",
-        "2017-04-14" => "Karfreitag",
-        "2017-04-17" => "Ostermontag",
-        "2017-05-01" => "Tag der Arbeit",
-        "2017-05-25" => "Christi Himmelfahrt",
-        "2017-06-05" => "Pfingstmontag",
-        "2017-10-03" => "Tag der Deutschen Einheit",
-        "2017-10-31" => "Reformationstag",
-        "2017-12-25" => "1. Weihnachtstag",
-        "2017-12-26" => "2. Weihnachtstag",
+        "2018-01-01" => "Neujahrstag",
+        "2018-03-30" => "Karfreitag",
+        "2018-04-02" => "Ostermontag",
+        "2018-05-01" => "Tag der Arbeit",
+        "2018-05-10" => "Christi Himmelfahrt",
+        "2018-05-21" => "Pfingstmontag",
+        "2018-05-31" => "Fronleichnam",
+        "2018-10-03" => "Tag der Deutschen Einheit",
+        "2018-12-25" => "1. Weihnachtstag",
+        "2018-12-26" => "2. Weihnachtstag",
     ];
 
     protected $weekend = [
