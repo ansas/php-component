@@ -114,7 +114,11 @@ class Text
      *
      * This method can remove these types:
      * - <code>0541 123456</code> (twitter)
-     * - <code>+49 (0) 541 / 123 - 456</code> (facebook)
+     * - <code>+49 (0) 541 / 123 - 456</code>
+     *
+     * Notes:
+     * - Phone number must begin with + or 0
+     * - This method will also remove UCP or EAN starting with 0
      *
      * @param string $text
      * @param string $replaceWith [optional]
@@ -123,7 +127,7 @@ class Text
      */
     public static function stripPhones($text, $replaceWith = '')
     {
-        $text = preg_replace('/(?:\+\s?)?\d[\d\s\(\)\/\-]+\d{3,}[\d\s\(\)\/\-]+\d/u', $replaceWith, $text);
+        $text = preg_replace('/(?:\+\s?|0+)[1-9][\d\s\(\)\/\-]+\d{3,}[\d\s\(\)\/\-]+\d/u', $replaceWith, $text);
 
         return $text;
     }

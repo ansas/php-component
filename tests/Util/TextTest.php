@@ -173,6 +173,16 @@ class TextTest extends TestCase
             'Phone: <b>[...]</b>',
             Text::stripPhones("Phone: <b>+49 (0) 541 / 123 - 456</b>", '[...]')
         );
+
+        $this->assertEquals(
+            '9781231231230',
+            Text::stripPhones('9781231231230')
+        );
+
+        $this->assertEquals(
+            '[...]',
+            Text::stripPhones('0123456789012', '[...]')
+        );
     }
 
     public function testStripSocials()
