@@ -105,6 +105,18 @@ class Workday extends DateTime
     }
 
     /**
+     * @param array $holidays
+     *
+     * @return $this
+     */
+    public function setHolidays(array $holidays)
+    {
+        $this->holidays = $holidays;
+
+        return $this;
+    }
+
+    /**
      * @return $this
      */
     public function withoutTime()

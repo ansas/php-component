@@ -49,7 +49,7 @@ class WorkdayTest extends TestCase
 
     public function testIsHoliday()
     {
-        $date = new Workday("2017-04-30");
+        $date = $this->createWorkdayIn2017("2017-04-30");
         $this->assertEquals(false, $date->isHoliday(), $date->format($date::DAY_DATE_FORMAT));
 
         $date->modify("+1 day");
@@ -67,7 +67,7 @@ class WorkdayTest extends TestCase
 
     public function testIsWorkday()
     {
-        $date = new Workday("2017-04-30");
+        $date = $this->createWorkdayIn2017("2017-04-30");
         $this->assertEquals(false, $date->isWorkday(), "Weekend");
 
         $date->modify("+1 day");
@@ -79,7 +79,7 @@ class WorkdayTest extends TestCase
 
     public function testAddWorkdays()
     {
-        $date = new Workday("2017-04-28");
+        $date = $this->createWorkdayIn2017("2017-04-28");
         $date->addWorkdays(1);
         $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-05-02");
 
@@ -88,5 +88,30 @@ class WorkdayTest extends TestCase
 
         $date->addWorkdays(5);
         $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-05-11");
+    }
+
+    /**
+     * @param string $date
+     *
+     * @return Workday
+     */
+    public function createWorkdayIn2017($date)
+    {
+        $workday = new Workday($date);
+
+        $workday->setHolidays([
+            "2017-01-01" => "Neujahrstag",
+            "2017-04-14" => "Karfreitag",
+            "2017-04-17" => "Ostermontag",
+            "2017-05-01" => "Tag der Arbeit",
+            "2017-05-25" => "Christi Himmelfahrt",
+            "2017-06-05" => "Pfingstmontag",
+            "2017-10-03" => "Tag der Deutschen Einheit",
+            "2017-10-31" => "Reformationstag",
+            "2017-12-25" => "1. Weihnachtstag",
+            "2017-12-26" => "2. Weihnachtstag",
+        ]);
+
+        return $workday;
     }
 }
