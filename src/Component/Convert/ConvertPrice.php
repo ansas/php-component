@@ -152,8 +152,7 @@ class ConvertPrice
             $price = $price * 100;
         }
 
-        // cast: set to string before setting to int to avoid float inaccuracy
-        $this->price = (int) (string) $price;
+        $this->price = round($price);
 
         return $this;
     }
