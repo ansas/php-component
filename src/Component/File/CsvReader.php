@@ -60,6 +60,11 @@ class CsvReader extends CsvBase implements IteratorAggregate
     protected $appendRowsColumns = false;
 
     /**
+     * @var bool Truncate (remove) BOM
+     */
+    protected $removeBom;
+
+    /**
      * @var bool Skip empty rows
      */
     protected $skipEmptyLines = false;
@@ -230,6 +235,20 @@ class CsvReader extends CsvBase implements IteratorAggregate
     }
 
     /**
+     * Set mode to remove BOM
+     *
+     * @param bool $removeBom
+     *
+     * @return $this
+     */
+    public function removeBom($removeBom)
+    {
+        $this->removeBom = (bool) $removeBom;
+
+        return $this;
+    }
+
+    /**
      * Reset file.
      *
      * @return $this
@@ -334,9 +353,17 @@ class CsvReader extends CsvBase implements IteratorAggregate
 
             return null;
         }
-        $this->line++;
+
+        if ($this->removeBom) {
+            if (substr($set[0], 0, 3) == pack("CCC", 0xef, 0xbb, 0xbf)) {
+                $set[0] = substr($set[0], 3);
+            }
+            $this->removeBom = false;
+        }
 
         $set = $this->convertEncoding($set);
+
+        $this->line++;
 
         return $set;
     }
