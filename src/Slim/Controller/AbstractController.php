@@ -53,6 +53,7 @@ abstract class AbstractController
     {
         $this->setContainer($container);
         $this->registerDependencies();
+        $this->setUp();
     }
 
     /**
@@ -76,6 +77,15 @@ abstract class AbstractController
      * @return void
      */
     protected function registerDependencies()
+    {
+    }
+
+    /**
+     * Set-up controller (if needed).
+     *
+     * @return void
+     */
+    protected function setUp()
     {
     }
 }
