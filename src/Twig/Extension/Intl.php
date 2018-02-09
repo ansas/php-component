@@ -26,6 +26,7 @@ class Intl extends Twig_Extensions_Extension_Intl
     {
         $filters   = parent::getFilters();
         $filters[] = new Twig_SimpleFilter('localizedcurrencysymbol', [$this, '_getCurrencySymbol']);
+        $filters[] = new Twig_SimpleFilter('localizeddecimal', [$this, '_getDecimal']);
 
         return $filters;
     }
@@ -35,5 +36,16 @@ class Intl extends Twig_Extensions_Extension_Intl
         $formatter = twig_get_number_formatter("{$locale}@currency={$currency}", 'currency');
 
         return $formatter->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
+    }
+
+    function _getDecimal($number, $style = 'decimal', $precision = 0, $locale = null)
+    {
+        $formatter = clone twig_get_number_formatter($locale, $style);
+        $precision = (int) $precision;
+
+        $formatter->setAttribute(NumberFormatter::MIN_FRACTION_DIGITS, $precision);
+        $formatter->setAttribute(NumberFormatter::MAX_FRACTION_DIGITS, $precision);
+
+        return $formatter->format($number);
     }
 }
