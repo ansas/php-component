@@ -112,7 +112,7 @@ class Period
      * @param string $period Period name
      * @param int    $mode   [optional] Period::DAYS_AND_TIME or Period::DAYS_ONLY
      *
-     * @return array
+     * @return DateTime[]
      * @throws Exception If unable to determine the period.
      */
     public function getPeriod($period, $mode = self::DAYS_ONLY)
