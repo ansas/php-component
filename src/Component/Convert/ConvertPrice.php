@@ -131,12 +131,19 @@ class ConvertPrice
     {
         $this->validatePriceFormat($format);
 
+        // sanitize: price is null if value like -1.123E-11 provided
+        if (preg_match('/^\-?\d+\.\d+E(\+|\-)\d+$/u', (string) $price)) {
+            $this->price = 0;
+
+            return $this;
+        }
+
         if ($format == self::EURO) {
             // remove: all not allowed chars
-            $price = preg_replace('/[^0-9,-\.\+]/', '', $price);
+            $price = preg_replace('/[^0-9,\-\.\+]/', '', $price);
 
             // sanitize: +/- at end of number
-            $price = preg_replace('/^(.*)(-|\+)$/', '$2$1', $price);
+            $price = preg_replace('/^(.*)(\-|\+)$/', '$2$1', $price);
 
             // sanitize: , in price
             if (mb_strpos($price, ',') !== false) {
