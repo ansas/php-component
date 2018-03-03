@@ -36,6 +36,45 @@ class File
     }
 
     /**
+     * @param string $file
+     *
+     * @return mixed
+     * @throws IOException
+     */
+    public static function getContent($file)
+    {
+        if (!File::exists($file)) {
+            throw new IOException(sprintf("File %s does not exist.", $file));
+        }
+
+        $content = file_get_contents($file);
+
+        if (false === $content) {
+            throw new IOException(sprintf("Cannot get content from file %s.", $file));
+        }
+
+        return $content;
+    }
+
+    /**
+     * @param string $file
+     * @param mixed  $content
+     *
+     * @return int
+     * @throws IOException
+     */
+    public static function putContent($file, $content)
+    {
+        $bytesWritten = @file_put_contents($file, $content);
+
+        if (false === $bytesWritten) {
+            throw new IOException(sprintf("Cannot put content to file %s.", $file));
+        }
+
+        return $bytesWritten;
+    }
+
+    /**
      * Copy a (remote) file.
      *
      * @param string $pathOld
@@ -68,6 +107,18 @@ class File
         }
 
         throw new IOException(sprintf("Cannot delete %s.", $file));
+    }
+
+    /**
+     * Check if file exists.
+     *
+     * @param string $file
+     *
+     * @return bool
+     */
+    public static function exists($file)
+    {
+        return file_exists($file);
     }
 
     /**
