@@ -370,6 +370,7 @@ class Profiler
     {
         // Check if method was called only with $context
         if (is_array($message)) {
+            $level   = $context ?: null;
             $context = $message;
             $message = 'Lap';
         }
@@ -406,6 +407,7 @@ class Profiler
     {
         // Check if method was called only with $context
         if (is_array($message)) {
+            $level   = $context ?: null;
             $context = $message;
             $message = 'Note';
         }
