@@ -387,6 +387,24 @@ class FtpClient
     }
 
     /**
+     * Put a file on ftp-server.
+     *
+     * @param string $oldName
+     * @param string $newName
+     *
+     * @return $this
+     * @throws Exception
+     */
+    public function rename(string $oldName, string $newName)
+    {
+        if (!@ftp_rename($this->ftp, $oldName, $newName)) {
+            throw new Exception(sprintf("Cannot rename file from %s to %s", $oldName, $newName));
+        }
+
+        return $this;
+    }
+
+    /**
      * Get size of file on ftp-server.
      *
      * @param string $remoteFile Remote file path.
@@ -403,5 +421,24 @@ class FtpClient
         }
 
         return $size;
+    }
+
+    /**
+     * Get timestamp of last modification of file on ftp-server.
+     *
+     * @param string $remoteFile Remote file path.
+     *
+     * @return int Timestamp.
+     * @throws Exception
+     */
+    public function getModifiedTimestamp(string $remoteFile)
+    {
+        $timestamp = @ftp_mdtm($this->ftp, $remoteFile);
+
+        if ($timestamp < 0) {
+            throw new Exception("Cannot get file modification timestamp");
+        }
+
+        return $timestamp;
     }
 }
