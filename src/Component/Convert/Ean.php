@@ -319,9 +319,12 @@ class Ean
     }
 
     /**
+     * @param bool $skipDouble [optional]
+     *
      * @return array
+     * @throws Exception
      */
-    public function getValueList()
+    public function getValueList($skipDouble = false)
     {
         $list = [];
 
@@ -332,6 +335,11 @@ class Ean
             }
         }
 
+        if ($skipDouble) {
+            $list = array_reverse($list, true);
+            $list = array_unique($list, SORT_REGULAR);
+            $list = array_reverse($list, true);
+        }
         return $list;
     }
 
