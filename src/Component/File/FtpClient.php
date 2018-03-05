@@ -275,20 +275,30 @@ class FtpClient
     /**
      * Get a file from ftp-server.
      *
-     * @param string|null $remoteFile Remote file path.
-     * @param string      $localFile  [optional] Local file path, default: $remoteFile.
-     * @param int         $mode       [optional] Transfer mode, allowed: FTP_ASCII or FTP_BINARY
+     * @param string|null $remoteFile           Remote file path.
+     * @param string      $localFile            [optional] Local file path, default: $remoteFile.
+     * @param int         $mode                 [optional] Transfer mode, allowed: FTP_ASCII or FTP_BINARY
+     * @param int         $attempts             [optional] Number of retries in case of error.
+     * @param int         $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
      *
      * @return $this
      * @throws Exception
      */
-    public function get(string $remoteFile, string $localFile = null, int $mode = FTP_BINARY)
-    {
+    public function get(
+        string $remoteFile, string $localFile = null, int $mode = FTP_BINARY, int $attempts = 1,
+        int $sleepBetweenAttempts = 5
+    ) {
         if (!$localFile) {
             $localFile = $remoteFile;
         }
 
         if (!@ftp_get($this->ftp, $localFile, $remoteFile, $mode)) {
+            if (--$attempts > 0) {
+                sleep($sleepBetweenAttempts);
+
+                return $this->get($remoteFile, $localFile, $mode, $attempts, $sleepBetweenAttempts);
+            }
+
             throw new Exception(sprintf("Cannot copy file from %s to %s", $remoteFile, $localFile));
         }
 
@@ -437,7 +447,7 @@ class FtpClient
      * @return int Timestamp.
      * @throws Exception
      */
-    public function getModifiedTimestamp(string $remoteFile, int $attempts = 2, int $sleepBetweenAttempts = 5)
+    public function getModifiedTimestamp(string $remoteFile, int $attempts = 1, int $sleepBetweenAttempts = 5)
     {
         $timestamp = @ftp_mdtm($this->ftp, $remoteFile);
 
