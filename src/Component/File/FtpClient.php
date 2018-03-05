@@ -80,8 +80,8 @@ class FtpClient
      *
      * @param string $user                 [optional]
      * @param string $password             [optional]
-     * @param int    $attempts             [optional]
-     * @param int    $sleepBetweenAttempts [optional]
+     * @param int    $attempts             [optional] Number of retries in case of error.
+     * @param int    $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
      *
      * @return $this
      * @throws Exception
@@ -135,25 +135,28 @@ class FtpClient
     /**
      * List (specified) files in directory on ftp-server.
      *
-     * @param string $dir         [optional] Directory to search in.
-     * @param string $regex       [optional] Match files against regex.
-     * @param bool   $returnFirst [optional] Return first result only?
-     * @param int    $attempts    [optional] Number of retries in case of error.
+     * @param string $dir                  [optional] Directory to search in.
+     * @param string $regex                [optional] Match files against regex.
+     * @param bool   $returnFirst          [optional] Return first result only?
+     * @param int    $attempts             [optional] Number of retries in case of error.
+     * @param int    $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
      *
      * @return array|string
      * @throws Exception
      */
-    public function listFiles(string $dir = ".", string $regex = "", bool $returnFirst = false, int $attempts = 5)
-    {
+    public function listFiles(
+        string $dir = ".", string $regex = "", bool $returnFirst = false, int $attempts = 5,
+        int $sleepBetweenAttempts = 5
+    ) {
         // Get total list of files of given dir
         $total = @ftp_nlist($this->ftp, $dir);
 
         if ($total === false) {
             // Check if tries left call method again
             if (--$attempts > 0) {
-                sleep(5);
+                sleep($sleepBetweenAttempts);
 
-                return $this->listFiles($dir, $regex, $returnFirst, $attempts);
+                return $this->listFiles($dir, $regex, $returnFirst, $attempts, $sleepBetweenAttempts);
             }
 
             throw new Exception(sprintf("Cannot list files in %s with regex %s", $dir, $regex));
@@ -188,22 +191,23 @@ class FtpClient
     /**
      * Get raw data of files in directory on ftp-server.
      *
-     * @param string $dir      [optional] Directory to search in.
-     * @param int    $attempts [optional] Number of retries in case of error.
+     * @param string $dir                  [optional] Directory to search in.
+     * @param int    $attempts             [optional] Number of retries in case of error.
+     * @param int    $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
      *
      * @return array
      * @throws Exception
      */
-    public function listFilesRaw(string $dir = ".", int $attempts = 5)
+    public function listFilesRaw(string $dir = ".", int $attempts = 5, int $sleepBetweenAttempts = 5)
     {
         $total = @ftp_rawlist($this->ftp, $dir);
 
         if ($total === false) {
             // Check if tries left call method again
             if (--$attempts > 0) {
-                sleep(5);
+                sleep($sleepBetweenAttempts);
 
-                return $this->listFilesRaw($dir, $attempts);
+                return $this->listFilesRaw($dir, $attempts, $sleepBetweenAttempts);
             }
 
             throw new Exception(sprintf("Cannot list files in %s", $dir));
@@ -426,16 +430,24 @@ class FtpClient
     /**
      * Get timestamp of last modification of file on ftp-server.
      *
-     * @param string $remoteFile Remote file path.
+     * @param string $remoteFile           Remote file path.
+     * @param int    $attempts             [optional] Number of retries in case of error.
+     * @param int    $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
      *
      * @return int Timestamp.
      * @throws Exception
      */
-    public function getModifiedTimestamp(string $remoteFile)
+    public function getModifiedTimestamp(string $remoteFile, int $attempts = 2, int $sleepBetweenAttempts = 5)
     {
         $timestamp = @ftp_mdtm($this->ftp, $remoteFile);
 
         if ($timestamp < 0) {
+            if (--$attempts > 0) {
+                sleep($sleepBetweenAttempts);
+
+                return $this->getModifiedTimestamp($remoteFile, $attempts, $sleepBetweenAttempts);
+            }
+
             throw new Exception("Cannot get file modification timestamp");
         }
 
