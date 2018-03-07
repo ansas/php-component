@@ -42,11 +42,20 @@ class CollectionIterator implements IteratorAggregate, Countable
      * CollectionIterator constructor.
      *
      * @param Traversable $iterator
+     * @param int         $count [optional]
      */
-    public function __construct(Traversable $iterator)
+    public function __construct(Traversable $iterator, int $count = null)
     {
         $this->iterator  = $iterator;
-        $this->positions = iterator_count($iterator);
+
+        if (null !== $count) {
+            $this->positions = $count;
+        } elseif (method_exists($iterator, 'count')) {
+            $this->positions = $iterator->count();
+        } else {
+            $this->positions = iterator_count($iterator);
+        }
+
         $this->reset();
     }
 
@@ -99,6 +108,16 @@ class CollectionIterator implements IteratorAggregate, Countable
             $this->position++;
             yield $key => $value;
         }
+    }
+
+    /**
+     * Returns the number of elements left.
+     *
+     * @return int
+     */
+    public function getLeft()
+    {
+        return $this->getTotal() - $this->getIndex();
     }
 
     /**
