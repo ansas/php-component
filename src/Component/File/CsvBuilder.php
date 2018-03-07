@@ -78,9 +78,11 @@ class CsvBuilder extends CsvBuilderBase
             $this->csv = "";
 
             // Build header
-            $columns = array_keys($this->header);
-            $columns = $this->sanitizeColumns($columns);
-            $this->csv     .= $this->buildRow($columns);
+            if (!$this->getWithoutHeader()) {
+                $columns = array_keys($this->header);
+                $columns = $this->sanitizeColumns($columns);
+                $this->csv     .= $this->buildRow($columns);
+            }
 
             foreach ($this->data as $data) {
                 $columns = [];

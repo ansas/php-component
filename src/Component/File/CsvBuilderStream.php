@@ -64,7 +64,7 @@ class CsvBuilderStream extends CsvBuilderBase
             $this->setHeader($columns);
         }
 
-        if (!$this->hasLines()) {
+        if (!$this->hasLines() && !$this->getWithoutHeader()) {
             $columns = array_keys($this->getHeader());
             $this->writeRow($columns);
         }

@@ -36,6 +36,11 @@ abstract class CsvBuilderBase extends CsvBase
     protected $newline = "\n";
 
     /**
+     * @var bool Set mode to skip printing header in CSV
+     */
+    protected $withoutHeader = false;
+
+    /**
      * Add data (row) to CSV.
      *
      * @param array $data
@@ -82,6 +87,16 @@ abstract class CsvBuilderBase extends CsvBase
     public function getNewline()
     {
         return $this->newline;
+    }
+
+    /**
+     * Skip printing header in CSV (or not).
+     *
+     * @return bool
+     */
+    public function getWithoutHeader()
+    {
+        return $this->withoutHeader;
     }
 
     /**
@@ -157,6 +172,20 @@ abstract class CsvBuilderBase extends CsvBase
     public function setNewline($newline)
     {
         $this->newline = $newline;
+
+        return $this;
+    }
+
+    /**
+     * Set mode to skip printing header in CSV (or not).
+     *
+     * @param bool $withoutHeader
+     *
+     * @return $this
+     */
+    public function setWithoutHeader($withoutHeader)
+    {
+        $this->withoutHeader = (bool) $withoutHeader;
 
         return $this;
     }
