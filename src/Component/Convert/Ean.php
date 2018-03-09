@@ -25,19 +25,19 @@ use Exception;
 class Ean
 {
     /** supported types */
-    const EAN    = 'EAN';
     const ISBN13 = 'ISBN-13';
     const ISBN10 = 'ISBN-10';
     const UPC    = 'UPC';
+    const EAN    = 'EAN';
 
     /**
      * @var array Allowed formats.
      */
     protected static $types = [
-        self::EAN    => self::EAN,
         self::ISBN13 => self::ISBN13,
         self::ISBN10 => self::ISBN10,
         self::UPC    => self::UPC,
+        self::EAN    => self::EAN,
     ];
 
     /**
@@ -336,9 +336,7 @@ class Ean
         }
 
         if ($skipDouble) {
-            $list = array_reverse($list, true);
-            $list = array_unique($list, SORT_REGULAR);
-            $list = array_reverse($list, true);
+            $list = array_unique($list, SORT_STRING);
         }
         return $list;
     }
