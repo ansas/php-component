@@ -149,6 +149,23 @@ class Ean
     }
 
     /**
+     * Check if length of given ean makes sense.
+     *
+     * @param string|int $value ean, upc or isbn13
+     *
+     * @return bool
+     */
+    public static function hasValidLength($value)
+    {
+        // Sanitize
+        $value  = (int) $value;
+        $length = strlen($value);
+
+        // Validate
+        return !($length < 9 || $length > 13);
+    }
+
+    /**
      * Convert isbn13 to isbn10.
      *
      * @param string $ean     isbn13
@@ -356,14 +373,14 @@ class Ean
      */
     protected function parseValue($value)
     {
+        // Validate
+        if (!static::hasValidLength($value)) {
+            throw new Exception("No valid EAN, UPC or ISBN13 provided");
+        }
+
         // Sanitize
         $value  = (int) $value;
         $length = strlen($value);
-
-        // Validate
-        if ($length < 6 || $length > 13) {
-            throw new Exception("No valid EAN, UPC or ISBN13 provided");
-        }
 
         // Set value
         $this->value = $value;
