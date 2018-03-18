@@ -11,6 +11,7 @@
 namespace Ansas\Component\Date;
 
 use DateTime;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -35,6 +36,7 @@ class WorkdayTest extends TestCase
     public function testEqualsBetweenDateTimeAndWorkdayWorks()
     {
         $this->assertEquals(new DateTime("today"), new Workday("today"));
+        $this->assertEquals(new Workday("2018-03-18"), new Workday("2018-03-18"));
         $this->assertTrue(new DateTime("yesterday") < new DateTime("today"));
         $this->assertTrue(new DateTime("yesterday") < new Workday("today"));
         $this->assertTrue(new Workday("yesterday") < new DateTime("today"));
@@ -88,6 +90,30 @@ class WorkdayTest extends TestCase
 
         $date->addWorkdays(5);
         $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-05-11");
+
+        $date->addWorkdays(-5);
+        $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-05-04");
+    }
+
+    public function testModify()
+    {
+        $date = $this->createWorkdayIn2017("2017-05-24 10:00:00");
+        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-24 10:00:00");
+
+        $date->modify('1 workday');
+        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-26 10:00:00");
+
+        $date->modify('-1 workdays');
+        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-24 10:00:00");
+
+        $date->modify('+1 workdays + 1 hour');
+        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-26 11:00:00");
+
+        $date->modify('- 1 hour - 1 workday');
+        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-24 10:00:00");
+
+        $date->modify('+ 1 hour + 1 day');
+        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-25 11:00:00");
     }
 
     /**

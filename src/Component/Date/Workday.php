@@ -11,6 +11,8 @@
 namespace Ansas\Component\Date;
 
 use DateTime;
+use DateTimeZone;
+use Exception;
 
 class Workday extends DateTime
 {
@@ -36,6 +38,34 @@ class Workday extends DateTime
     ];
 
     /**
+     * @inheritdoc
+     */
+    public function __construct(string $time = 'now', DateTimeZone $timezone = null)
+    {
+        // Create default object with default timestamp
+        parent::__construct('now', $timezone);
+
+        // Modify timestamp with our altered logic
+        $this->modify($time);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function modify($modify)
+    {
+        if (preg_match('/(?<sign>\+|\-)?\s*(?<days>\d+)\s*workdays?/ui', $modify, $matches)) {
+            $this->addWorkdays($matches['sign'] . $matches['days']);
+            $modify = str_replace($matches[0], '', $modify);
+        }
+
+        $modify = trim($modify);
+        if ($modify) {
+            parent::modify($modify);
+        }
+    }
+
+    /**
      * @param DateTime $date
      *
      * @return static
@@ -53,9 +83,16 @@ class Workday extends DateTime
     public function addWorkdays($days)
     {
         $done = 0;
+        $days = (int) $days;
+        $sign = '+';
+
+        if ($days < 0) {
+            $days *= -1;
+            $sign = '-';
+        }
 
         while ($done < $days) {
-            $this->modify("+1 day");
+            $this->modify("{$sign} 1 day");
             if ($this->isWorkday()) {
                 $done++;
             }
