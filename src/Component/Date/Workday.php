@@ -12,7 +12,6 @@ namespace Ansas\Component\Date;
 
 use DateTime;
 use DateTimeZone;
-use Exception;
 
 class Workday extends DateTime
 {
@@ -49,6 +48,21 @@ class Workday extends DateTime
         $this->modify($time);
     }
 
+    public function __clone()
+    {
+        // TODO: Implement __clone() method.
+    }
+
+    /**
+     * @param DateTime $date
+     *
+     * @return static
+     */
+    public static function fromDateTime(DateTime $date)
+    {
+        return new static("@" . $date->getTimestamp(), $date->getTimezone());
+    }
+
     /**
      * @inheritdoc
      */
@@ -63,16 +77,6 @@ class Workday extends DateTime
         if ($modify) {
             parent::modify($modify);
         }
-    }
-
-    /**
-     * @param DateTime $date
-     *
-     * @return static
-     */
-    public static function fromDateTime(DateTime $date)
-    {
-        return new static("@" . $date->getTimestamp(), $date->getTimezone());
     }
 
     /**

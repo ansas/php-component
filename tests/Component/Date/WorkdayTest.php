@@ -116,6 +116,16 @@ class WorkdayTest extends TestCase
         $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-25 11:00:00");
     }
 
+    public function testClone()
+    {
+        $date1 = $this->createWorkdayIn2017("2017-05-24 10:00:00");
+        $date2 = clone $date1;
+        $date2->modify('+1 hour');
+
+        $this->assertEquals($date1->format('Y-m-d H:i:s'), "2017-05-24 10:00:00");
+        $this->assertEquals($date2->format('Y-m-d H:i:s'), "2017-05-24 11:00:00");
+    }
+
     /**
      * @param string $date
      *
