@@ -89,6 +89,9 @@ class ExtendedRouter extends Router
             $url = $this->basePath . $url;
         }
 
+        // Remove trailing ? (is set if $queryParam list was not empty but only contained empty values)
+        $url = rtrim($url, '?');
+
         return $url;
     }
 
