@@ -42,6 +42,18 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /** Sort collection by values (descending order) */
     const SORT_BY_VALUES_DESC = 8;
 
+    /** has check array_key_exists($key) mode */
+    const HAS_EXISTS = 1;
+
+    /** has check isset($key) mode */
+    const HAS_ISSET = 2;
+
+    /** has check empty($key) mode */
+    const HAS_NONEMPTY = 4;
+
+    /** has check strlen($key) mode */
+    const HAS_LENGTH = 8;
+
     /**
      * @var array Holds complete collection data
      */
@@ -78,7 +90,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      */
     public function __isset($key)
     {
-        return $this->has($key);
+        return $this->has($key, self::HAS_ISSET);
     }
 
     /**
@@ -134,12 +146,13 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      *
      * @param  mixed $key   The item key.
      * @param  mixed $value The item value to add / set.
+     * @param int    $mode  The mode to compare if value exists [optional]
      *
      * @return $this
      */
-    public function add($key, $value)
+    public function add($key, $value, $mode = self::HAS_ISSET)
     {
-        if (!$this->has($key)) {
+        if (!$this->has($key, $mode)) {
             $this->set($key, $value);
         } else {
             $key = $this->normalizeKey($key);
@@ -243,12 +256,13 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      *
      * @param  mixed $key     The item key.
      * @param  mixed $default [optional] The default value (if key does not exist).
+     * @param int    $mode    The mode to check if key exists [optional]
      *
      * @return mixed The item value.
      */
-    public function get($key, $default = null)
+    public function get($key, $default = null, $mode = self::HAS_ISSET)
     {
-        if (!$this->has($key)) {
+        if (!$this->has($key, $mode)) {
             return $default;
         }
 
@@ -270,15 +284,32 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Check if specified collection item exists.
      *
-     * @param  mixed $key The item key.
+     * @param mixed $key  The item key.
+     * @param int   $mode The mode to check if key exists [optional]
      *
      * @return bool
+     * @throws InvalidArgumentException
      */
-    public function has($key)
+    public function has($key, $mode = self::HAS_EXISTS)
     {
         $key = $this->normalizeKey($key);
 
-        return isset($this->data[$key]);
+        switch ($mode) {
+            case self::HAS_EXISTS:
+                return array_key_exists($key, $this->data);
+
+            case self::HAS_ISSET:
+                return isset($this->data[$key]);
+
+            case self::HAS_NONEMPTY:
+                return !empty($this->data[$key]);
+
+            case self::HAS_LENGTH:
+                return isset($this->data[$key]) && strlen($this->data[$key]);
+
+            default:
+                throw new InvalidArgumentException("Mode {$mode} not supported");
+        }
     }
 
     /**
@@ -312,7 +343,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      */
     public function matches($key, $regex, &$matches = [])
     {
-        if (!$this->has($key)) {
+        if (!$this->has($key, self::HAS_ISSET)) {
             return false;
         }
 
@@ -323,14 +354,15 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      * Get specified collection item.
      *
      * @param  mixed $key The item key.
+     * @param int   $mode The mode to check if key exists [optional]
      *
      * @return mixed The item value.
      * @throws Exception
      */
-    public function need($key)
+    public function need($key, $mode = self::HAS_ISSET)
     {
-        if (!$this->has($key)) {
-            throw new Exception("Required key {$key} does not exist.");
+        if (!$this->has($key, $mode)) {
+            throw new Exception("Key {$key} is required");
         }
 
         return $this->get($key);
@@ -345,7 +377,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      */
     public function offsetExists($key)
     {
-        return $this->has($key);
+        return $this->has($key, self::HAS_EXISTS);
     }
 
     /**
@@ -419,7 +451,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      */
     public function remove($key, $remove = true)
     {
-        if ($remove && $this->has($key)) {
+        if ($remove && $this->has($key, self::HAS_EXISTS)) {
             $key = $this->normalizeKey($key);
             unset($this->data[$key]);
         }
@@ -503,7 +535,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      * @param int $sortFlags Sort flags (see PHP SORT_ sonstants)
      *
      * @return $this
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function sort($sortBy = self::SORT_BY_KEYS_ASC, $sortFlags = SORT_REGULAR)
     {
@@ -515,7 +547,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
         ];
 
         if (!isset($sortFunctions[$sortBy])) {
-            throw new Exception("");
+            throw new InvalidArgumentException("SortBy {$sortBy} not supported");
         }
 
         $function = $sortFunctions[$sortBy];
@@ -532,7 +564,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      *
      * @return $this
      */
-    public function switch ($a, $b)
+    public function switch($a, $b)
     {
         $oldA = $this->get($a);
         $oldB = $this->get($b);
