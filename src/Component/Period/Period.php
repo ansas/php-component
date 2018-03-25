@@ -10,6 +10,7 @@
 
 namespace Ansas\Component\Period;
 
+use Ansas\Util\Debug;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -117,10 +118,153 @@ class Period
      */
     public function getPeriod($period, $mode = self::DAYS_ONLY)
     {
-        $date = new DateTime('today', $this->getTimezoneFrom());
+        $result = $this->parsePeriod($period);
 
+        if ($result['max'] && $mode == self::DAYS_AND_TIME) {
+            $result['max']->modify("+1 day -1 second");
+        }
+
+        foreach ($result as $key => $value) {
+            if (!$value) {
+                unset($result[$key]);
+            } elseif ($mode == self::DAYS_ONLY) {
+                $result[$key] = new DateTime($result[$key]->format('Y-m-d'), $this->getTimezoneTo());
+            } elseif ($this->getTimezoneTo()) {
+                $result[$key]->setTimezone($this->getTimezoneTo());
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Calculate min and max dates and return them as DateTime objects.
+     *
+     * @param string $period Period name
+     *
+     * @return array
+     */
+    public function getPeriodWithTime($period)
+    {
+        return $this->getPeriod($period, self::DAYS_AND_TIME);
+    }
+
+    /**
+     * @return DateTimeZone|null
+     */
+    public function getTimezoneFrom()
+    {
+        return $this->timezoneFrom;
+    }
+
+    /**
+     * @return DateTimeZone|null
+     */
+    public function getTimezoneTo()
+    {
+        return $this->timezoneTo;
+    }
+
+    /**
+     * @param string|DateTimeZone|null $timezoneFrom
+     *
+     * @return $this
+     */
+    public function setTimezoneFrom($timezoneFrom)
+    {
+        $this->timezoneFrom = $this->toTimezone($timezoneFrom);
+
+        return $this;
+    }
+
+    /**
+     * @param string|DateTimeZone|null $timezoneTo
+     *
+     * @return $this
+     */
+    public function setTimezoneTo($timezoneTo)
+    {
+        $this->timezoneTo = $this->toTimezone($timezoneTo);
+
+        return $this;
+    }
+
+    /**
+     * @param string|DateTimeZone|null $timezone
+     *
+     * @return DateTimeZone|null
+     */
+    protected function toTimezone($timezone)
+    {
+        if (!$timezone) {
+            return null;
+        }
+
+        if ($timezone instanceof DateTimeZone) {
+            return $timezone;
+        }
+
+        return new DateTimeZone($timezone);
+    }
+
+    /**
+     * @param $period
+     *
+     * @return array
+     * @throws Exception
+     */
+    protected function parsePeriod($period)
+    {
+        if (false !== strpos($period, '-')) {
+            return $this->parsePeriodFromDates($period);
+        }
+
+        return $this->parsePeriodFromName($period);
+    }
+
+    /**
+     * @param $period
+     *
+     * @return array
+     * @throws Exception
+     */
+    protected function parsePeriodFromDates($period)
+    {
+        if (substr_count($period, '-') != 1) {
+            throw new Exception("Expecting 'date1-date2' syntax");
+        }
+
+        $result = [
+            'min' => null,
+            'max' => null,
+        ];
+
+        list($result['min'], $result['max']) = explode('-', $period);
+
+        foreach ($result as $key => $value) {
+            if (!$value) {
+                $result[$key] = null;
+                continue;
+            }
+
+            $result[$key] = new DateTime($value, $this->getTimezoneFrom());
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $period
+     *
+     * @return array
+     * @throws Exception
+     */
+    protected function parsePeriodFromName($period)
+    {
         $min = null;
         $max = null;
+
+        $date = new DateTime('today', $this->getTimezoneFrom());
 
         switch ($period) {
             case 'today' :
@@ -204,94 +348,11 @@ class Period
                 }
         }
 
-        $result = [];
-
-        if ($max && $mode == self::DAYS_AND_TIME) {
-            $max->modify("+1 day -1 second");
-        }
-
-        foreach (['min' => $min, 'max' => $max] as $key => $value) {
-            if (!$value) {
-                continue;
-            }
-            if ($mode == self::DAYS_ONLY) {
-                $value = new DateTime($value->format('Y-m-d'), $this->getTimezoneTo());
-            } elseif ($this->getTimezoneTo()) {
-                $value->setTimezone($this->getTimezoneTo());
-            }
-            $result[$key] = $value;
-        }
+        $result = [
+            'min' => $min,
+            'max' => $max,
+        ];
 
         return $result;
-    }
-
-    /**
-     * Calculate min and max dates and return them as DateTime objects.
-     *
-     * @param string $period Period name
-     *
-     * @return array
-     */
-    public function getPeriodWithTime($period)
-    {
-        return $this->getPeriod($period, self::DAYS_AND_TIME);
-    }
-
-    /**
-     * @return DateTimeZone|null
-     */
-    public function getTimezoneFrom()
-    {
-        return $this->timezoneFrom;
-    }
-
-    /**
-     * @return DateTimeZone|null
-     */
-    public function getTimezoneTo()
-    {
-        return $this->timezoneTo;
-    }
-
-    /**
-     * @param string|DateTimeZone|null $timezoneFrom
-     *
-     * @return $this
-     */
-    public function setTimezoneFrom($timezoneFrom)
-    {
-        $this->timezoneFrom = $this->toTimezone($timezoneFrom);
-
-        return $this;
-    }
-
-    /**
-     * @param string|DateTimeZone|null $timezoneTo
-     *
-     * @return $this
-     */
-    public function setTimezoneTo($timezoneTo)
-    {
-        $this->timezoneTo = $this->toTimezone($timezoneTo);
-
-        return $this;
-    }
-
-    /**
-     * @param string|DateTimeZone|null $timezone
-     *
-     * @return DateTimeZone|null
-     */
-    protected function toTimezone($timezone)
-    {
-        if (!$timezone) {
-            return null;
-        }
-
-        if ($timezone instanceof DateTimeZone) {
-            return $timezone;
-        }
-
-        return new DateTimeZone($timezone);
     }
 }
