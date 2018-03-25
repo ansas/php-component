@@ -133,6 +133,20 @@ class FtpClient
     }
 
     /**
+     * Check if file exists on ftp-server.
+     *
+     * @param string $remoteFile Remote file path.
+     *
+     * @return bool
+     */
+    public function exists(string $remoteFile)
+    {
+        $size = @ftp_size($this->ftp, $remoteFile);
+
+        return $size >= 0;
+    }
+
+    /**
      * List (specified) files in directory on ftp-server.
      *
      * @param string $dir                  [optional] Directory to search in.
@@ -430,7 +444,7 @@ class FtpClient
     {
         $size = @ftp_size($this->ftp, $remoteFile);
 
-        if ($size === false) {
+        if ($size == -1) {
             throw new Exception("Cannot get file size");
         }
 
