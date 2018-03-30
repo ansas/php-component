@@ -95,6 +95,49 @@ class WorkdayTest extends TestCase
         $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-05-04");
     }
 
+    public function testAddWorkdaysIfTodayIsHoliday()
+    {
+        $date = $this->createWorkdayIn2017("2017-04-14");
+        $date->addWorkdays(1);
+        $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-04-18");
+
+        $date = $this->createWorkdayIn2017("2017-04-14");
+        $date->addWorkdays(-1);
+        $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-04-13");
+    }
+
+    public function testNextLastWorkday()
+    {
+        $date = $this->createWorkdayIn2017("2017-04-14");
+        $date->modify('next workday');
+        $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-04-18");
+
+        $date = $this->createWorkdayIn2017("2017-04-14");
+        $date->modify('last workday');
+        $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-04-13");
+
+        $date = $this->createWorkdayIn2017("2017-04-18");
+        $date->modify('last workday');
+        $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-04-18");
+        $date->modify('next workday');
+        $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-04-18");
+
+        $date = $this->createWorkdayIn2017("2017-04-14");
+        $date->modify('last workday - 1 workdays');
+        $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-04-12");
+    }
+
+    public function testAddWorkdaysIfTodayIsWeekend()
+    {
+        $date = $this->createWorkdayIn2017("2017-04-15");
+        $date->addWorkdays(1);
+        $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-04-18");
+
+        $date = $this->createWorkdayIn2017("2017-04-15");
+        $date->addWorkdays(-1);
+        $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-04-13");
+    }
+
     public function testModify()
     {
         $date = $this->createWorkdayIn2017("2017-05-24 10:00:00");
