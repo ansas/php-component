@@ -233,7 +233,9 @@ abstract class CsvBuilderBase extends CsvBase
                 || false !== strpos($value, $this->enclosure)
                 || false !== strpos($value, $this->newline)
             ) {
-                $value = str_replace($this->escape, $this->escape . $this->escape, $value);
+                if ($this->escape != $this->enclosure) {
+                    $value = str_replace($this->escape, $this->escape . $this->escape, $value);
+                }
                 $value = str_replace($this->enclosure, $this->escape . $this->enclosure, $value);
                 $value = $this->enclosure . $value . $this->enclosure;
 
