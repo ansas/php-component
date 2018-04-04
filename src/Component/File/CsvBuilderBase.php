@@ -229,9 +229,11 @@ abstract class CsvBuilderBase extends CsvBase
 
         foreach ($columns as $key => $value) {
             if (false !== strpos($value, $this->delimiter)
+                || false !== strpos($value, $this->escape)
                 || false !== strpos($value, $this->enclosure)
                 || false !== strpos($value, $this->newline)
             ) {
+                $value = str_replace($this->escape, $this->escape . $this->escape, $value);
                 $value = str_replace($this->enclosure, $this->escape . $this->enclosure, $value);
                 $value = $this->enclosure . $value . $this->enclosure;
 
