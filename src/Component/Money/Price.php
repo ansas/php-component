@@ -406,6 +406,34 @@ class Price extends PriceBase
     }
 
     /**
+     * @param array $taxValuesAllowed
+     *
+     * @return $this
+     */
+    public function setTaxPercentClosest(array $taxValuesAllowed)
+    {
+        $taxOld = $this->getTaxPercent();
+        $taxNew = $taxOld;
+
+        $diffLeast = null;
+        foreach ($taxValuesAllowed as $taxCurrent) {
+            $diffCurrent = abs($taxOld - $taxCurrent);
+            if ($diffLeast === null || $diffLeast > $diffCurrent) {
+                $diffLeast = $diffCurrent;
+                $taxNew    = $taxCurrent;
+            }
+
+            $taxDifferences[$taxNew] = abs($taxOld - $taxNew);
+        }
+
+        if ($taxOld != $taxNew) {
+            $this->set('taxPercent', $taxNew);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param float $value
      * @param bool  $calculateMissing [optional]
      *
