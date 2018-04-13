@@ -28,6 +28,11 @@ class PriceAggregate extends PriceBase
     const SUBTRACT = '-';
 
     /**
+     * @var bool Keep empty tax rates (or not)
+     */
+    protected $keepEmptyTaxRates = false;
+
+    /**
      * @var array List of prices per tax rate
      */
     protected $perTaxRate = [];
@@ -147,7 +152,11 @@ class PriceAggregate extends PriceBase
         $this->perTaxRate[$percent]['net']   += $price->get('net');
 
         // Remove tax block if price is now 0.00
-        if (!Price::round($this->perTaxRate[$percent]['gross']) && !Price::round($this->perTaxRate[$percent]['net'])) {
+        if (
+            !$this->getKeepEmptyTaxRates()
+            && !Price::round($this->perTaxRate[$percent]['gross'])
+            && !Price::round($this->perTaxRate[$percent]['net'])
+        ) {
             unset($this->perTaxRate[$percent]);
         }
 
@@ -258,6 +267,7 @@ class PriceAggregate extends PriceBase
             return $this;
         }
 
+        // Note: do not round here!
         foreach (array_keys($this->perTaxRate) as $percent) {
             foreach (['gross', 'net'] as $property) {
                 $this->perTaxRate[$percent][$property] *= $factor;
@@ -283,6 +293,10 @@ class PriceAggregate extends PriceBase
         $result = null;
 
         switch ($property) {
+            case 'keepEmptyTaxRates':
+                $result = $this->keepEmptyTaxRates;
+                break;
+
             case 'perTaxRate':
                 $result = $this->getPerTaxRate();
                 break;
@@ -300,6 +314,14 @@ class PriceAggregate extends PriceBase
         }
 
         return $result;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getKeepEmptyTaxRates()
+    {
+        return $this->get('keepEmptyTaxRates');
     }
 
     /**
@@ -345,6 +367,20 @@ class PriceAggregate extends PriceBase
     }
 
     /**
+     * @return $this
+     */
+    public function round()
+    {
+        foreach (array_keys($this->perTaxRate) as $percent) {
+            foreach (['gross', 'net'] as $property) {
+                $this->perTaxRate[$percent][$property] = Price::round($this->perTaxRate[$percent][$property]);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string $property
      * @param float  $value
      *
@@ -354,7 +390,12 @@ class PriceAggregate extends PriceBase
     {
         $this->validateProperty($property);
 
-        $old = $this->get($property);
+        // Note: do not round here!
+        $old = 0;
+        foreach (array_keys($this->perTaxRate) as $percent) {
+            $old += $this->perTaxRate[$percent][$property];
+        }
+
         if ($old) {
             $this->changeToFactor($value / $old);
         }
@@ -370,6 +411,18 @@ class PriceAggregate extends PriceBase
     public function setGross(float $value)
     {
         return $this->set('gross', $value);
+    }
+
+    /**
+     * @param bool $round
+     *
+     * @return $this
+     */
+    public function setKeepEmptyTaxRates($keepEmptyTaxRates)
+    {
+        $this->keepEmptyTaxRates = (bool) $keepEmptyTaxRates;
+
+        return $this;
     }
 
     /**
