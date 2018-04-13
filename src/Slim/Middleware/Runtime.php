@@ -10,6 +10,7 @@
 
 namespace Ansas\Slim\Middleware;
 
+use Ansas\Util\Number;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -44,20 +45,6 @@ class Runtime
 
         $executionTime = microtime(true) - $requestTime;
 
-        return $response->withHeader(self::HEADER, $this->readableTime($executionTime));
-    }
-
-    /**
-     * @param float $time
-     * @param int   $decimals [optional]
-     *
-     * @return string
-     */
-    protected function readableTime($time, $decimals = 3)
-    {
-        $decimals = (int) $decimals;
-        $unit     = 'sec';
-
-        return sprintf("%.{$decimals}f %s", $time, $unit);
+        return $response->withHeader(self::HEADER, Number::toReadableTime($executionTime));
     }
 }

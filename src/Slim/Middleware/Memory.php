@@ -10,6 +10,7 @@
 
 namespace Ansas\Slim\Middleware;
 
+use Ansas\Util\Number;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -43,47 +44,6 @@ class Memory
 
         $memory = memory_get_peak_usage(true);
 
-        return $response->withHeader(self::HEADER, $this->readableSize($memory));
-    }
-
-    /**
-     * @param int    $bytes
-     * @param int    $decimals [optional]
-     * @param string $system   [optional] binary | metric
-     *
-     * @return string
-     */
-    protected function readableSize($bytes, $decimals = 1, $system = 'metric')
-    {
-        $mod = ($system === 'binary') ? 1024 : 1000;
-
-        $units = [
-            'binary' => [
-                'B',
-                'KiB',
-                'MiB',
-                'GiB',
-                'TiB',
-                'PiB',
-                'EiB',
-                'ZiB',
-                'YiB',
-            ],
-            'metric' => [
-                'B',
-                'kB',
-                'MB',
-                'GB',
-                'TB',
-                'PB',
-                'EB',
-                'ZB',
-                'YB',
-            ],
-        ];
-
-        $factor = floor((strlen($bytes) - 1) / 3);
-
-        return sprintf("%.{$decimals}f %s", $bytes / pow($mod, $factor), $units[$system][$factor]);
+        return $response->withHeader(self::HEADER, Number::toReadableSize($memory));
     }
 }
