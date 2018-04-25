@@ -25,6 +25,8 @@ trait CreateFromExceptionTrait
     /**
      * Create new instance.
      *
+     * @param Exception $e
+     *
      * @return static
      */
     public static function createFromException(Exception $e)
