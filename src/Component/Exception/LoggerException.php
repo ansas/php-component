@@ -56,7 +56,23 @@ class LoggerException extends Exception
     }
 
     /**
-     * Get log level.
+     * Add log context.
+     *
+     * @param array $context Log context
+     *
+     * @return $this
+     */
+    public function addContext(array $context)
+    {
+        if ($context) {
+            $this->context = array_merge($this->context, $context);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get log context.
      *
      * @return array
      */
@@ -77,9 +93,15 @@ class LoggerException extends Exception
 
     /**
      * @param LoggerInterface $logger
+     * @param array           $context Log context [optional]
+     *
+     * @return $this
      */
-    public function log(LoggerInterface $logger)
+    public function log(LoggerInterface $logger, array $context = [])
     {
+        $this->addContext($context);
         $logger->log($this->getLevel(), $this->getMessage(), $this->getContext());
+
+        return $this;
     }
 }
