@@ -134,6 +134,21 @@ class CsvReader extends CsvBase implements IteratorAggregate
     }
 
     /**
+     * @param array $required
+     *
+     * @return $this
+     * @throws Exception
+     */
+    public function ensureRequiredColumnsExist(array $required)
+    {
+        if (array_intersect($required, $this->getHeader()) != $required) {
+            throw new Exception("Columns missing, required: " . implode(', ', $required));
+        }
+
+        return $this;
+    }
+
+    /**
      * Return CSV header as array.
      *
      * @return array
