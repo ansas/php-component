@@ -155,13 +155,17 @@ class Text
     /**
      * Convert string into bool value.
      *
-     * @param string $string
+     * @param mixed $string
      *
      * @return bool
      * @throws InvalidArgumentException
      */
     public static function toBool($string)
     {
+        if (is_null($string)) {
+            return false;
+        }
+
         if (!is_scalar($string)) {
             throw new InvalidArgumentException("Value must be scalar");
         }
