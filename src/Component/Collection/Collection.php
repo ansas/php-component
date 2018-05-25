@@ -529,6 +529,31 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
+     * Set specified collection item.
+     *
+     * @param  mixed $key   The item key. [optional]
+     *
+     * @return $this
+     */
+    public function trim($key = null)
+    {
+        if (null === $key) {
+            foreach ($this->all() as $key => $value) {
+                if (is_scalar($value)) {
+                    $this->set($key, trim($value));
+                }
+            }
+        } else {
+            $value = $this->get($key);
+            if (is_scalar($value)) {
+                $this->set($key, trim($value));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Sort collection.
      *
      * @param int $sortBy    Sort by flag (see self::SORT_ constants)
