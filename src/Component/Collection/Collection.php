@@ -187,7 +187,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     public function append($items)
     {
         if (!is_array($items) && !$items instanceof Traversable) {
-            throw new InvalidArgumentException("Argument must be an array of instance of Traversable");
+            throw new InvalidArgumentException("Argument must be an array or instance of Traversable");
         }
 
         foreach ($items as $key => $value) {
