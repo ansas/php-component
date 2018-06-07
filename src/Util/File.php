@@ -59,13 +59,14 @@ class File
     /**
      * @param string $file
      * @param mixed  $content
+     * @param int    $flags [optional]
      *
      * @return int
      * @throws IOException
      */
-    public static function putContent($file, $content)
+    public static function putContent($file, $content, $flags = 0)
     {
-        $bytesWritten = @file_put_contents($file, $content);
+        $bytesWritten = @file_put_contents($file, $content, $flags);
 
         if (false === $bytesWritten) {
             throw new IOException(sprintf("Cannot put content to file %s.", $file));
