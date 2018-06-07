@@ -64,11 +64,6 @@ class CsvBuilderStream extends CsvBuilderBase
             $this->setHeader($columns);
         }
 
-        if (!$this->hasLines() && !$this->getWithoutHeader()) {
-            $columns = array_keys($this->getHeader());
-            $this->writeRow($columns);
-        }
-
         $columns = $this->mergeData($data);
         $this->writeRow($columns);
 
@@ -113,6 +108,21 @@ class CsvBuilderStream extends CsvBuilderBase
     public function hasLines()
     {
         return !!$this->lines;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setHeader(array $header)
+    {
+        parent::setHeader($header);
+
+        if (!$this->hasLines() && !$this->getWithoutHeader()) {
+            $columns = array_keys($this->getHeader());
+            $this->writeRow($columns);
+        }
+
+        return $this;
     }
 
     /**
