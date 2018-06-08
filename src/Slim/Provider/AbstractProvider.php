@@ -11,7 +11,6 @@
 namespace Ansas\Slim\Provider;
 
 use Exception;
-use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
 /**
@@ -31,13 +30,6 @@ abstract class AbstractProvider implements ServiceProviderInterface
     {
         return [];
     }
-
-    /**
-     * Register provider.
-     *
-     * @param Container $container
-     */
-    abstract public function register(Container $container);
 
     /**
      * Merge provided $settings with default settings.
