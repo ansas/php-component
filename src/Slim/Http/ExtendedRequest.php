@@ -280,6 +280,26 @@ class ExtendedRequest extends Request
     }
 
     /**
+     * Get Request URI.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param array $params
+     *
+     * @return string
+     */
+    public function getRequestTargetWithParams($params)
+    {
+        $target = $this->getFullPath();
+
+        if ($params) {
+            $target .= '?' . http_build_query($params);
+        }
+
+        return $target;
+    }
+
+    /**
      * Get "HTTP_USER_AGENT" header.
      *
      * Note: This method is not part of the PSR-7 standard.
