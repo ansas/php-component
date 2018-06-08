@@ -10,7 +10,7 @@
 
 namespace Ansas\Slim\Handler;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Slim\Container;
 
 /**
