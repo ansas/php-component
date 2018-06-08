@@ -335,9 +335,9 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Check if specified collection item exists.
      *
-     * @param mixed  $key      The item key.
-     * @param string $regex
-     * @param array  &$matches [optional]
+     * @param  mixed  $key      The item key.
+     * @param  string $regex
+     * @param  array  &$matches [optional]
      *
      * @return bool
      */
@@ -353,8 +353,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Get specified collection item.
      *
-     * @param  mixed $key The item key.
-     * @param int   $mode The mode to check if key exists [optional]
+     * @param  mixed $key  The item key.
+     * @param  int   $mode The mode to check if key exists [optional]
      *
      * @return mixed The item value.
      * @throws Exception
@@ -439,6 +439,29 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
 
         // Compare filter items by provided keys and return new array
         return array_intersect_key($this->data, array_flip($keys));
+    }
+
+    /**
+     * Get specified collection item.
+     *
+     * @param  array $path    The path of array keys.
+     * @param  mixed $default [optional] The default value (if key does not exist).
+     *
+     * @return mixed The item value.
+     */
+    public function path($path, $default = null)
+    {
+        $data = $this->data;
+        $path = (array) $path;
+
+        foreach ($path as $key) {
+            if (!is_array($data) || !array_key_exists($key, $data)) {
+                return $default;
+            }
+            $data = $data[$key];
+        }
+
+        return $data;
     }
 
     /**
@@ -531,7 +554,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Set specified collection item.
      *
-     * @param  mixed $key   The item key. [optional]
+     * @param  mixed $key The item key. [optional]
      *
      * @return $this
      */
