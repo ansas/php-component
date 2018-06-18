@@ -84,6 +84,22 @@ class HtmlTest extends TestCase
         );
     }
 
+    public function testStripEmptyTags()
+    {
+        $this->assertEquals(
+            'abc',
+            Html::stripEmptyTags('<p></p>abc')
+        );
+        $this->assertEquals(
+            '<b>abc</b>',
+            Html::stripEmptyTags('<p></p><b>abc<i> </i></b>')
+        );
+        $this->assertEquals(
+            ' <b>abc</b>',
+            Html::stripEmptyTags('<p title="abc"><i>' . "\n\t\r\n". '</i></p> <b>abc</b>')
+        );
+    }
+
     public function testStripTags()
     {
         $this->assertEquals(

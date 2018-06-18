@@ -43,6 +43,18 @@ class Html
     }
 
     /**
+     * Remove empty tags.
+     *
+     * @param string $html
+     *
+     * @return string
+     */
+    public static function stripEmptyTags($html)
+    {
+        return preg_replace('/<([^<\/>]*)([^<\/>]*)>([\s]*?|(?R))<\/\1>/imsU', '', $html);
+    }
+
+    /**
      * Remove all attributes of all tags.
      *
      * @param string $html
