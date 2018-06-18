@@ -51,7 +51,33 @@ class Html
      */
     public static function stripEmptyTags($html)
     {
-        return preg_replace('/<([^<\/>]*)([^<\/>]*)>([\s]*?|(?R))<\/\1>/imsU', '', $html);
+        return preg_replace('/<([^<\/>]*)([^<\/>]*)>([\s]*?|(?R))*<\/\1>/imsU', '', $html);
+    }
+
+    /**
+     * Fix HTML errors (tags not opening or closing correctly).
+     *
+     * @param string $html
+     *
+     * @return string
+     */
+    public static function fix($html)
+    {
+        // Add dummy tag to prevent DOMDocument from adding unwanted tags
+        $html = '<dummy>' . $html . '</dummy>';
+
+        // Add XML encoding to prevent DOMDocument from saving special chars as HTML entities
+        $html = '<?xml encoding="utf-8" ?>' . $html;
+
+        // Load HTML into document ignoring errors (sanitizes here) without adding html/body tags and doctype
+        $doc = new \DOMDocument();
+        $doc->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR);
+
+        // Save sanitized HTML and remove dummy tags again
+        $html = $doc->saveHTML($doc->documentElement);
+        $html = preg_replace('/^.*<dummy>|<\/dummy>.*$/', '', $html);
+
+        return $html;
     }
 
     /**

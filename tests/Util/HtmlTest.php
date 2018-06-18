@@ -87,8 +87,8 @@ class HtmlTest extends TestCase
     public function testStripEmptyTags()
     {
         $this->assertEquals(
-            'abc',
-            Html::stripEmptyTags('<p></p>abc')
+            'äöü',
+            Html::stripEmptyTags('<p></p>äöü')
         );
         $this->assertEquals(
             '<b>abc</b>',
@@ -96,7 +96,39 @@ class HtmlTest extends TestCase
         );
         $this->assertEquals(
             ' <b>abc</b>',
-            Html::stripEmptyTags('<p title="abc"><i>' . "\n\t\r\n". '</i></p> <b>abc</b>')
+            Html::stripEmptyTags('<p title="abc"><i>' . "\n\t\r\n" . '</i></p> <b>abc</b>')
+        );
+    }
+
+    public function testFix()
+    {
+        $this->assertEquals(
+            'äöü',
+            Html::fix('äöü')
+        );
+        $this->assertEquals(
+            '<p>äöü</p>',
+            Html::fix('<p>äöü</p></p>')
+        );
+        $this->assertEquals(
+            '<p>abc</p>',
+            Html::fix('<p>abc</p>')
+        );
+        $this->assertEquals(
+            '<b>abc</b>',
+            Html::fix('</p><b>abc</b>')
+        );
+        $this->assertEquals(
+            '<body>abc</body>',
+            Html::fix('<html><body>abc</body></html>')
+        );
+        $this->assertEquals(
+            '<body>abc</body>',
+            Html::fix('<html><body>abc</u></body></b></html>')
+        );
+        $this->assertEquals(
+            '<body>abc</body>',
+            Html::fix('<html><body>abc</u></body></b></html>')
         );
     }
 
@@ -130,5 +162,18 @@ class HtmlTest extends TestCase
             '<b>abc' . "\n\n" . '</b>',
             Html::stripTags('<p><b>abc' . "\n\n" . '</b></p>', 'b')
         );
+    }
+
+    public function testCombination()
+    {
+        $actual   = '<ol><li>bla<br /><a href="">bli</li></ol></div>';
+        $expected = "<ol><li>bla<br>bli</li></ol>";
+
+        $actual = Html::stripTags($actual, ['strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li', 'p', 'div', 'br']);
+        $actual = Html::stripEmptyTags($actual);
+        $actual = Html::stripAttributes($actual);
+        $actual = Html::fix($actual);
+
+        $this->assertEquals($expected, $actual);
     }
 }
