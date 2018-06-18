@@ -47,6 +47,24 @@ class Path
     }
 
     /**
+     * Combine path parts.
+     *
+     * @param string $part1
+     * @param string $part2
+     *
+     * @return string
+     * @throws InvalidArgumentException
+     */
+    public static function combine(string $part1, string $part2)
+    {
+        if ($part1 && $part2) {
+            return sprintf("%s/%s", rtrim($part1, '/'), ltrim($part2, '/'));
+        }
+
+        throw new InvalidArgumentException("All parts must be filled");
+    }
+
+    /**
      * Creates a directory / path if it does not already exist.
      *
      * @param string $path
