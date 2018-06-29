@@ -51,6 +51,15 @@ class ExtendedRouter extends Router
     }
 
     /**
+     * Clear all defined routes.
+     */
+    public function clearRoutes()
+    {
+        $this->routes       = [];
+        $this->routeCounter = 0;
+    }
+
+    /**
      * Get the language identifier.
      *
      * @return string|null
@@ -100,10 +109,6 @@ class ExtendedRouter extends Router
      */
     public function relativePathFor($name, array $data = [], array $queryParams = [], $lang = null)
     {
-        if (!$name) {
-            throw new InvalidArgumentException("Invalid empty data path name");
-        }
-
         // Get values needed for localized paths
         $identifier = $this->getLanguageIdentifier();
         $locales    = $this->getLocalization();
