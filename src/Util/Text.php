@@ -245,11 +245,43 @@ class Text
      * Convert to upper string.
      *
      * @param string $string
+     * @param bool   $trim [optional]
+     *
+     * @return string
+     */
+    public static function toSingleWhitespace($string, $trim = true)
+    {
+        $string = preg_replace("/\r|\n|\t/", " ", $string);
+        $string = preg_replace("/ {2,}/", " ", $string);
+
+        if ($trim) {
+            $string = self::trim($string);
+        }
+
+        return $string;
+    }
+
+    /**
+     * Convert to upper string.
+     *
+     * @param string $string
      *
      * @return string
      */
     public static function toUpper($string)
     {
         return self::toCase($string, self::UPPER);
+    }
+
+    /**
+     * Trim string.
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public static function trim($string)
+    {
+        return trim($string);
     }
 }
