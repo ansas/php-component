@@ -240,7 +240,8 @@ class Localization extends Locales
 
         // Set locale (must be incl. code set!)
         $locale = $locale . '.' . self::CODE_SET;
-        setlocale(LC_MESSAGES, $locale);
+        setlocale(LC_ALL, $locale);
+        setlocale(LC_NUMERIC, 'C');
 
         // Bind (virtual) locale and domain for gettext() usage
         bindtextdomain($domain, $path);
