@@ -73,91 +73,63 @@ class Locale
     }
 
     /**
-     * Get country code.
+     * Sanitize given country from locale.
      *
-     * If param $case is not set the result will be in UPPER case (e. g. "DE") by default.
+     * Must be a simple locale without code set, currency or similar (e. g. "de_DE" or "de-de" or "DE").
      *
-     * @param string $case [optional] Convert value to case (Text::LOWER, Text::UPPER or Text::NONE)
+     * @param string|Locale $locale
+     * @param string|Locale $default [optional] The default locale to return if $locale is invalid
      *
-     * @return string
+     * @return null|string
      */
-    public function getCountry($case = Text::NONE)
+    public static function sanitizeCountry($locale, $default = null)
     {
-        return Text::toCase(\Locale::getRegion($this->locale), $case);
+        if ($locale instanceof Locale) {
+            return $locale->getCountry();
+        }
+
+        if ($default) {
+            $default = Locale::sanitizeCountry($default, null);
+        }
+
+        $locale = (string) $locale;
+        $locale = trim($locale);
+
+        if (!$locale || !preg_match("/(?<country>[a-z]{2})$/ui", $locale, $found)) {
+            return $default;
+        }
+
+        return Text::toUpper($found['country']);
     }
 
     /**
-     * Get country name.
+     * Sanitize given language from locale.
      *
-     * If param $inLocale is not set the result will be in the local original language.
+     * Must be a simple locale without code set, currency or similar (e. g. "de_DE" or "de-de" or "de").
      *
-     * @param Locale|string $inLocale [optional] Set the locale to display value in.
+     * @param string|Locale $locale
+     * @param string|Locale $default [optional] The default locale to return if $locale is invalid
      *
-     * @return string
+     * @return null|string
      */
-    public function getCountryName($inLocale = null)
+    public static function sanitizeLanguage($locale, $default = null)
     {
-        $inLocale = Locale::sanitizeLocale($inLocale, $this->locale);
+        if ($locale instanceof Locale) {
+            return $locale->getLanguage();
+        }
 
-        return \Locale::getDisplayRegion($this->locale, $inLocale);
-    }
+        if ($default) {
+            $default = Locale::sanitizeLanguage($default, null);
+        }
 
-    /**
-     * Get language code.
-     *
-     * If param $case is not set the result will be in LOWER case (e. g. "de") by default.
-     *
-     * @param string $case [optional] Convert value to case (Text::LOWER, Text::UPPER or Text::NONE)
-     *
-     * @return string
-     */
-    public function getLanguage($case = Text::NONE)
-    {
-        return Text::toCase(\Locale::getPrimaryLanguage($this->locale), $case);
-    }
+        $locale = (string) $locale;
+        $locale = trim($locale);
 
-    /**
-     * Get language name.
-     *
-     * If param $inLocale is not set the result will be in the local original language.
-     *
-     * @param Locale|string $inLocale [optional] Set the locale to display value in.
-     *
-     * @return string
-     */
-    public function getLanguageName($inLocale = null)
-    {
-        $inLocale = Locale::sanitizeLocale($inLocale, $this->locale);
+        if (!$locale || !preg_match("/^(?<language>[a-z]{2})/ui", $locale, $found)) {
+            return $default;
+        }
 
-        return \Locale::getDisplayLanguage($this->locale, $inLocale);
-    }
-
-    /**
-     * Get locale code.
-     *
-     * The result will always be in the sanitized form (e. g. "de_DE").
-     *
-     * @return string
-     */
-    public function getLocale()
-    {
-        return $this->locale;
-    }
-
-    /**
-     * Get locale name.
-     *
-     * If param $inLocale is not set the result will be in the local original language.
-     *
-     * @param Locale|string $inLocale [optional] Set the locale to display value in.
-     *
-     * @return string
-     */
-    public function getLocaleName($inLocale = null)
-    {
-        $inLocale = Locale::sanitizeLocale($inLocale, $this->locale);
-
-        return \Locale::getDisplayName($this->locale, $inLocale);
+        return Text::toLower($found['language']);
     }
 
     /**
@@ -191,5 +163,129 @@ class Locale
         $found['country']  = Text::toUpper($found['country']);
 
         return sprintf("%s_%s", $found['language'], $found['country']);
+    }
+
+    /**
+     * Get country code.
+     *
+     * If param $case is not set the result will be in UPPER case (e. g. "DE") by default.
+     *
+     * @param string $case [optional] Convert value to case (Text::LOWER, Text::UPPER or Text::NONE)
+     *
+     * @return string
+     */
+    public function getCountry($case = Text::NONE)
+    {
+        return Text::toCase(\Locale::getRegion($this->locale), $case);
+    }
+
+    /**
+     * Get country name.
+     *
+     * If param $inLocale is not set the result will be in the local original language.
+     *
+     * @param Locale|string $inLocale [optional] Set the locale to display value in.
+     *
+     * @return string
+     */
+    public function getCountryName($inLocale = null)
+    {
+        $inLocale = Locale::sanitizeLocale($inLocale, $this->locale);
+
+        return \Locale::getDisplayRegion($this->locale, $inLocale);
+    }
+
+    /**
+     * Get country name for specified locale or country-code.
+     *
+     * If param $inLocale is not set the result will be in the local original language.
+     *
+     * @param Locale|string $locale   Locale (or locale part "country") to get name for.
+     * @param Locale|string $inLocale [optional] Set the locale to display value in.
+     *
+     * @return string
+     */
+    public function getCountryNameFor($locale, $inLocale = null)
+    {
+        $locale   = '_' . Locale::sanitizeCountry($locale);
+        $inLocale = Locale::sanitizeLanguage($inLocale, $this->locale);
+
+        return \Locale::getDisplayRegion($locale, $inLocale);
+    }
+
+    /**
+     * Get language code.
+     *
+     * If param $case is not set the result will be in LOWER case (e. g. "de") by default.
+     *
+     * @param string $case [optional] Convert value to case (Text::LOWER, Text::UPPER or Text::NONE)
+     *
+     * @return string
+     */
+    public function getLanguage($case = Text::NONE)
+    {
+        return Text::toCase(\Locale::getPrimaryLanguage($this->locale), $case);
+    }
+
+    /**
+     * Get language name.
+     *
+     * If param $inLocale is not set the result will be in the local original language.
+     *
+     * @param Locale|string $inLocale [optional] Set the locale to display value in.
+     *
+     * @return string
+     */
+    public function getLanguageName($inLocale = null)
+    {
+        $inLocale = Locale::sanitizeLocale($inLocale, $this->locale);
+
+        return \Locale::getDisplayLanguage($this->locale, $inLocale);
+    }
+
+    /**
+     * Get language name for specified locale or language-code.
+     *
+     * If param $inLocale is not set the result will be in the local original language.
+     *
+     * @param Locale|string $locale   Locale (or locale part "language") to get name for.
+     * @param Locale|string $inLocale [optional] Set the locale to display value in.
+     *
+     * @return string
+     */
+    public function getLanguageNameFor($locale, $inLocale = null)
+    {
+        $locale   = Locale::sanitizeLanguage($locale) . '_';
+        $inLocale = Locale::sanitizeLanguage($inLocale, $this->locale);
+
+        return \Locale::getDisplayLanguage($locale, $inLocale);
+    }
+
+    /**
+     * Get locale code.
+     *
+     * The result will always be in the sanitized form (e. g. "de_DE").
+     *
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * Get locale name.
+     *
+     * If param $inLocale is not set the result will be in the local original language.
+     *
+     * @param Locale|string $inLocale [optional] Set the locale to display value in.
+     *
+     * @return string
+     */
+    public function getLocaleName($inLocale = null)
+    {
+        $inLocale = Locale::sanitizeLocale($inLocale, $this->locale);
+
+        return \Locale::getDisplayName($this->locale, $inLocale);
     }
 }
