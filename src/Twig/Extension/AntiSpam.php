@@ -34,16 +34,6 @@ class AntiSpam extends Twig_Extension
     }
 
     /**
-     * Returns the name of the extension.
-     *
-     * @return string The extension name
-     */
-    public function getName()
-    {
-        return 'antiSpam';
-    }
-
-    /**
      * Returns a string converted to html entities.
      *
      * @see http://goo.gl/LPhtJ

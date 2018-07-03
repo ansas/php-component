@@ -30,16 +30,6 @@ class ExtendedTests extends Twig_Extension
         return $filters;
     }
 
-    /**
-     * Returns the name of the extension.
-     *
-     * @return string The extension name
-     */
-    public function getName()
-    {
-        return 'extendedTests';
-    }
-
     function _instanceof($var, $instance)
     {
         return $var instanceof $instance;

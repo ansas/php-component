@@ -34,14 +34,4 @@ class Format extends Twig_Extension
             new Twig_SimpleFilter('readabletime', [Number::class, 'toReadableTime']),
         ];
     }
-
-    /**
-     * Returns the name of the extension.
-     *
-     * @return string The extension name
-     */
-    public function getName()
-    {
-        return 'format';
-    }
 }
