@@ -12,6 +12,7 @@ namespace Ansas\Twig\Extension;
 
 use Twig_Extension;
 use Twig_SimpleFilter;
+use Twig_SimpleFunction;
 
 /**
  * Class PhpFunctions
@@ -34,16 +35,27 @@ class PhpFunctions extends Twig_Extension
             new Twig_SimpleFilter('getclass', 'get_class'),
             new Twig_SimpleFilter('strlen', 'strlen'),
             new Twig_SimpleFilter('count', 'count'),
+            new Twig_SimpleFilter('php_*', [$this, '_callPhpFunction']),
         ];
     }
 
     /**
-     * Returns the name of the extension.
+     * Returns a list of functions to add to the existing list.
      *
-     * @return string The extension name
+     * @return array An array of functions
      */
-    public function getName()
+    public function getFunctions()
     {
-        return 'phpfunctions';
+        return [
+            new Twig_SimpleFunction('php_*', [$this, '_callPhpFunction']),
+        ];
+    }
+
+    function _callPhpFunction()
+    {
+        $args = func_get_args();
+        $func = array_shift($args);
+
+        return @call_user_func_array($func, $args);
     }
 }
