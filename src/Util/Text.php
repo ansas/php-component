@@ -242,7 +242,7 @@ class Text
     }
 
     /**
-     * Convert to upper string.
+     * Convert to single line string without multiple whitespaces.
      *
      * @param string $string
      * @param bool   $trim [optional]
