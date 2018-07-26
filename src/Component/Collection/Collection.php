@@ -492,7 +492,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     public function removeEmpty($considerEmpty = [''])
     {
         foreach ($this->all() as $key => $value) {
-            if (!is_scalar($value)) {
+            if (!is_scalar($value) && !is_null($value)) {
                 continue;
             }
             foreach ($considerEmpty as $empty) {
