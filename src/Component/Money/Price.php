@@ -10,6 +10,8 @@
 
 namespace Ansas\Component\Money;
 
+use Ansas\Component\Convert\ConvertPrice;
+use Ansas\Util\Text;
 use InvalidArgumentException;
 use LogicException;
 use Traversable;
@@ -134,7 +136,11 @@ class Price extends PriceBase
         $price = new static(null, $priceType);
 
         foreach ($properties as $property => $value) {
-            $price->set($property, $value, false);
+            $value = Text::trim($value);
+            if (mb_strlen($value)) {
+                $value = ConvertPrice::getInstance()->sanitize($value);
+                $price->set($property, $value, false);
+            }
         }
 
         if (count($properties) > 1) {
