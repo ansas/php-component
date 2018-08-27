@@ -69,9 +69,10 @@ class Workday extends DateTime
     public function modify($modify)
     {
         if (preg_match('/(?<direction>next|last)\s+workday/ui', $modify, $matches)) {
-            $sign = strtolower($matches['direction']) == 'next' ? '+' : '-';
-            while (!$this->isWorkday()) {
-                $this->modify("{$sign} 1 day");
+            if (strtolower($matches['direction']) == 'next') {
+                $this->nextWorkday();
+            } else {
+                $this->lastWorkday();
             }
             $modify = str_replace($matches[0], '', $modify);
         }
@@ -108,6 +109,30 @@ class Workday extends DateTime
             if ($this->isWorkday()) {
                 $done++;
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function lastWorkday()
+    {
+        if (!$this->isWorkday()) {
+            $this->addWorkdays(-1);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function nextWorkday()
+    {
+        if (!$this->isWorkday()) {
+            $this->addWorkdays(+1);
         }
 
         return $this;

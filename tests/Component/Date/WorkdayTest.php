@@ -109,8 +109,16 @@ class WorkdayTest extends TestCase
     public function testNextLastWorkday()
     {
         $date = $this->createWorkdayIn2017("2017-04-14");
+        $date->nextWorkday();
+        $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-04-18");
+
+        $date = $this->createWorkdayIn2017("2017-04-14");
         $date->modify('next workday');
         $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-04-18");
+
+        $date = $this->createWorkdayIn2017("2017-04-14");
+        $date->lastWorkday();
+        $this->assertEquals($date->format($date::DAY_DATE_FORMAT), "2017-04-13");
 
         $date = $this->createWorkdayIn2017("2017-04-14");
         $date->modify('last workday');
