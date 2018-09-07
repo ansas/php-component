@@ -20,7 +20,7 @@ use Pimple\Container;
  * - Adds the "default" locale your to translate parts are written in and
  * - Finds all supported translated locales dynamically.
  *
- * @package App\Provider
+ * @package Ansas\Slim\Provider
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class LocaleProvider extends AbstractProvider

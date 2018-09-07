@@ -18,7 +18,7 @@ use Pimple\Container;
  *
  * - Enables config (settings) override
  *
- * @package App\Provider
+ * @package Ansas\Slim\Provider
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class ConfigProvider extends AbstractProvider

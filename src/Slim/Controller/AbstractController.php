@@ -79,13 +79,4 @@ abstract class AbstractController
     protected function registerDependencies()
     {
     }
-
-    /**
-     * Set-up controller (if needed).
-     *
-     * @return void
-     */
-    protected function setUp()
-    {
-    }
 }

@@ -19,7 +19,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * Override URI data with proxy header data
  *
  * @package Ansas\Slim\Middleware
- * @author  Ansas Meyer <mail@preigu.com>
+ * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class AllowProxyRequest
 {

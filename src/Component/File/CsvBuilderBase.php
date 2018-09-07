@@ -16,7 +16,7 @@ use Exception;
  * Class CsvBuilderBase
  *
  * @package Ansas\Component\File
- * @author  Ansas Meyer <mail@preigu.com>
+ * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 abstract class CsvBuilderBase extends CsvBase
 {

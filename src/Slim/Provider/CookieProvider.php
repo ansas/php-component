@@ -16,7 +16,7 @@ use Pimple\Container;
 /**
  * Class CookieProvider
  *
- * @package App\Provider
+ * @package Ansas\Slim\Provider
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class CookieProvider extends AbstractProvider

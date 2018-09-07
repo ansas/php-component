@@ -34,6 +34,7 @@ trait ContainerInjectTrait
     public function __construct(ContainerInterface $container)
     {
         $this->setContainer($container);
+        $this->setUp();
     }
 
     /**
@@ -84,5 +85,14 @@ trait ContainerInjectTrait
         $this->container = $container;
 
         return $this;
+    }
+
+    /**
+     * Set-up (if needed).
+     *
+     * @return void
+     */
+    protected function setUp()
+    {
     }
 }
