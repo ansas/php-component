@@ -33,17 +33,15 @@ use Slim\Views\Twig;
 trait TwigHandlerTrait
 {
     /**
-     * Renders template with previous set data.
+     * Fetches template with previous set data.
      *
-     * @param Request  $request
-     * @param Response $response
-     * @param string   $template The template to render
-     * @param int      $status   [optional] Response status code
+     * @param Request $request
+     * @param string  $template The template to render
      *
-     * @return Response
+     * @return string
      * @throws Exception
      */
-    public function renderTemplate(Request $request, Response $response, $template, $status = null)
+    public function fetchTemplate(Request $request, $template)
     {
         if (!$this->view instanceof Twig) {
             throw new Exception("Twig provider not registered.");
@@ -56,9 +54,7 @@ trait TwigHandlerTrait
                 case 'request':
                     $value = $request;
                     break;
-                case 'response':
-                    $value = $response;
-                    break;
+
                 default:
                     $value = isset($this->container[$key]) ? $this->container[$key] : null;
                     break;
@@ -67,15 +63,32 @@ trait TwigHandlerTrait
             $this->view->getEnvironment()->addGlobal($map, $value);
         }
 
-        if ($status) {
-            $response = $response->withStatus($status);
-        }
-
-        $response = $this->view->render(
-            $response,
+        $result = $this->view->fetch(
             $template . $this->settings['view']['extension'],
             $this->data->all()
         );
+
+        return $result;
+    }
+
+    /**
+     * Renders template with previous set data.
+     *
+     * @param Request  $request
+     * @param Response $response
+     * @param string   $template The template to render
+     * @param int      $status   [optional] Response status code
+     *
+     * @return Response
+     * @throws Exception
+     */
+    public function renderTemplate(Request $request, Response $response, $template, $status = null)
+    {
+        $response->getBody()->write($this->fetchTemplate($request, $template));
+
+        if ($status) {
+            $response = $response->withStatus($status);
+        }
 
         return $response;
     }
