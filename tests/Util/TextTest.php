@@ -20,6 +20,44 @@ use PHPUnit\Framework\TestCase;
  */
 class TextTest extends TestCase
 {
+    public function testMaxCharWidth()
+    {
+        $this->assertEquals(
+            0,
+            Text::maxCharWidth('')
+        );
+
+        $this->assertEquals(
+            1,
+            Text::maxCharWidth(' ')
+        );
+
+        $this->assertEquals(
+            1,
+            Text::maxCharWidth('abc')
+        );
+
+        $this->assertEquals(
+            2,
+            Text::maxCharWidth('äöüß')
+        );
+
+        $this->assertEquals(
+            3,
+            Text::maxCharWidth('€')
+        );
+
+        $this->assertEquals(
+            3,
+            Text::maxCharWidth('Übrig: 123,56 €')
+        );
+
+        $this->assertEquals(
+            4,
+            Text::maxCharWidth('🌟')
+        );
+    }
+
     public function testStripEmails()
     {
         $this->assertEquals(

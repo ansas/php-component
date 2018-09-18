@@ -70,6 +70,26 @@ class Text
     }
 
     /**
+     * Get max bytes needed per char.
+     *
+     * @param string $string
+     *
+     * @return int
+     */
+    public static function maxCharWidth($string)
+    {
+        $chars = preg_split('//u', $string, null, PREG_SPLIT_NO_EMPTY);
+
+        if (!$chars) {
+            return 0;
+        }
+
+        $sizes = array_map('strlen', $chars);
+
+        return max($sizes);
+    }
+
+    /**
      * Remove emails in text.
      *
      * The email must atleast contain an @ and have a second-level domain.
