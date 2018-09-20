@@ -42,6 +42,23 @@ class Arr
     /**
      * Get specified collection item.
      *
+     * @param  array $data The data.
+     * @param  mixed $key  The key to move to end of data.
+     *
+     * @return array The result.
+     */
+    public static function moveKeyToEnd(array $data, $key)
+    {
+        if (array_key_exists($key, $data)) {
+            $data += array_splice($data, array_search($key, array_keys($data)), 1);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get specified collection item.
+     *
      * @param  array $data    The data.
      * @param  array $path    The path of array keys.
      * @param  mixed $default [optional] The default value (if key does not exist).
