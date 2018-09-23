@@ -110,6 +110,37 @@ class Path
     }
 
     /**
+     * Change goToPath into go/to/path (GoToPath => /go/to/path)
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    public static function fromCamelCase(string $path)
+    {
+        $path = preg_replace('/[A-Z]/u', '/$0', $path);
+        $path = Text::toLower($path);
+
+        return $path;
+    }
+
+    /**
+     * Change go/to/path into goToPath (/go/to/path => GoToPath)
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    public static function toCamelCase(string $path)
+    {
+        $path = ucwords($path, '/');
+        $path = lcfirst($path);
+        $path = str_replace('/', '', $path);
+
+        return $path;
+    }
+
+    /**
      * Get the "project" root path.
      *
      * For an optionally specified $rootForPath (default is start script path)
