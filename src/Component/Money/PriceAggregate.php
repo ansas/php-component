@@ -217,7 +217,7 @@ class PriceAggregate extends PriceBase
         $old  = $this->get($property);
         $diff = Price::round($new - $old);
 
-        if (abs($diff) <= abs($tolerance)) {
+        if (abs($diff) > abs($tolerance)) {
             $price = Price
                 ::create()
                 ->setGross($diff)
