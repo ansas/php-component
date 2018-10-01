@@ -126,16 +126,19 @@ class PriceAggregateTest extends TestCase
         $inputJson = '{"gross":13.96,"net":12.91,"perTaxRate":{"7":{"gross":12.56,"net":11.74,"percent":7},"19":{"gross":1.4,"net":1.17,"percent":19}}}';
         $adjustedJson = '{"gross":13.95,"net":12.9,"perTaxRate":{"7":{"gross":12.55,"net":11.73,"percent":7},"19":{"gross":1.4,"net":1.17,"percent":19}}}';
 
+        // Changes (as tolerance is okay)
         $priceAggregate = PriceAggregate::createFromJson($inputJson);
-
-        // No changes (as tolerance is okay)
         $priceAggregate->adjustRoundingError('gross', 13.95, 0.02);
-        $this->assertEquals($inputJson, $priceAggregate->toJson());
-        $priceAggregate->adjustRoundingError('gross', 13.95, -0.01);
-        $this->assertEquals($inputJson, $priceAggregate->toJson());
-
-        // Changes (as tolerance is NOT okay)
-        $priceAggregate->adjustRoundingError('gross', 13.95, 0);
         $this->assertEquals($adjustedJson, $priceAggregate->toJson());
+
+        // Changes (as tolerance is okay)
+        $priceAggregate = PriceAggregate::createFromJson($inputJson);
+        $priceAggregate->adjustRoundingError('gross', 13.95, -0.01);
+        $this->assertEquals($adjustedJson, $priceAggregate->toJson());
+
+        // No changes (as tolerance is NOT okay)
+        $priceAggregate = PriceAggregate::createFromJson($inputJson);
+        $priceAggregate->adjustRoundingError('gross', 13.95, 0);
+        $this->assertEquals($inputJson, $priceAggregate->toJson());
     }
 }
