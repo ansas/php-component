@@ -291,7 +291,7 @@ class ThriftyFileSession implements SessionHandlerInterface
         // which is the session.gc_maxlifetime value
         $glob = $this->getPathForSessionId('*');
         foreach (glob($glob) as $file) {
-            if (filemtime($file) + $ttl < time()) {
+            if (@filemtime($file) + $ttl < time()) {
                 @unlink($file);
             }
         }
