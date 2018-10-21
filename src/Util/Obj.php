@@ -11,17 +11,17 @@
 namespace Ansas\Util;
 
 /**
- * Class Object
+ * Class Obj
  *
  * @package Ansas\Util
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
-class Object
+class Obj
 {
     /**
      * Convert object to array.
      *
-     * @param object $object
+     * @param Obj $object
      *
      * @return array
      */
@@ -33,7 +33,7 @@ class Object
     /**
      * Convert object to string.
      *
-     * @param object $object
+     * @param Obj $object
      *
      * @return string
      */
