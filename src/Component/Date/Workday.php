@@ -27,6 +27,8 @@ class Workday extends DateTime
         "2018-05-21" => "Pfingstmontag",
         "2018-05-31" => "Fronleichnam",
         "2018-10-03" => "Tag der Deutschen Einheit",
+        "2018-10-31" => "Reformationstag",
+        "2018-11-01" => "Allerheiligen",
         "2018-12-25" => "1. Weihnachtstag",
         "2018-12-26" => "2. Weihnachtstag",
     ];
