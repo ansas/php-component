@@ -23,8 +23,10 @@ class Time
      *
      * @param float $seconds
      */
-    public static function sleep(float $seconds)
+    public static function sleep($seconds)
     {
+        $seconds = (float) $seconds;
+
         if ($seconds > 0) {
             usleep($seconds * 1000000);
         }
