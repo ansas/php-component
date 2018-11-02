@@ -111,7 +111,7 @@ class File
     }
 
     /**
-     * Check if file exists.
+     * Check if file exists and is file.
      *
      * @param string $file
      *

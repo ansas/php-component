@@ -73,7 +73,7 @@ class Path
      *
      * @throws IOException
      */
-    public static function create(string $path, int $mode = 0777, bool $recursive = true)
+    public static function create(string $path, $mode = 0777, $recursive = true)
     {
         if (@is_dir($path)) {
             return;
@@ -94,7 +94,7 @@ class Path
      *
      * @throws IOException
      */
-    public static function delete(string $path, bool $recursive = false)
+    public static function delete(string $path, $recursive = false)
     {
         Path::validatePath($path);
 
@@ -107,6 +107,18 @@ class Path
         }
 
         throw new IOException(sprintf("Cannot delete path %s.", $path));
+    }
+
+    /**
+     * Check if path exists and is directory.
+     *
+     * @param string $path
+     *
+     * @return bool
+     */
+    public static function exists($path)
+    {
+        return file_exists($path) && is_dir($path);
     }
 
     /**
