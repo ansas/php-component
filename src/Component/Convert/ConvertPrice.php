@@ -156,7 +156,10 @@ class ConvertPrice
             }
 
             // convert: to internal int structure
+            $price = (float) $price;
             $price = $price * 100;
+        } else {
+            $price = (float) $price;
         }
 
         $this->price = round($price);
