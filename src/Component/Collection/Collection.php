@@ -605,14 +605,14 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
-     * Switch values of two keys.
+     * Swap / switch values of two keys.
      *
      * @param mixed $a
      * @param mixed $b
      *
      * @return $this
      */
-    public function switch($a, $b)
+    public function swap($a, $b)
     {
         $oldA = $this->get($a);
         $oldB = $this->get($b);
