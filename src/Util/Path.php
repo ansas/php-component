@@ -37,7 +37,7 @@ class Path
      *
      * @throws IOException
      */
-    public static function chdir(string $path)
+    public static function chdir($path)
     {
         if (@chdir($path)) {
             return;
@@ -55,7 +55,7 @@ class Path
      * @return string
      * @throws InvalidArgumentException
      */
-    public static function combine(string $part1, string $part2)
+    public static function combine($part1, $part2)
     {
         if ($part1 && $part2) {
             return sprintf("%s/%s", rtrim($part1, '/'), ltrim($part2, '/'));
@@ -73,7 +73,7 @@ class Path
      *
      * @throws IOException
      */
-    public static function create(string $path, $mode = 0777, $recursive = true)
+    public static function create($path, $mode = 0777, $recursive = true)
     {
         if (@is_dir($path)) {
             return;
@@ -94,7 +94,7 @@ class Path
      *
      * @throws IOException
      */
-    public static function delete(string $path, $recursive = false)
+    public static function delete($path, $recursive = false)
     {
         Path::validatePath($path);
 
@@ -128,7 +128,7 @@ class Path
      *
      * @return string
      */
-    public static function fromCamelCase(string $path)
+    public static function fromCamelCase($path)
     {
         $path = preg_replace('/[A-Z]/u', '/$0', $path);
         $path = Text::toLower($path);
@@ -143,7 +143,7 @@ class Path
      *
      * @return string
      */
-    public static function toCamelCase(string $path)
+    public static function toCamelCase($path)
     {
         $path = ucwords($path, '/');
         $path = lcfirst($path);
@@ -194,7 +194,7 @@ class Path
      * @param string|array $fileFilterRegex [optional] Regex of files to purge (can be negated to skip files)
      * @param string|array $dirFilterRegex  [optional] Regex of dirs to purge (can be negated to skip dirs)
      */
-    public static function purge(string $path, $fileFilterRegex = null, $dirFilterRegex = null)
+    public static function purge($path, $fileFilterRegex = null, $dirFilterRegex = null)
     {
         Path::validatePath($path);
 

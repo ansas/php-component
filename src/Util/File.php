@@ -149,7 +149,7 @@ class File
      *
      * @throws IOException
      */
-    public static function touch(string $file, int $time = null)
+    public static function touch($file, $time = null)
     {
         $touch = $time ? @touch($file, $time) : @touch($file);
         if (true !== $touch) {
@@ -165,7 +165,7 @@ class File
      *
      * @throws IOException
      */
-    public static function unzip(string $file, string $pathToExtractTo = null)
+    public static function unzip($file, $pathToExtractTo = null)
     {
         $call = "ionice -c 3 unzip -q -j -o -DD {$file}";
         if ($pathToExtractTo) {
