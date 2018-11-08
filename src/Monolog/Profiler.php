@@ -8,8 +8,6 @@
  * @link    https://github.com/ansas/php-component
  */
 
-declare(strict_types = 1);
-
 namespace Ansas\Monolog;
 
 use Ansas\Component\Collection\Collection;
