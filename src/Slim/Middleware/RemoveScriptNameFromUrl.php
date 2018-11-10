@@ -45,8 +45,8 @@ class RemoveScriptNameFromUrl
         $basePath      = $uri->getBasePath();
         $requestTarget = $request->getRequestTarget();
 
-        if (0 === strpos($requestTarget, $basePath)) {
-            $requestTarget = substr($requestTarget, strlen($basePath));
+        if (strlen($basePath) && 0 === strpos($requestTarget, $basePath)) {
+            $requestTarget = mb_substr($requestTarget, mb_strlen($basePath));
 
             return $response->withHeader('Location', $requestTarget);
         }
