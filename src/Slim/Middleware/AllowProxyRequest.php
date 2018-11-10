@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class Proxy
+ * Class AllowProxyRequest
  *
  * Override URI data with proxy header data
  *
