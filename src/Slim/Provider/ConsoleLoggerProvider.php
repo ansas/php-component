@@ -90,12 +90,6 @@ class ConsoleLoggerProvider extends AbstractProvider
             $errorHandler->setFormatter($formatter);
             $logger->pushHandler($errorHandler);
 
-            // Register logger as default PHP error, exception and shutdown handler
-            // Note: Make sure only this handler handles errors (set $callPrevious to false)
-            $errorHandler = ErrorHandler::register($logger, $errorLevelMap = false, $exceptionLevelMap = false);
-            $errorHandler->registerErrorHandler($levelMap = [], $callPrevious = false);
-            $errorHandler->registerExceptionHandler($levelMap = [], $callPrevious = false);
-
             return $logger;
         };
     }
