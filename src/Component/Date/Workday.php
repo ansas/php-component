@@ -13,11 +13,20 @@ namespace Ansas\Component\Date;
 use DateTime;
 use DateTimeZone;
 
+/**
+ * Class Workday
+ *
+ * @package Ansas\Component\Date
+ * @author  Ansas Meyer <mail@ansas-meyer.de>
+ */
 class Workday extends DateTime
 {
     const DAY_DATE_FORMAT    = 'Y-m-d';
     const DAY_WEEKDAY_FORMAT = 'N';
 
+    /**
+     * @var array List of dates to consider as holiday
+     */
     protected $holidays = [
         "2018-01-01" => "Neujahrstag",
         "2018-03-30" => "Karfreitag",
@@ -31,8 +40,24 @@ class Workday extends DateTime
         "2018-11-01" => "Allerheiligen",
         "2018-12-25" => "1. Weihnachtstag",
         "2018-12-26" => "2. Weihnachtstag",
+
+        "2019-01-01" => "Neujahrstag",
+        "2019-04-19" => "Karfreitag",
+        "2019-04-22" => "Ostermontag",
+        "2019-05-01" => "Tag der Arbeit",
+        "2019-05-30" => "Christi Himmelfahrt",
+        "2019-06-10" => "Pfingstmontag",
+        "2019-06-20" => "Fronleichnam",
+        "2019-10-03" => "Tag der Deutschen Einheit",
+        "2019-10-31" => "Reformationstag",
+        "2019-11-01" => "Allerheiligen",
+        "2019-12-25" => "1. Weihnachtstag",
+        "2019-12-26" => "2. Weihnachtstag",
     ];
 
+    /**
+     * @var array List of days to consider as weekend
+     */
     protected $weekend = [
         6,
         7,
@@ -52,7 +77,6 @@ class Workday extends DateTime
 
     public function __clone()
     {
-        // TODO: Implement __clone() method.
     }
 
     /**
