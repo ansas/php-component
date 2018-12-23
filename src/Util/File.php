@@ -31,7 +31,7 @@ class File
     public static function chmod($file, $mode)
     {
         if (!@chmod($file, $mode)) {
-            throw new IOException(sprintf("Cannot chmod %s to %s.", $file, $mode));
+            throw new IOException(sprintf("Cannot chmod %s to %s", $file, $mode));
         }
     }
 
@@ -44,13 +44,13 @@ class File
     public static function getContent($file)
     {
         if (!File::exists($file)) {
-            throw new IOException(sprintf("File %s does not exist.", $file));
+            throw new IOException(sprintf("File %s does not exist", $file));
         }
 
         $content = file_get_contents($file);
 
         if (false === $content) {
-            throw new IOException(sprintf("Cannot get content from file %s.", $file));
+            throw new IOException(sprintf("Cannot get content from file %s", $file));
         }
 
         return $content;
@@ -69,7 +69,7 @@ class File
         $bytesWritten = @file_put_contents($file, $content, $flags);
 
         if (false === $bytesWritten) {
-            throw new IOException(sprintf("Cannot put content to file %s.", $file));
+            throw new IOException(sprintf("Cannot put content to file %s", $file));
         }
 
         return $bytesWritten;
@@ -86,7 +86,7 @@ class File
     public static function copy($pathOld, $pathNew)
     {
         if (!@copy($pathOld, $pathNew)) {
-            throw new IOException(sprintf("Cannot copy %s to %s.", $pathOld, $pathNew));
+            throw new IOException(sprintf("Cannot copy %s to %s", $pathOld, $pathNew));
         }
     }
 
@@ -107,7 +107,7 @@ class File
             return;
         }
 
-        throw new IOException(sprintf("Cannot delete %s.", $file));
+        throw new IOException(sprintf("Cannot delete %s", $file));
     }
 
     /**
@@ -133,11 +133,11 @@ class File
     public static function move($pathOld, $pathNew)
     {
         if (!is_file($pathOld)) {
-            throw new IOException(sprintf("Old file %s is not a file.", $pathOld));
+            throw new IOException(sprintf("Old file %s is not a file", $pathOld));
         }
 
         if (!@rename($pathOld, $pathNew)) {
-            throw new IOException(sprintf("Cannot rename %s to %s.", $pathOld, $pathNew));
+            throw new IOException(sprintf("Cannot rename %s to %s", $pathOld, $pathNew));
         }
     }
 
@@ -153,7 +153,7 @@ class File
     {
         $touch = $time ? @touch($file, $time) : @touch($file);
         if (true !== $touch) {
-            throw new IOException(sprintf("Cannot touch %s.", $file));
+            throw new IOException(sprintf("Cannot touch %s", $file));
         }
     }
 
@@ -167,7 +167,7 @@ class File
      */
     public static function unzip($file, $pathToExtractTo = null)
     {
-        $call = "ionice -c 3 unzip -q -j -o -DD {$file}";
+        $call = "ionice -c 3 unzip -q -j -o -DD {$file} 2>&1";
         if ($pathToExtractTo) {
             $call .= " -d {$pathToExtractTo}";
         }
@@ -175,7 +175,7 @@ class File
         exec($call, $output, $returnCode);
 
         if ($returnCode != 0) {
-            throw new IOException("Cannot unzip %s: %s", $file, join("\n", $output));
+            throw new IOException(sprintf("Cannot unzip %s: %s", $file, join("\n", $output)));
         }
     }
 }
