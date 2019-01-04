@@ -36,7 +36,7 @@ class WorkdayTest extends TestCase
     public function testEqualsBetweenDateTimeAndWorkdayWorks()
     {
         $this->assertEquals(new DateTime("today"), new Workday("today"));
-        $this->assertEquals(new Workday("2018-03-18"), new Workday("2018-03-18"));
+        $this->assertEquals(Workday::createFromFormat("!Y-m-d", "2018-03-18"), Workday::createFromFormat("!Y-m-d", "2018-03-18"));
         $this->assertTrue(new DateTime("yesterday") < new DateTime("today"));
         $this->assertTrue(new DateTime("yesterday") < new Workday("today"));
         $this->assertTrue(new Workday("yesterday") < new DateTime("today"));
