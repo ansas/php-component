@@ -73,11 +73,12 @@ class PriceAggregate extends PriceBase
      * Create new instance.
      *
      * @param array $value
+     * @param bool  $validate [optional]
      *
      * @return static
      * @throws InvalidArgumentException
      */
-    public static function createFromArray($value)
+    public static function createFromArray($value, $validate = true)
     {
         if (!isset($value['perTaxRate'])) {
             throw new InvalidArgumentException("key perTaxRate is missing on root level");
@@ -86,7 +87,7 @@ class PriceAggregate extends PriceBase
         $priceAggregate = new static();
 
         foreach ($value['perTaxRate'] as $perTaxRate) {
-            $priceAggregate->addPrice(Price::createFromArray($perTaxRate));
+            $priceAggregate->addPrice(Price::createFromArray($perTaxRate, Price::GROSS, $validate));
         }
 
         return $priceAggregate;
@@ -332,7 +333,7 @@ class PriceAggregate extends PriceBase
         $result = [];
 
         foreach ($this->perTaxRate as $percent => $perTaxRate) {
-            $result[$percent] = Price::createFromArray($perTaxRate);
+            $result[$percent] = Price::createFromArray($perTaxRate, Price::GROSS, false);
         }
 
         return $result;

@@ -123,11 +123,12 @@ class Price extends PriceBase
      *
      * @param array  $properties
      * @param string $priceType [optional]
+     * @param bool   $validate  [optional]
      *
      * @return static
      * @throws InvalidArgumentException
      */
-    public static function createFromArray($properties, string $priceType = self::GROSS)
+    public static function createFromArray($properties, string $priceType = self::GROSS, $validate = true)
     {
         if (!is_array($properties) && !$properties instanceof Traversable) {
             throw new InvalidArgumentException("prices must be iterable");
@@ -144,7 +145,7 @@ class Price extends PriceBase
             $value = Text::trim($value);
             if (mb_strlen($value)) {
                 $value = ConvertPrice::getInstance()->sanitize($value);
-                $price->set($property, $value, false);
+                $price->set($property, $value, false, true);
             }
         }
 
@@ -152,7 +153,9 @@ class Price extends PriceBase
             $price->calculate();
         }
 
-        $price->validate();
+        if ($validate) {
+            $price->validate();
+        }
 
         return $price;
     }
