@@ -135,6 +135,11 @@ class Price extends PriceBase
 
         $price = new static(null, $priceType);
 
+        // Make sure default type is set first in order to be able to sanitize sign of other properties
+        if (isset($properties[$priceType])) {
+            $properties = [$priceType => $properties[$priceType]] + $properties;
+        }
+
         foreach ($properties as $property => $value) {
             $value = Text::trim($value);
             if (mb_strlen($value)) {
@@ -146,6 +151,8 @@ class Price extends PriceBase
         if (count($properties) > 1) {
             $price->calculate();
         }
+
+        $price->validate();
 
         return $price;
     }
@@ -301,11 +308,12 @@ class Price extends PriceBase
      * @param string $property
      * @param mixed  $value
      * @param bool   $calculateMissing [optional]
+     * @param bool   $sanitizeSign     [optional]
      *
      * @return $this
      * @throws InvalidArgumentException
      */
-    public function set(string $property, $value, $calculateMissing = true)
+    public function set(string $property, $value, $calculateMissing = true, $sanitizeSign = false)
     {
         $property = $this->translateProperty($property);
 
@@ -334,6 +342,19 @@ class Price extends PriceBase
                 }
 
                 $this->{'taxPercent'} = $value * 100 - 100;
+                break;
+
+            case 'gross';
+            case 'net';
+            case 'tax';
+                if ($sanitizeSign && $this->has('defaultType')) {
+                    $defaultType = $this->getDefaultType();
+                    if ($property != $defaultType && $this->has($defaultType)) {
+                        if ($value < 0 != $this->get($defaultType) < 0) {
+                            $value *= -1;
+                        }
+                    }
+                }
                 break;
         }
 
@@ -448,6 +469,31 @@ class Price extends PriceBase
     public function setTaxRate(float $value, $calculateMissing = true)
     {
         return $this->set('taxRate', $value, $calculateMissing);
+    }
+
+    /**
+     * @return $this
+     * @throws LogicException
+     */
+    protected function validate()
+    {
+        $this->needed(['defaultType', 'gross', 'net', 'tax']);
+
+        $mustByNegative = $this->get($this->getDefaultType()) < 0;
+
+        foreach (['gross', 'net', 'tax'] as $property) {
+            $value = $this->get($property);
+            if (!$value) {
+                continue;
+            }
+
+            $isNegative = $value < 0;
+            if ($mustByNegative != $isNegative) {
+                throw new LogicException("Property {$property} has wrong sign");
+            }
+        }
+
+        return $this;
     }
 
     /**

@@ -59,7 +59,7 @@ class PriceTest extends TestCase
         $this->assertEquals(Price::NET, $price->getDefaultType());
         $this->assertEquals("119", $price);
 
-        $this->assertEquals(static::$json, Price::createFromArray(['gross' => 119, 'net' => 100])->toJson());
+        $this->assertEquals(static::$json, Price::createFromArray(['gross' => -119, 'tax' => 19])->changeSign()->toJson());
         $this->assertEquals(static::$json, Price::createFromArray(['tax' => 19, 'percent' => 19])->toJson());
     }
 
