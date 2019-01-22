@@ -137,7 +137,7 @@ class ExtendedRequest extends Request
      */
     public function getHostAce()
     {
-        return idn_to_ascii($this->getHost(), IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+        return idn_to_ascii($this->getHost(), IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46);
     }
 
     /**
@@ -149,7 +149,7 @@ class ExtendedRequest extends Request
      */
     public function getHostIdn()
     {
-        return idn_to_utf8($this->getHost(), IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+        return idn_to_utf8($this->getHost(), IDNA_NONTRANSITIONAL_TO_UNICODE, INTL_IDNA_VARIANT_UTS46);
     }
 
     /**
