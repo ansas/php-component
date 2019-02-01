@@ -415,7 +415,7 @@ class PriceAggregate extends PriceBase
     }
 
     /**
-     * @param bool $round
+     * @param bool $keepEmptyTaxRates
      *
      * @return $this
      */
