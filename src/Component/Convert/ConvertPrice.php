@@ -72,6 +72,19 @@ class ConvertPrice
     }
 
     /**
+     * Create new instance.
+     *
+     * @param mixed  $price  [optional] the price to convert
+     * @param string $format [optional] the type of $price, default ConvertPrice::EURO
+     *
+     * @return static
+     */
+    public static function create($price = null, $format = self::EURO)
+    {
+        return new static($price, $format);
+    }
+
+    /**
      * Returns new or existing Singleton instance.
      *
      * @return static
@@ -83,6 +96,22 @@ class ConvertPrice
         }
 
         return static::$instance;
+    }
+
+    /**
+     * @return int
+     */
+    public function asCent()
+    {
+        return $this->getPrice(self::CENT);
+    }
+
+    /**
+     * @return float
+     */
+    public function asEuro()
+    {
+        return $this->getPrice(self::EURO);
     }
 
     /**
@@ -109,7 +138,7 @@ class ConvertPrice
     {
         $this->validatePriceFormat($format);
 
-        if ($format == self::EURO) {
+        if ($this->price !== null && $format == self::EURO) {
             return round($this->price / 100, 2);
         }
 
@@ -162,7 +191,7 @@ class ConvertPrice
             $price = (float) $price;
         }
 
-        $this->price = round($price);
+        $this->price = (int) round($price);
 
         return $this;
     }
@@ -173,7 +202,7 @@ class ConvertPrice
      * @param mixed  $price
      * @param string $format [optional] the type of $price, default ConvertPrice::EURO.
      *
-     * @return mixed
+     * @return float|int
      * @throws InvalidArgumentException
      */
     public function sanitize($price, $format = self::EURO)
