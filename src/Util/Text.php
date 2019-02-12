@@ -90,6 +90,25 @@ class Text
     }
 
     /**
+     * Replace first occurrence to $search in $text by $replace.
+     *
+     * @param string $search
+     * @param string $replace
+     * @param string $text
+     *
+     * @return string
+     */
+    public static function replaceFirst($search, $replace, $text)
+    {
+        $pos = strpos($text, $search);
+        if ($pos !== false) {
+            $text = substr_replace($text, $replace, $pos, strlen($search));
+        }
+
+        return $text;
+    }
+
+    /**
      * Remove emails in text.
      *
      * The email must atleast contain an @ and have a second-level domain.
