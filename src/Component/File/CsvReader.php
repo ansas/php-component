@@ -361,7 +361,7 @@ class CsvReader extends CsvBase implements IteratorAggregate
     {
         $set = $this->file->fgetcsv($this->delimiter, $this->enclosure, $this->escape);
 
-        if (1 === count($set) && null === $set[0]) {
+        if (is_array($set) && 1 === count($set) && null === $set[0]) {
             if ($this->skipEmptyLines && !$this->file->eof()) {
                 return $this->getNextDataSet();
             }
