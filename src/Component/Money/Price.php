@@ -568,7 +568,7 @@ class Price extends PriceBase
             if ($this->has('gross', 'net') && $this->net) {
                 return $this->setTaxRate($this->gross / $this->net);
             }
-            if ($this->has('gross', 'tax') && $this->gross) {
+            if ($this->has('gross', 'tax') && $this->gross != $this->tax) {
                 return $this->setTaxRate($this->gross / ($this->gross - $this->tax));
             }
             if ($this->has('net', 'tax')) {
