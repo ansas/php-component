@@ -59,6 +59,19 @@ class Arr
     /**
      * Get specified collection item.
      *
+     * @param  array $data
+     * @param  array $keys Keys to return in result.
+     *
+     * @return array
+     */
+    public static function only(array $data, array $keys)
+    {
+        return array_intersect_key($data, array_flip($keys));
+    }
+
+    /**
+     * Get specified collection item.
+     *
      * @param  array $data    The data.
      * @param  array $path    The path of array keys.
      * @param  mixed $default [optional] The default value (if key does not exist).
