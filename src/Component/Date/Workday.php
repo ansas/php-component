@@ -219,6 +219,14 @@ class Workday extends DateTime
     }
 
     /**
+     * @return DateTime
+     */
+    public function toDateTime()
+    {
+        return new DateTime("@" . $this->getTimestamp(), $this->getTimezone());
+    }
+
+    /**
      * @return $this
      */
     public function withoutTime()
