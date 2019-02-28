@@ -66,13 +66,15 @@ class Workday extends DateTime
     /**
      * @inheritdoc
      */
-    public function __construct(string $time = 'now', DateTimeZone $timezone = null)
+    public function __construct($time = 'now', DateTimeZone $timezone = null)
     {
         // Create default object with default timestamp
         parent::__construct('now', $timezone);
 
         // Modify timestamp with our altered logic
-        $this->modify($time);
+        if (strlen($time)) {
+            $this->modify($time);
+        }
     }
 
     public function __clone()
