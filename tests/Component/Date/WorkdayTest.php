@@ -49,7 +49,7 @@ class WorkdayTest extends TestCase
         $timezone = new DateTimeZone('Europe/Paris');
         $date     = new DateTime('now', $timezone);
         $workday  = Workday::fromDateTime($date);
-        $this->assertInstanceOf(Workday::class, $workday);
+        $this->assertEquals(Workday::class, get_class($workday));
         $this->assertEquals($date->format(DATE_ATOM), $workday->format(DATE_ATOM));
         $this->assertEquals($timezone->getName(), $workday->getTimezone()->getName());
     }
@@ -59,7 +59,7 @@ class WorkdayTest extends TestCase
         $workday  = new Workday('now', new DateTimeZone('Europe/Paris'));
         $date     = $workday->toDateTime();
 
-        $this->assertInstanceOf(DateTime::class, $date);
+        $this->assertEquals(DateTime::class, get_class($date));
         $this->assertEquals($date->format(DATE_ATOM), $workday->format(DATE_ATOM));
         $this->assertEquals($date->getTimezone()->getName(), $workday->getTimezone()->getName());
     }
