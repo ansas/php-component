@@ -88,7 +88,10 @@ class Workday extends DateTime
      */
     public static function fromDateTime(DateTime $date)
     {
-        return new static("@" . $date->getTimestamp(), $date->getTimezone());
+        $workday = new static("@" . $date->getTimestamp());
+        $workday->setTimezone($date->getTimezone());
+
+        return $workday;
     }
 
     /**
@@ -223,7 +226,10 @@ class Workday extends DateTime
      */
     public function toDateTime()
     {
-        return new DateTime("@" . $this->getTimestamp(), $this->getTimezone());
+        $date = new static("@" . $this->getTimestamp());
+        $date->setTimezone($this->getTimezone());
+
+        return $date;
     }
 
     /**

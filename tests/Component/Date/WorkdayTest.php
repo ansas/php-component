@@ -11,7 +11,7 @@
 namespace Ansas\Component\Date;
 
 use DateTime;
-use Exception;
+use DateTimeZone;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -36,7 +36,8 @@ class WorkdayTest extends TestCase
     public function testEqualsBetweenDateTimeAndWorkdayWorks()
     {
         $this->assertEquals(new DateTime("today"), new Workday("today"));
-        $this->assertEquals(Workday::createFromFormat("!Y-m-d", "2018-03-18"), Workday::createFromFormat("!Y-m-d", "2018-03-18"));
+        $this->assertEquals(Workday::createFromFormat("!Y-m-d", "2018-03-18"),
+            Workday::createFromFormat("!Y-m-d", "2018-03-18"));
         $this->assertTrue(new DateTime("yesterday") < new DateTime("today"));
         $this->assertTrue(new DateTime("yesterday") < new Workday("today"));
         $this->assertTrue(new Workday("yesterday") < new DateTime("today"));
@@ -45,8 +46,22 @@ class WorkdayTest extends TestCase
 
     public function testCreateFromDateTime()
     {
-        $date = Workday::fromDateTime(new DateTime());
-        $this->assertInstanceOf(Workday::class, $date);
+        $timezone = new DateTimeZone('Europe/Paris');
+        $date     = new DateTime('now', $timezone);
+        $workday  = Workday::fromDateTime($date);
+        $this->assertInstanceOf(Workday::class, $workday);
+        $this->assertEquals($date->format(DATE_ATOM), $workday->format(DATE_ATOM));
+        $this->assertEquals($timezone->getName(), $workday->getTimezone()->getName());
+    }
+
+    public function testToDateTime()
+    {
+        $workday  = new Workday('now', new DateTimeZone('Europe/Paris'));
+        $date     = $workday->toDateTime();
+
+        $this->assertInstanceOf(DateTime::class, $date);
+        $this->assertEquals($date->format(DATE_ATOM), $workday->format(DATE_ATOM));
+        $this->assertEquals($date->getTimezone()->getName(), $workday->getTimezone()->getName());
     }
 
     public function testIsHoliday()
