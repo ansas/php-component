@@ -226,7 +226,7 @@ class Workday extends DateTime
      */
     public function toDateTime()
     {
-        $date = new static("@" . $this->getTimestamp());
+        $date = new DateTime("@" . $this->getTimestamp());
         $date->setTimezone($this->getTimezone());
 
         return $date;
