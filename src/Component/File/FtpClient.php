@@ -26,21 +26,6 @@ class FtpClient
     private $host;
 
     /**
-     * @var int Port
-     */
-    private $port;
-
-    /**
-     * @var string User
-     */
-    private $user;
-
-    /**
-     * @var string Password
-     */
-    private $password;
-
-    /**
      * @var resource FTP handle
      */
     private $ftp;
@@ -49,20 +34,16 @@ class FtpClient
      * FTP constructor.
      *
      * @param string $host
-     * @param int    $port     [optional]
-     * @param string $user     [optional]
-     * @param string $password [optional]
+     * @param int    $port    [optional]
+     * @param int    $timeout [optional]
      *
      * @throws Exception
      */
-    public function __construct(string $host, int $port = 21, string $user = null, string $password = null)
+    public function __construct(string $host, int $port = 21, int $timeout = 30)
     {
-        $this->host     = $host;
-        $this->user     = $user;
-        $this->port     = $port;
-        $this->password = $password;
+        $this->host = $host;
 
-        if (!$this->ftp = @ftp_connect($this->host, $this->port)) {
+        if (!$this->ftp = @ftp_connect($this->host, $port, $timeout)) {
             throw new Exception(sprintf("Cannot connect to host %s", $this->host));
         }
     }
@@ -78,24 +59,17 @@ class FtpClient
     /**
      * Login to server.
      *
-     * @param string $user                 [optional]
-     * @param string $password             [optional]
+     * @param string $user
+     * @param string $password
      * @param int    $attempts             [optional] Number of retries in case of error.
      * @param int    $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
      *
      * @return $this
      * @throws Exception
      */
-    public function login(string $user = null, string $password = null, $attempts = 1, $sleepBetweenAttempts = 5)
+    public function login(string $user, string $password, $attempts = 1, $sleepBetweenAttempts = 5)
     {
-        if ($user) {
-            $this->user = $user;
-        }
-        if ($password) {
-            $this->password = $password;
-        }
-
-        if (!@ftp_login($this->ftp, $this->user, $this->password)) {
+        if (!@ftp_login($this->ftp, $user, $password)) {
             if (--$attempts > 0) {
                 sleep($sleepBetweenAttempts);
 
@@ -322,14 +296,14 @@ class FtpClient
     /**
      * Get a file from ftp-server and write it directly into file.
      *
-     * @param string   $remoteFile Remote file path.
-     * @param resource $handle     File handle.
-     * @param int      $resumePos  [optional] Start or resume position in file.
+     * @param string $remoteFile Remote file path.
+     * @param mixed  $handle     File handle.
+     * @param int    $resumePos  [optional] Start or resume position in file.
      *
      * @return $this
      * @throws Exception
      */
-    public function fget(string $remoteFile, resource $handle, int $resumePos = 0)
+    public function fget(string $remoteFile, $handle, int $resumePos = 0)
     {
         if (!@ftp_fget($this->ftp, $handle, $remoteFile, FTP_BINARY, $resumePos)) {
             throw new Exception("Cannot write in file handle");
@@ -381,14 +355,14 @@ class FtpClient
     /**
      * Read directly from file and put data on ftp-server.
      *
-     * @param string   $remoteFile Remote file path.
-     * @param resource $handle     File handle.
-     * @param int      $resumePos  [optional] Start or resume position in file.
+     * @param string $remoteFile Remote file path.
+     * @param mixed  $handle     File handle.
+     * @param int    $resumePos  [optional] Start or resume position in file.
      *
      * @return $this
      * @throws Exception
      */
-    public function fput(string $remoteFile, resource $handle, int $resumePos = 0)
+    public function fput(string $remoteFile, $handle, int $resumePos = 0)
     {
         if (!@ftp_fput($this->ftp, $remoteFile, $handle, FTP_BINARY, $resumePos)) {
             throw new Exception(sprintf("Cannot copy data from file handle to %s", $remoteFile));
