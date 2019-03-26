@@ -117,6 +117,8 @@ class Workday extends DateTime
         if ($modify) {
             parent::modify($modify);
         }
+
+        return $this;
     }
 
     /**

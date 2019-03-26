@@ -180,6 +180,12 @@ class WorkdayTest extends TestCase
 
         $date->modify('+ 1 hour + 1 day');
         $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-25 11:00:00");
+
+        $date->modify('last day of -1 month');
+        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-04-30 11:00:00");
+
+        $date->modify('+1 hour')->modify('-1 hour');
+        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-04-30 11:00:00");
     }
 
     public function testClone()
