@@ -36,6 +36,20 @@ class File
     }
 
     /**
+     * Creates a file if it does not already exist.
+     *
+     * @param string $file
+     *
+     * @throws IOException
+     */
+    public static function create($file)
+    {
+        if (!File::exists($file)) {
+            File::touch($file);
+        }
+    }
+
+    /**
      * @param string $file
      *
      * @return mixed
