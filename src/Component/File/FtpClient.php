@@ -150,6 +150,9 @@ class FtpClient
             throw new Exception(sprintf("Cannot list files in %s with regex %s", $dir, $regex));
         }
 
+        // Make sure results are in ascending alphabetical order
+        sort($total, SORT_STRING);
+
         $result = [];
 
         foreach ($total as $file) {
