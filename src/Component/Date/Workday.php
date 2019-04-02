@@ -68,12 +68,24 @@ class Workday extends DateTime
      */
     public function __construct($time = 'now', DateTimeZone $timezone = null)
     {
-        // Create default object with default timestamp
-        parent::__construct('now', $timezone);
+        // Important: parent constructor ignores timezone if time is timestamp or contains timezone
+        // @see: https://www.php.net/manual/de/datetime.construct.php
+        // @see: https://en.wikipedia.org/wiki/ISO_8601#Time_zone_designators
+        if (preg_match('/^@|(?:[\+\-]\d\d(:?\d\d)?)$|\d\dZ$/ui', $time)) {
+            parent::__construct($time, $timezone);
+        } else {
+            // Create default object with current timestamp
+            parent::__construct('now', $timezone);
 
-        // Modify timestamp with our altered logic
-        if (strlen($time)) {
-            $this->modify($time);
+            // Modify timestamp with our altered logic
+            if (strlen($time)) {
+                $this->modify($time);
+            }
+        }
+
+        // Sanitize timezone (always use UTC if offset ist 0)
+        if (!$this->getOffset()) {
+            $this->setTimezone(new DateTimeZone('UTC'));
         }
     }
 

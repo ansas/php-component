@@ -36,12 +36,35 @@ class WorkdayTest extends TestCase
     public function testEqualsBetweenDateTimeAndWorkdayWorks()
     {
         $this->assertEquals(new DateTime("today"), new Workday("today"));
-        $this->assertEquals(Workday::createFromFormat("!Y-m-d", "2018-03-18"),
-            Workday::createFromFormat("!Y-m-d", "2018-03-18"));
+
+        $this->assertEquals(
+            Workday::createFromFormat("!Y-m-d", "2018-03-18"),
+            Workday::createFromFormat("!Y-m-d", "2018-03-18")
+        );
+
         $this->assertTrue(new DateTime("yesterday") < new DateTime("today"));
         $this->assertTrue(new DateTime("yesterday") < new Workday("today"));
+
         $this->assertTrue(new Workday("yesterday") < new DateTime("today"));
         $this->assertTrue(new Workday("yesterday") < new Workday("today"));
+    }
+
+    public function testEqualsWithTimezoneInDateString()
+    {
+        // Timezone in constructor must not be used
+        foreach (['Z', '+00', '+0000', '+00:00'] as $suffix) {
+            $date = new Workday('2018-04-30T22:30:00' . $suffix, new DateTimeZone('Europe/Paris'));
+            $this->assertEquals($date->getOffset(), 0);
+            $this->assertEquals($date->getTimezone()->getName(), 'UTC');
+            $this->assertEquals($date->format('Y-m-d H:i:s'), "2018-04-30 22:30:00");
+        }
+
+        // Timezone in constructor must be used
+        foreach (['Europe/Paris', 'UTC'] as $timezone) {
+            $date = new Workday('2018-04-30T22:30:00', new DateTimeZone($timezone));
+            $this->assertEquals($date->getTimezone()->getName(), $timezone);
+            $this->assertEquals($date->format('Y-m-d H:i:s'), "2018-04-30 22:30:00");
+        }
     }
 
     public function testCreateFromDateTime()
