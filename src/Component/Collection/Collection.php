@@ -42,16 +42,16 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /** Sort collection by values (descending order) */
     const SORT_BY_VALUES_DESC = 8;
 
-    /** has check array_key_exists($key) mode */
+    /** has check "array key exists" mode */
     const HAS_EXISTS = 1;
 
-    /** has check isset($key) mode */
+    /** has check "isset" mode */
     const HAS_ISSET = 2;
 
-    /** has check empty($key) mode */
+    /** has check "empty" mode */
     const HAS_NONEMPTY = 4;
 
-    /** has check strlen($key) mode */
+    /** has check "string length" mode */
     const HAS_LENGTH = 8;
 
     /**
@@ -210,9 +210,9 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Get collection as json string.
      *
-     * @param int $options [optional] JSON_ constants bitmask (e. g. JSON_PRETTY_PRINT)
+     * @param int $options [optional] JSON_ constants (e. g. JSON_PRETTY_PRINT)
      *
-     * @return string
+     * @return string|false
      */
     public function asJson($options = 0)
     {
@@ -527,7 +527,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      */
     public function serialize()
     {
-        return json_encode($this->data);
+        return (string) $this->asJson();
     }
 
     /**
@@ -580,13 +580,14 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      * Sort collection.
      *
      * @param int $sortBy    Sort by flag (see self::SORT_ constants)
-     * @param int $sortFlags Sort flags (see PHP SORT_ sonstants)
+     * @param int $sortFlags Sort flags (see PHP SORT_ constants)
      *
      * @return $this
      * @throws InvalidArgumentException
      */
     public function sort($sortBy = self::SORT_BY_KEYS_ASC, $sortFlags = SORT_REGULAR)
     {
+        /** @noinspection SpellCheckingInspection */
         $sortFunctions = [
             self::SORT_BY_KEYS_ASC    => 'ksort',
             self::SORT_BY_KEYS_DESC   => 'krsort',
