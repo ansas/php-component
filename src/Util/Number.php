@@ -77,4 +77,38 @@ class Number
 
         return sprintf("%.{$decimals}f %s", $time, $unit);
     }
+
+    /**
+     * @param mixed $value
+     * @param mixed $max
+     *
+     * @return mixed
+     */
+    public static function toMax($value, $max)
+    {
+        return ($max !== null && $max < $value) ? $max : $value;
+    }
+
+    /**
+     * @param mixed $value
+     * @param mixed $min
+     *
+     * @return mixed
+     */
+    public static function toMin($value, $min)
+    {
+        return ($min !== null && $min > $value) ? $min : $value;
+    }
+
+    /**
+     * @param mixed $value
+     * @param mixed $min
+     * @param mixed $max
+     *
+     * @return mixed
+     */
+    public static function toMinMax($value, $min, $max)
+    {
+        return static::toMin(static::toMax($value, $max), $min);
+    }
 }
