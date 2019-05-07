@@ -21,7 +21,7 @@ class Obj
     /**
      * Convert object to array.
      *
-     * @param Obj $object
+     * @param object $object
      *
      * @return array
      */

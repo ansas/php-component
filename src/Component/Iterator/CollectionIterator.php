@@ -46,7 +46,7 @@ class CollectionIterator implements IteratorAggregate, Countable
      */
     public function __construct(Traversable $iterator, int $count = null)
     {
-        $this->iterator  = $iterator;
+        $this->iterator = $iterator;
 
         if (null !== $count) {
             $this->positions = $count;
@@ -63,12 +63,13 @@ class CollectionIterator implements IteratorAggregate, Countable
      * Create new instance.
      *
      * @param Traversable $iterator
+     * @param int         $count [optional]
      *
      * @return static
      */
-    public static function create(Traversable $iterator)
+    public static function create(Traversable $iterator, int $count = null)
     {
-        return new static($iterator);
+        return new static($iterator, $count);
     }
 
     /**
