@@ -11,10 +11,7 @@
 namespace Ansas\Slim\Handler;
 
 use Ansas\Slim\Http\ExtendedRequest;
-use Ansas\Util\Path;
 use Exception;
-use Psr\Container\ContainerInterface;
-use Slim\Container;
 use Slim\Http\Response;
 
 /**
@@ -44,35 +41,36 @@ trait InvokeSubControllerTrait
         $method = $args['method'] ?? $this->getInvokeFallbackMethod();
 
         // Map sub directories
+        $subClass  = $method;
+        $subMethod = null;
         if (false !== strpos($method, '/')) {
             list($subClass, $subMethod) = explode('/', $method, 2);
-
-            $class = preg_replace(
-                '/Controller$/u',
-                '\\' . ucfirst($subClass) . 'Controller',
-                static::class
-            );
-
-            // Variant 1: url sub/dir is handled by sub/class
-            if (class_exists($class)) {
-                $args['method'] = $subMethod;
-
-                $controller = new $class($this->getContainer());
-
-                if (method_exists($controller, '__invoke')) {
-                    return $controller($request, $response, $args);
-                }
-
-                if (!$subMethod || !is_callable([$controller, $subMethod])) {
-                    $subMethod = 'notFound';
-                };
-
-                return $controller->$subMethod($request, $response);
-            }
-
-            // Variant 2: url sub/dir is handled by subMethod in current class
         }
 
+        $class = preg_replace(
+            '/Controller$/u',
+            '\\' . ucfirst($subClass) . 'Controller',
+            static::class
+        );
+
+        // Variant 1: url sub/dir is handled by sub/class
+        if (class_exists($class)) {
+            $args['method'] = $subMethod;
+
+            $controller = new $class($this->getContainer());
+
+            if (method_exists($controller, '__invoke')) {
+                return $controller($request, $response, $args);
+            }
+
+            if (!$subMethod || !is_callable([$controller, $subMethod])) {
+                $subMethod = 'notFound';
+            };
+
+            return $controller->$subMethod($request, $response);
+        }
+
+        // Variant 2: url sub/dir is handled by subMethod in current class
         return $this->__invokeSimple($request, $response, $args);
     }
 }
