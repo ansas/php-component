@@ -94,6 +94,19 @@ class Workday extends DateTime
     }
 
     /**
+     * Create new instance.
+     *
+     * @param string       $time     [optional]
+     * @param DateTimeZone $timezone [optional]
+     *
+     * @return static
+     */
+    public static function create($time = 'now', DateTimeZone $timezone = null)
+    {
+        return new static($time, $timezone);
+    }
+
+    /**
      * @param DateTime $date
      *
      * @return static
