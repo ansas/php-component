@@ -19,6 +19,20 @@ namespace Ansas\Util;
 class Number
 {
     /**
+     * Check if two numbers are equal.
+     *
+     * @param float $v1
+     * @param float $v2
+     * @param int   $precision [optional]
+     *
+     * @return bool
+     */
+    public static function isEqual($v1, $v2, $precision = 2)
+    {
+        return round((float) $v1, (int) $precision) == round((float) $v2, (int) $precision);
+    }
+
+    /**
      * Convert to readable size.
      *
      * @param int    $bytes
@@ -60,7 +74,6 @@ class Number
 
         return sprintf("%.{$decimals}f %s", $bytes / pow($mod, $factor), $units[$system][$factor]);
     }
-
 
     /**
      * Convert to readable time.
