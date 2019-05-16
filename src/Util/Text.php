@@ -46,6 +46,18 @@ class Text
     const NONE = 'none';
 
     /**
+     * @param string $string
+     * @param int    $first [optional]
+     * @param int    $from  [optional]
+     *
+     * @return int
+     */
+    public static function firstChar($string, $first = 1, $from = 0)
+    {
+        return mb_substr($string, $from, $first);
+    }
+
+    /**
      * Check if string is complete lower case.
      *
      * @param string $string
@@ -227,6 +239,14 @@ class Text
      */
     public static function toCase($string, $case)
     {
+        if (is_null($string)) {
+            $string = '';
+        }
+
+        if (!is_scalar($string)) {
+            throw new InvalidArgumentException("Param string must be a scalar");
+        }
+
         switch ($case) {
             case self::UPPER:
                 $string = mb_strtoupper($string);
