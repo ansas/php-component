@@ -52,7 +52,7 @@ class PhpErrorLoggerProvider extends AbstractProvider
 
         $errorHandler = new ErrorHandler($logger);
         $errorHandler->registerErrorHandler([], $settings['bubble'], $settings['level']);
-        $errorHandler->registerExceptionHandler([], $settings['bubble']);
+        $errorHandler->registerExceptionHandler(null, $settings['bubble']);
         $errorHandler->registerFatalHandler();
     }
 }
