@@ -198,21 +198,30 @@ class ExtendedRequest extends Request
      *
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param array|string $filter Array or comma separated list
+     * @param array|string $filter     Array or comma separated list
+     * @param bool         $filledOnly [optional]
      *
      * @return array
      */
-    public function getParamsWith($filter)
+    public function getParamsWith($filter, $filledOnly = false)
     {
         // Convert $filter to array if necessary
         if (!is_array($filter)) {
             $filter = preg_split("/, */", $filter, -1, PREG_SPLIT_NO_EMPTY);
         }
 
-        $params = $this->getParams();
-        $filter = array_flip($filter);
+        $params = array_intersect_key($this->getParams(), array_flip($filter));
 
-        return array_intersect_key($params, $filter);
+        if ($filledOnly) {
+            $params = array_filter(
+                $params,
+                function ($v) {
+                    return $v !== '';
+                }
+            );
+        }
+
+        return $params;
     }
 
     /**
@@ -220,11 +229,12 @@ class ExtendedRequest extends Request
      *
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param array|string $filter Array or comma separated list
+     * @param array|string $filter     Array or comma separated list
+     * @param bool         $filledOnly [optional]
      *
      * @return array
      */
-    public function getParamsWithout($filter)
+    public function getParamsWithout($filter, $filledOnly = false)
     {
         // Convert $filter to array if necessary
         if (!is_array($filter)) {
@@ -234,7 +244,7 @@ class ExtendedRequest extends Request
         $params = array_keys($this->getParams());
         $filter = array_merge(array_diff($params, $filter), array_diff($filter, $params));
 
-        return $this->getParamsWith($filter);
+        return $this->getParamsWith($filter, $filledOnly);
     }
 
     /**
@@ -270,9 +280,9 @@ class ExtendedRequest extends Request
      *
      * Note: This method is not part of the PSR-7 standard.
      *
+     * @return string
      * @deprecated Use <code>getRequestTarget()</code> instead.
      *
-     * @return string
      */
     public function getRequestUri()
     {
