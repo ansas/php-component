@@ -167,6 +167,16 @@ class TextTest extends TestCase
             '<b>[...]</b>',
             Text::stripLinks('<b>https://www.test.de</b>', '[...]')
         );
+
+        $this->assertEquals(
+            'Buy at MY.[...].',
+            Text::stripLinks('Buy at MY.Amazon.com.', '[...]', ['com', 'de'])
+        );
+
+        $this->assertEquals(
+            'Buy at <b>[...]</b>.',
+            Text::stripLinks('Buy at <b>Amazon.com</b>.', '[...]', ['com'])
+        );
     }
 
 

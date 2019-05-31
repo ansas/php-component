@@ -148,14 +148,20 @@ class Text
      * - <code>test.de/sub</code> (with path)
      *
      * @param string $text
-     * @param string $replaceWith [optional]
+     * @param string $replaceWith     [optional]
+     * @param array  $topLevelDomains [optional]
      *
      * @return string
      */
-    public static function stripLinks($text, $replaceWith = '')
+    public static function stripLinks($text, $replaceWith = '', $topLevelDomains = [])
     {
         $text = preg_replace('/(?:(?:[^\s\:>]+:)?\/\/|www\.)[^\s\.]+\.\w+[^\s<]+/u', $replaceWith, $text);
         $text = preg_replace('/[^\s\.>]+\.[a-z]{2,}\/[^\s<]+/u', $replaceWith, $text);
+
+        if ($topLevelDomains) {
+            $list = join('|', $topLevelDomains);
+            $text = preg_replace('/\b[^\s\.>]+\.(?:' . $list . ')\b/ui', $replaceWith, $text);
+        }
 
         return $text;
     }
