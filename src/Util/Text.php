@@ -297,7 +297,7 @@ class Text
         }
 
         // Quote special regex chars, add delimiters and modifiers
-        return '/' . preg_quote($string) . '/' . $modifiers;
+        return '/' . preg_quote($string, '/') . '/' . $modifiers;
     }
 
     /**
