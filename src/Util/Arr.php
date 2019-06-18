@@ -113,7 +113,10 @@ class Arr
 
         $current = &$data;
         foreach($path as $key) {
-            $current = &$current[$key] ?? [];
+            if (!is_array($current)) {
+                $current = [];
+            }
+            $current = &$current[$key];
         }
 
         $current = $value;
