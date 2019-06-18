@@ -42,8 +42,8 @@ class Arr
     /**
      * Get specified collection item.
      *
-     * @param  array $data The data.
-     * @param  mixed $key  The key to move to end of data.
+     * @param array $data The data.
+     * @param mixed $key  The key to move to end of data.
      *
      * @return array The result.
      */
@@ -59,8 +59,8 @@ class Arr
     /**
      * Get specified collection item.
      *
-     * @param  array $data
-     * @param  array $keys Keys to return in result.
+     * @param array $data
+     * @param array $keys Keys to return in result.
      *
      * @return array
      */
@@ -72,15 +72,18 @@ class Arr
     /**
      * Get specified collection item.
      *
-     * @param  array $data    The data.
-     * @param  array $path    The path of array keys.
-     * @param  mixed $default [optional] The default value (if key does not exist).
+     * @param array        $data    The data.
+     * @param array|string $path    The path of array keys.
+     * @param mixed        $default [optional] The default value (if key does not exist).
+     * @param string       $glue    [optional]
      *
      * @return mixed The item value.
      */
-    public static function path(array $data, $path, $default = null)
+    public static function path(array $data, $path, $default = null, $glue = '.')
     {
-        $path = (array) $path;
+        if (!is_array($path)) {
+            $path = explode($glue, $path);
+        }
 
         foreach ($path as $key) {
             if (!is_array($data) || !array_key_exists($key, $data)) {
@@ -88,6 +91,32 @@ class Arr
             }
             $data = $data[$key];
         }
+
+        return $data;
+    }
+
+    /**
+     * Get specified collection item.
+     *
+     * @param array        $data    The data.
+     * @param array|string $path    The path of array keys.
+     * @param mixed        $value   The new value.
+     * @param string       $glue    [optional]
+     *
+     * @return mixed The new array.
+     */
+    public static function setPath(array $data, $path, $value, $glue = '.')
+    {
+        if (!is_array($path)) {
+            $path = explode($glue, $path);
+        }
+
+        $current = &$data;
+        foreach($path as $key) {
+            $current = &$current[$key] ?? [];
+        }
+
+        $current = $value;
 
         return $data;
     }

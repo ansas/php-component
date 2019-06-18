@@ -2,6 +2,7 @@
 composer.lock
 
 # paths
+.idea
 doc
 tmp
 vendor
