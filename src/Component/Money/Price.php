@@ -327,13 +327,13 @@ class Price extends PriceBase
                 $value = strtolower($value);
 
                 if (!in_array($value, [static::GROSS, static::NET])) {
-                    throw new InvalidArgumentException("defaultType invalid");
+                    throw new InvalidArgumentException("defaultType '{$value}' invalid");
                 }
                 break;
 
             case 'taxPercent':
                 if ($value < 0 || $value >= 100) {
-                    throw new InvalidArgumentException("taxPercent invalid");
+                    throw new InvalidArgumentException("taxPercent '{$value}' invalid");
                 }
 
                 $this->{'taxRate'} = $value / 100 + 1;
@@ -341,7 +341,7 @@ class Price extends PriceBase
 
             case 'taxRate':
                 if ($value < 1 || $value >= 2) {
-                    throw new InvalidArgumentException("taxRate invalid");
+                    throw new InvalidArgumentException("taxRate '{$value}' invalid");
                 }
 
                 $this->{'taxPercent'} = $value * 100 - 100;
