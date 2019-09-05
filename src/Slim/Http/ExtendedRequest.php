@@ -267,12 +267,23 @@ class ExtendedRequest extends Request
      *
      * Note: This method is not part of the PSR-7 standard.
      *
+     * @param bool $cutBaseUrl [optional]
+     *
      * @return string|null
      */
-    public function getReferrer()
+    public function getReferrer($cutBaseUrl = false)
     {
         /** @noinspection SpellCheckingInspection */
-        return $this->getHeaderLine('HTTP_REFERER');
+        $referrer = $this->getHeaderLine('HTTP_REFERER');
+
+        if ($cutBaseUrl) {
+            /** @var Uri $uri */
+            $uri = $this->getUri();
+
+            $referrer = str_replace($uri->getBaseUrl(), '', $referrer);
+        }
+
+        return $referrer;
     }
 
     /**
