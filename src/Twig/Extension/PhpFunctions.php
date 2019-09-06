@@ -35,6 +35,7 @@ class PhpFunctions extends Twig_Extension
             new Twig_SimpleFilter('getclass', 'get_class'),
             new Twig_SimpleFilter('strlen', 'strlen'),
             new Twig_SimpleFilter('count', 'count'),
+            new Twig_SimpleFilter('ksort', [$this, '_ksort']),
             new Twig_SimpleFilter('php_*', [$this, '_callPhpFunction']),
         ];
     }
@@ -57,5 +58,12 @@ class PhpFunctions extends Twig_Extension
         $func = array_shift($args);
 
         return @call_user_func_array($func, $args);
+    }
+
+    function _ksort($array)
+    {
+        ksort($array);
+
+        return $array;
     }
 }
