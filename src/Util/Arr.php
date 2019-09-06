@@ -70,7 +70,7 @@ class Arr
     }
 
     /**
-     * Get specified collection item.
+     * Get specified value in array path.
      *
      * @param array        $data    The data.
      * @param array|string $path    The path of array keys.
@@ -96,7 +96,22 @@ class Arr
     }
 
     /**
-     * Get specified collection item.
+     * Increment specified value in array path.
+     *
+     * @param array        $data    The data.
+     * @param array|string $path    The path of array keys.
+     * @param mixed        $value   The value to increment.
+     * @param string       $glue    [optional]
+     *
+     * @return mixed The new array.
+     */
+    public static function incrementPath(array $data, $path, $value, $glue = '.')
+    {
+        return self::setPath($data, $path, self::path($data, $path, 0, $glue) + $value, $glue);
+    }
+
+    /**
+     * Set specified value in array path.
      *
      * @param array        $data    The data.
      * @param array|string $path    The path of array keys.
