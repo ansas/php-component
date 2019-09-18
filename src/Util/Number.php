@@ -19,6 +19,20 @@ namespace Ansas\Util;
 class Number
 {
     /**
+     * Check if number is between min and max.
+     *
+     * @param float|int $value
+     * @param float|int $min
+     * @param float|int $max
+     *
+     * @return bool
+     */
+    public static function isBetween($value, $min, $max)
+    {
+        return $value >= $min && $value <= $max;
+    }
+
+    /**
      * Check if two numbers are equal.
      *
      * @param float $v1
