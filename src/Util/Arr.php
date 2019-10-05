@@ -96,12 +96,36 @@ class Arr
     }
 
     /**
+     * Get specified value in array path.
+     *
+     * @param array $data
+     * @param int   $num [optional]
+     *
+     * @return mixed The random value(s).
+     */
+    public static function random(array $data, $num = 1)
+    {
+        $keys = array_rand($data, $num);
+
+        if ($num == 1) {
+            return $data[$keys];
+        }
+
+        $results = [];
+        foreach ($keys as $key) {
+            $results[] = $data[$key];
+        }
+
+        return $results;
+    }
+
+    /**
      * Increment specified value in array path.
      *
-     * @param array        $data    The data.
-     * @param array|string $path    The path of array keys.
-     * @param mixed        $value   The value to increment.
-     * @param string       $glue    [optional]
+     * @param array        $data  The data.
+     * @param array|string $path  The path of array keys.
+     * @param mixed        $value The value to increment.
+     * @param string       $glue  [optional]
      *
      * @return mixed The new array.
      */
@@ -113,10 +137,10 @@ class Arr
     /**
      * Set specified value in array path.
      *
-     * @param array        $data    The data.
-     * @param array|string $path    The path of array keys.
-     * @param mixed        $value   The new value.
-     * @param string       $glue    [optional]
+     * @param array        $data  The data.
+     * @param array|string $path  The path of array keys.
+     * @param mixed        $value The new value.
+     * @param string       $glue  [optional]
      *
      * @return mixed The new array.
      */
@@ -127,7 +151,7 @@ class Arr
         }
 
         $current = &$data;
-        foreach($path as $key) {
+        foreach ($path as $key) {
             if (!is_array($current)) {
                 $current = [];
             }
