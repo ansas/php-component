@@ -36,15 +36,21 @@ trait TwigHandlerTrait
      * Fetches template with previous set data.
      *
      * @param Request $request
-     * @param string  $template The template to render
+     * @param string  $template   The template to render
+     * @param array   $data       [optional]
+     * @param bool    $appendData [optional]
      *
      * @return string
      * @throws Exception
      */
-    public function fetchTemplate(Request $request, $template)
+    public function fetchTemplate(Request $request, $template, $data = [], $appendData = true)
     {
         if (!$this->view instanceof Twig) {
             throw new Exception("Twig provider not registered.");
+        }
+
+        if ($appendData) {
+            $data += $this->data->all();
         }
 
         foreach ($this->settings['view']['global'] as $key => $map) {
@@ -65,7 +71,7 @@ trait TwigHandlerTrait
 
         $result = $this->view->fetch(
             $template . $this->settings['view']['extension'],
-            $this->data->all()
+            $data
         );
 
         return $result;
