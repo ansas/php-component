@@ -1,4 +1,9 @@
 <?php
+
+/** @noinspection PhpUnused */
+/** @noinspection RegExpRedundantEscape */
+/** @noinspection SpellCheckingInspection */
+
 /**
  * This file is part of the PHP components.
  *
@@ -123,7 +128,7 @@ class Text
     /**
      * Remove emails in text.
      *
-     * The email must atleast contain an @ and have a second-level domain.
+     * The email must at least contain an @ and have a second-level domain.
      *
      * @param string $text
      * @param string $replaceWith [optional]
@@ -276,6 +281,18 @@ class Text
     }
 
     /**
+     * Convert to float (remove nun numeric chars).
+     *
+     * @param string $string
+     *
+     * @return float
+     */
+    public static function toFloat($string)
+    {
+        return (float) preg_replace('/[^0-9\.]/u', '', $string);
+    }
+
+    /**
      * Convert to lower string.
      *
      * @param string $string
@@ -316,7 +333,7 @@ class Text
      */
     public static function toSingleWhitespace($string, $trim = true)
     {
-        $string = preg_replace("/\r|\n|\t/", " ", $string);
+        $string = preg_replace("/[\r\n\t]/", " ", $string);
         $string = preg_replace("/ {2,}/", " ", $string);
 
         if ($trim) {
@@ -324,6 +341,27 @@ class Text
         }
 
         return $string;
+    }
+
+    /**
+     * Convert e.g. 8M to size in bytes.
+     *
+     * @param string $string
+     * @param string $system [optional] binary | metric
+     *
+     * @return int
+     */
+    public static function toSizeInByte($string, $system = 'metric')
+    {
+        $mod = ($system === 'binary') ? 1024 : 1000;
+
+        $size = self::toFloat($string);
+        $unit = substr(strpbrk(strtolower($string), 'kmgtpezy'), 0, 1);
+        if ($unit) {
+            $size *= pow($mod, stripos('bkmgtpezy', $unit));
+        }
+
+        return (int) round($size);
     }
 
     /**
