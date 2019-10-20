@@ -127,6 +127,19 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
+     * Create new instance.
+     *
+     * @param CookiesInterface $cookie
+     * @param string           $cookieKey [optional]
+     *
+     * @return static
+     */
+    public static function create(CookiesInterface $cookie, $cookieKey = 'flash')
+    {
+        return new static($cookie, $cookieKey);
+    }
+
+    /**
      * Add a message to $key (result for $key will always be an array).
      *
      * @param string $key
@@ -152,36 +165,33 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Get all messages.
      *
+     * @param int $when [optional]
+     *
      * @return string[]
      */
-    public function all()
+    public function all($when = null)
     {
+        if ($when) {
+            $this->validateWhen($when);
+
+            return $this->messages[$when];
+        }
+
         return array_merge($this->messages[self::DURABLE], $this->messages[self::NOW]);
     }
 
     /**
      * Returns the number of elements.
      *
+     * @param int $when [optional]
+     *
      * This method implements the Countable interface.
      *
      * @return int
      */
-    public function count()
+    public function count($when = null)
     {
-        return count($this->all());
-    }
-
-    /**
-     * Create new instance.
-     *
-     * @param CookiesInterface $cookie
-     * @param string           $cookieKey [optional]
-     *
-     * @return static
-     */
-    public static function create(CookiesInterface $cookie, $cookieKey = 'flash')
-    {
-        return new static($cookie, $cookieKey);
+        return count($this->all($when));
     }
 
     /**
@@ -189,12 +199,13 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      *
      * @param string $key
      * @param string $default [optional]
+     * @param int    $when    [optional]
      *
      * @return string|null
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, $default = null, $when = null)
     {
-        $messages = $this->all();
+        $messages = $this->all($when);
 
         return isset($messages[$key]) ? $messages[$key] : $default;
     }
@@ -217,36 +228,27 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      * Check if message for specified $key exists.
      *
      * @param string $key
+     * @param int    $when [optional]
      *
      * @return bool
      */
-    public function has($key)
+    public function has($key, $when = null)
     {
-        return !!$this->get($key);
+        return !!$this->get($key, null, $when);
     }
 
     /**
-     * Load messages from cookie.
+     * Keep current request messages for next request.
      *
      * @return $this
      */
-    protected function load()
+    public function keep()
     {
-        $this->reset();
-
-        $messages = $this->cookie->get($this->cookieKey);
-
-        if ($messages) {
-            $messages = json_decode($messages, true);
-
-            if (!empty($messages[self::DURABLE])) {
-                $this->messages[self::DURABLE] = $messages[self::DURABLE];
+        foreach ($this->messages[self::NOW] as $key => $value) {
+            if (isset($this->messages[self::NEXT][$key])) {
+                $value = array_merge((array) $value, (array) $this->messages[self::NEXT][$key]);
             }
-            if (!empty($messages[self::NEXT])) {
-                $this->messages[self::NOW] = $messages[self::NEXT];
-            }
-
-            $this->save();
+            $this->set($key, $value, self::NEXT);
         }
 
         return $this;
@@ -342,30 +344,6 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Save messages to cookie.
-     *
-     * @return $this
-     */
-    protected function save()
-    {
-        $messages = [];
-        foreach ([self::DURABLE, self::NEXT] as $when) {
-            if (!empty($this->messages[$when])) {
-                $messages[$when] = $this->messages[$when];
-            }
-        }
-
-        if ($messages) {
-            $messages = json_encode($messages);
-            $this->cookie->set($this->cookieKey, $messages);
-        } else {
-            $this->cookie->remove($this->cookieKey);
-        }
-
-        return $this;
-    }
-
-    /**
      * Set / unset massage.
      *
      * @param string $key
@@ -386,6 +364,57 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
         } elseif ($message) {
             $this->messages[$when][$key] = $message;
             $this->save();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Load messages from cookie.
+     *
+     * @return $this
+     */
+    protected function load()
+    {
+        $this->reset();
+
+        $messages = $this->cookie->get($this->cookieKey);
+
+        if ($messages) {
+            $messages = json_decode($messages, true);
+
+            if (!empty($messages[self::DURABLE])) {
+                $this->messages[self::DURABLE] = $messages[self::DURABLE];
+            }
+            if (!empty($messages[self::NEXT])) {
+                $this->messages[self::NOW] = $messages[self::NEXT];
+            }
+
+            $this->save();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Save messages to cookie.
+     *
+     * @return $this
+     */
+    protected function save()
+    {
+        $messages = [];
+        foreach ([self::DURABLE, self::NEXT] as $when) {
+            if (!empty($this->messages[$when])) {
+                $messages[$when] = $this->messages[$when];
+            }
+        }
+
+        if ($messages) {
+            $messages = json_encode($messages);
+            $this->cookie->set($this->cookieKey, $messages);
+        } else {
+            $this->cookie->remove($this->cookieKey);
         }
 
         return $this;
