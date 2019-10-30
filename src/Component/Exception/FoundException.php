@@ -8,7 +8,7 @@
  * @link    https://github.com/ansas/php-component
  */
 
-namespace Ansas\Slim\Exception;
+namespace Ansas\Component\Exception;
 
 use Exception;
 
