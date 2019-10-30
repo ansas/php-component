@@ -27,7 +27,9 @@ class FoundException extends Exception
      */
     public function __construct($found)
     {
-        parent::__construct();
+        $message = is_scalar($found) ? $found : serialize($found);
+        parent::__construct($message);
+
         $this->found = $found;
     }
 
