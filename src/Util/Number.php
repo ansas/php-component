@@ -11,13 +11,30 @@
 namespace Ansas\Util;
 
 /**
- * Class Object
- *
- * @package Ansas\Util
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class Number
 {
+    /**
+     * @param float|int $value
+     *
+     * @return int
+     */
+    public static function countDigits($value)
+    {
+        return strlen(static::getDigits($value));
+    }
+
+    /**
+     * @param float|int $value
+     *
+     * @return string
+     */
+    public static function getDigits($value)
+    {
+        return (string) substr(strrchr($value, "."), 1);
+    }
+
     /**
      * Check if number is between min and max.
      *
@@ -137,5 +154,23 @@ class Number
     public static function toMinMax($value, $min, $max)
     {
         return static::toMin(static::toMax($value, $max), $min);
+    }
+
+    /**
+     * @param float|int $value
+     * @param float|int $step
+     *
+     * @return float
+     */
+    public static function toNearestStep($value, $step)
+    {
+        if (!$value || !$step) {
+            return (float) $value;
+        }
+
+        $value = (float) $value;
+        $value = round($value / $step) * $step;
+
+        return round($value, static::countDigits($step));
     }
 }

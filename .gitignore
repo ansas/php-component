@@ -1,5 +1,6 @@
 # files
 composer.lock
+composer.phar
 
 # paths
 .idea
