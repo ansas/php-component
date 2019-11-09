@@ -10,6 +10,7 @@
 
 namespace Ansas\Util;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -45,7 +46,7 @@ class NumberTest extends TestCase
         $this->assertEquals(3, Number::countDigits(1.123));
     }
 
-    public function testToNearestStep()
+    public function testToNearestStepDefaultMode()
     {
         $this->assertEquals(0, Number::toNearestStep(null, null));
         $this->assertEquals(5, Number::toNearestStep(5, 0));
@@ -77,5 +78,23 @@ class NumberTest extends TestCase
         $this->assertEquals(5.00, Number::toNearestStep('5', 0.25));
         $this->assertEquals(7.50, Number::toNearestStep(7.6, 0.25));
         $this->assertEquals(7.5, Number::toNearestStep(7.6, 2.5));
+    }
+
+    public function testToNearestStepExplicitMode()
+    {
+        $this->assertEquals(7.5, Number::toNearestStep(7.6, 2.5, Number::NEAREST_ROUND));
+        $this->assertEquals(7.5, Number::toNearestStep(5.1, 2.5, Number::NEAREST_UP));
+        $this->assertEquals(7.5, Number::toNearestStep(9.9, 2.5, Number::NEAREST_DOWN));
+
+        $this->assertEquals(7.5, Number::toNearestStep(7.5, 2.5, Number::NEAREST_ROUND));
+        $this->assertEquals(7.5, Number::toNearestStep(7.5, 2.5, Number::NEAREST_UP));
+        $this->assertEquals(7.5, Number::toNearestStep(7.5, 2.5, Number::NEAREST_DOWN));
+    }
+
+    public function testToNearestStepUnknownMode()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Mode 'wrongValue' not supported");
+        $this->assertEquals(7.5, Number::toNearestStep(9.9, 2.5, 'wrongValue'));
     }
 }

@@ -1,4 +1,7 @@
 <?php
+
+/** @noinspection PhpUnused */
+
 /**
  * This file is part of the PHP components.
  *
@@ -10,11 +13,20 @@
 
 namespace Ansas\Util;
 
+use InvalidArgumentException;
+
 /**
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class Number
 {
+    /**
+     * Set nearest modes (functions)
+     */
+    const NEAREST_ROUND = 'round';
+    const NEAREST_UP    = 'ceil';
+    const NEAREST_DOWN  = 'floor';
+
     /**
      * @param float|int $value
      *
@@ -159,17 +171,23 @@ class Number
     /**
      * @param float|int $value
      * @param float|int $step
+     * @param string    $mode [optional]
      *
      * @return float
+     * @throws InvalidArgumentException
      */
-    public static function toNearestStep($value, $step)
+    public static function toNearestStep($value, $step, $mode = self::NEAREST_ROUND)
     {
         if (!$value || !$step) {
             return (float) $value;
         }
 
+        if (!in_array($mode, ['round', 'ceil', 'floor'])) {
+            throw new InvalidArgumentException("Mode '{$mode}' not supported");
+        }
+
         $value = (float) $value;
-        $value = round($value / $step) * $step;
+        $value = $mode($value / $step) * $step;
 
         return round($value, static::countDigits($step));
     }
