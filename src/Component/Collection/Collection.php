@@ -10,6 +10,7 @@
 
 namespace Ansas\Component\Collection;
 
+use Ansas\Util\Arr;
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
@@ -72,7 +73,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Get specified collection item.
      *
-     * @param  mixed $key The item key.
+     * @param mixed $key The item key.
      *
      * @return mixed The item value.
      */
@@ -84,7 +85,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Check if specified collection item exists.
      *
-     * @param  mixed $key The item key.
+     * @param mixed $key The item key.
      *
      * @return bool
      */
@@ -96,8 +97,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Set specified collection item.
      *
-     * @param  mixed $key   The item key.
-     * @param  mixed $value The item value.
+     * @param mixed $key   The item key.
+     * @param mixed $value The item value.
      *
      * @return void
      */
@@ -119,7 +120,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Removes specified collection item.
      *
-     * @param  mixed $key The item key.
+     * @param mixed $key The item key.
      *
      * @return $this
      */
@@ -144,9 +145,9 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      * Adds item to collection for specified key
      * (converts item to array if key already exists).
      *
-     * @param  mixed $key   The item key.
-     * @param  mixed $value The item value to add / set.
-     * @param int    $mode  The mode to compare if value exists [optional]
+     * @param mixed $key   The item key.
+     * @param mixed $value The item value to add / set.
+     * @param int   $mode  The mode to compare if value exists [optional]
      *
      * @return $this
      */
@@ -179,7 +180,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      * Appends specified items to collection
      * (overwrites existing keys).
      *
-     * @param  array|Traversable $items The items to append / overwrite to collection.
+     * @param array|Traversable $items The items to append / overwrite to collection.
      *
      * @return $this
      * @throws InvalidArgumentException
@@ -254,9 +255,9 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Get specified collection item.
      *
-     * @param  mixed $key     The item key.
-     * @param  mixed $default [optional] The default value (if key does not exist).
-     * @param int    $mode    The mode to check if key exists [optional]
+     * @param mixed $key     The item key.
+     * @param mixed $default [optional] The default value (if key does not exist).
+     * @param int   $mode    The mode to check if key exists [optional]
      *
      * @return mixed The item value.
      */
@@ -335,9 +336,9 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Check if specified collection item exists.
      *
-     * @param  mixed  $key      The item key.
-     * @param  string $regex
-     * @param  array  &$matches [optional]
+     * @param mixed   $key     The item key.
+     * @param string  $regex
+     * @param array  &$matches [optional]
      *
      * @return bool
      */
@@ -353,8 +354,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Get specified collection item.
      *
-     * @param  mixed $key  The item key.
-     * @param  int   $mode The mode to check if key exists [optional]
+     * @param mixed $key  The item key.
+     * @param int   $mode The mode to check if key exists [optional]
      *
      * @return mixed The item value.
      * @throws Exception
@@ -371,7 +372,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Check if specified collection item exists.
      *
-     * @param  mixed $key The item key.
+     * @param mixed $key The item key.
      *
      * @return bool
      */
@@ -383,7 +384,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Get specified collection item.
      *
-     * @param  mixed $key The item key.
+     * @param mixed $key The item key.
      *
      * @return mixed The item value.
      */
@@ -395,8 +396,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Set specified collection item.
      *
-     * @param  mixed $key   The item key.
-     * @param  mixed $value The item value.
+     * @param mixed $key   The item key.
+     * @param mixed $value The item value.
      *
      * @return void
      */
@@ -408,7 +409,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Removes specified collection item.
      *
-     * @param  mixed $key The item key.
+     * @param mixed $key The item key.
      *
      * @return void
      */
@@ -422,7 +423,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      * (with original key => value pairs).
      * $keys can be an array or a comma separated string of keys.
      *
-     * @param  mixed $keys The item keys to export.
+     * @param mixed $keys The item keys to export.
      *
      * @return array Filtered items.
      */
@@ -444,24 +445,15 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Get specified collection item.
      *
-     * @param  array $path    The path of array keys.
-     * @param  mixed $default [optional] The default value (if key does not exist).
+     * @param array|string $path    The path of array keys.
+     * @param mixed        $default [optional] The default value (if key does not exist).
+     * @param string       $glue    [optional]
      *
      * @return mixed The item value.
      */
-    public function path($path, $default = null)
+    public function path($path, $default = null, $glue = '.')
     {
-        $data = $this->data;
-        $path = (array) $path;
-
-        foreach ($path as $key) {
-            if (!is_array($data) || !array_key_exists($key, $data)) {
-                return $default;
-            }
-            $data = $data[$key];
-        }
-
-        return $data;
+        return Arr::path($this->data, $path, $default, $glue);
     }
 
     /**
@@ -533,8 +525,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Set specified collection item.
      *
-     * @param  mixed $key   The item key.
-     * @param  mixed $value The item value.
+     * @param mixed $key   The item key.
+     * @param mixed $value The item value.
      *
      * @return $this
      */
@@ -554,7 +546,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Set specified collection item.
      *
-     * @param  mixed $key The item key. [optional]
+     * @param mixed $key The item key. [optional]
      *
      * @return $this
      */
@@ -627,7 +619,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Convert string back into object from storage (unfreeze, restore).
      *
-     * @param  string $data
+     * @param string $data
      *
      * @return void
      */
