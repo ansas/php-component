@@ -16,7 +16,7 @@ use Ansas\Slim\Handler\ContainerInjectTrait;
 use Ansas\Slim\Handler\FlashHandler;
 use Ansas\Slim\Handler\RedirectToRouteTrait;
 use Ansas\Slim\Handler\TwigHandlerTrait;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Monolog\Logger;
 use PDO;
 use Slim\Collection as SlimCollection;
