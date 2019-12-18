@@ -347,6 +347,13 @@ class ThriftyFileSession implements SessionHandlerInterface
         if (is_null($this->path)) {
             throw new Exception("Path not set");
         }
+        if (empty($id)) {
+            throw new Exception("Id not set");
+        }
+        // * special for gc
+        if (!preg_match('/^[-,a-zA-Z0-9]{1,128}$|^\*$/', $id)) {
+            throw new Exception("Id not valid: $id");
+        }
 
         return sprintf('%s/%s%s', $this->path, $this->prefix, $id);
     }
@@ -488,6 +495,7 @@ class ThriftyFileSession implements SessionHandlerInterface
         if (!$this->isStarted()) {
             if ($this->cookie
                 && !empty($_COOKIE[session_name()])
+                && preg_match('/^[-,a-zA-Z0-9]{1,128}$/', $_COOKIE[session_name()])
             ) {
                 session_id($_COOKIE[session_name()]);
             }
