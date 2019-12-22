@@ -53,6 +53,19 @@ class Workday extends DateTime
         "2019-11-01" => "Allerheiligen",
         "2019-12-25" => "1. Weihnachtstag",
         "2019-12-26" => "2. Weihnachtstag",
+
+        "2020-01-01" => "Neujahrstag",
+        "2020-04-10" => "Karfreitag",
+        "2020-04-13" => "Ostermontag",
+        "2020-05-01" => "Tag der Arbeit",
+        "2020-05-21" => "Christi Himmelfahrt",
+        "2020-06-01" => "Pfingstmontag",
+        "2020-06-11" => "Fronleichnam",
+        "2020-10-03" => "Tag der Deutschen Einheit",
+        "2020-10-31" => "Reformationstag",
+        "2020-11-01" => "Allerheiligen",
+        "2020-12-25" => "1. Weihnachtstag",
+        "2020-12-26" => "2. Weihnachtstag",
     ];
 
     /**
