@@ -10,6 +10,7 @@
 
 namespace Ansas\Util;
 
+use Ansas\Component\Exception\ContextException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -179,7 +180,6 @@ class TextTest extends TestCase
         );
     }
 
-
     public function testStripPhones()
     {
         $this->assertEquals(
@@ -274,5 +274,24 @@ class TextTest extends TestCase
             '<u>at: </u>[...]<b>now</b>',
             Text::stripSocials('<u>at: </u>facebook.com/test<b>now</b>', '[...]')
         );
+    }
+
+    /** @noinspection PhpUnhandledExceptionInspection */
+    public function testToXmlValid()
+    {
+        $xml = Text::toXml('<root><name>Test</name></root>');
+        $this->assertEquals('Test', (string) $xml->name);
+    }
+
+    /** @noinspection PhpUnhandledExceptionInspection */
+    public function testToXmlInvalid()
+    {
+        $this->expectException(ContextException::class);
+        try {
+            Text::toXml('invalid xml');
+        } catch (ContextException $e) {
+            $this->assertContains("start tag expected", ($e->getContext())[0]['message'], '', true);
+            throw $e;
+        }
     }
 }

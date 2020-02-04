@@ -10,7 +10,9 @@
 
 namespace Ansas\Util;
 
+use Ansas\Component\Exception\ContextException;
 use Ansas\Component\Exception\IOException;
+use SimpleXMLElement;
 
 /**
  * Class File
@@ -169,6 +171,19 @@ class File
         if (true !== $touch) {
             throw new IOException(sprintf("Cannot touch %s", $file));
         }
+    }
+
+    /**
+     * Convert to xml.
+     *
+     * @param string $file
+     *
+     * @return SimpleXMLElement
+     * @throws ContextException
+     */
+    public static function toXml($file)
+    {
+        return Text::toXml($file, true);
     }
 
     /**

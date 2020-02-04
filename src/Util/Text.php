@@ -15,7 +15,9 @@
 
 namespace Ansas\Util;
 
+use Ansas\Component\Exception\ContextException;
 use InvalidArgumentException;
+use SimpleXMLElement;
 
 /**
  * Class Text
@@ -374,6 +376,34 @@ class Text
     public static function toUpper($string)
     {
         return self::toCase($string, self::UPPER);
+    }
+
+    /**
+     * Convert to xml.
+     *
+     * @param string $string
+     * @param bool   $isFile [optional]
+     *
+     * @return SimpleXMLElement
+     * @throws ContextException
+     */
+    public static function toXml($string, $isFile = false)
+    {
+        $useErrors = libxml_use_internal_errors(true);
+        if ($isFile) {
+            $xml = simplexml_load_file($string);
+        } else {
+            $xml = simplexml_load_string($string);
+        }
+        $errors = libxml_get_errors();
+        libxml_clear_errors();
+        libxml_use_internal_errors($useErrors);
+
+        if (!$xml instanceof SimpleXMLElement) {
+            throw new ContextException("Cannot parse XML", Obj::toArray($errors));
+        }
+
+        return $xml;
     }
 
     /**
