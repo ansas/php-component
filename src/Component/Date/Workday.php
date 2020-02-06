@@ -1,4 +1,8 @@
 <?php
+
+/** @noinspection PhpUnused */
+/** @noinspection SpellCheckingInspection */
+
 /**
  * This file is part of the PHP components.
  *
@@ -12,6 +16,7 @@ namespace Ansas\Component\Date;
 
 use DateTime;
 use DateTimeZone;
+use Exception;
 
 /**
  * Class Workday
@@ -81,10 +86,15 @@ class Workday extends DateTime
      */
     public function __construct($time = 'now', DateTimeZone $timezone = null)
     {
+        // Auto-detect timestamps missing prefix '@'
+        if (ctype_digit((string) $time)) {
+            $time = '@' . $time;
+        }
+
         // Important: parent constructor ignores timezone if time is timestamp or contains timezone
         // @see: https://www.php.net/manual/de/datetime.construct.php
         // @see: https://en.wikipedia.org/wiki/ISO_8601#Time_zone_designators
-        if (preg_match('/^@|(?:[\+\-]\d\d(:?\d\d)?)$|\d\dZ$/ui', $time)) {
+        if (preg_match('/^@|(?:[+\-]\d\d(:?\d\d)?)$|\d\dZ$/ui', $time)) {
             parent::__construct($time, $timezone);
         } else {
             // Create default object with current timestamp
@@ -113,6 +123,7 @@ class Workday extends DateTime
      * @param DateTimeZone $timezone [optional]
      *
      * @return static
+     * @throws Exception
      */
     public static function create($time = 'now', DateTimeZone $timezone = null)
     {
@@ -123,6 +134,7 @@ class Workday extends DateTime
      * @param DateTime $date
      *
      * @return static
+     * @throws Exception
      */
     public static function fromDateTime(DateTime $date)
     {
@@ -146,7 +158,7 @@ class Workday extends DateTime
             $modify = str_replace($matches[0], '', $modify);
         }
 
-        if (preg_match('/(?<sign>\+|\-)?\s*(?<days>\d+)\s*workdays?/ui', $modify, $matches)) {
+        if (preg_match('/(?<sign>[+\-])?\s*(?<days>\d+)\s*workdays?/ui', $modify, $matches)) {
             $this->addWorkdays($matches['sign'] . $matches['days']);
             $modify = str_replace($matches[0], '', $modify);
         }
@@ -263,6 +275,7 @@ class Workday extends DateTime
 
     /**
      * @return DateTime
+     * @throws Exception
      */
     public function toDateTime()
     {

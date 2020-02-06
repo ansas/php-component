@@ -1,4 +1,8 @@
 <?php
+
+/** @noinspection PhpUnhandledExceptionInspection */
+/** @noinspection SpellCheckingInspection */
+
 /**
  * This file is part of the PHP components.
  *
@@ -12,6 +16,7 @@ namespace Ansas\Component\Date;
 
 use DateTime;
 use DateTimeZone;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -79,8 +84,8 @@ class WorkdayTest extends TestCase
 
     public function testToDateTime()
     {
-        $workday  = new Workday('now', new DateTimeZone('Europe/Paris'));
-        $date     = $workday->toDateTime();
+        $workday = new Workday('now', new DateTimeZone('Europe/Paris'));
+        $date    = $workday->toDateTime();
 
         $this->assertEquals(DateTime::class, get_class($date));
         $this->assertEquals($date->format(DATE_ATOM), $workday->format(DATE_ATOM));
@@ -221,10 +226,29 @@ class WorkdayTest extends TestCase
         $this->assertEquals($date2->format('Y-m-d H:i:s'), "2017-05-24 11:00:00");
     }
 
+    public function testFromTimestamp()
+    {
+        // Check if timestamp auto-defect works
+        $date = new Workday(1577836800);
+        $this->assertEquals($date->format('Y-m-d H:i:s'), "2020-01-01 00:00:00");
+        $this->assertEquals($date->getTimezone()->getName(), 'UTC');
+
+        // Check if timestamp auto-defect works and timezone is ignored
+        $date = new Workday('1577836800', new DateTimeZone('Europe/Paris'));
+        $this->assertEquals($date->format('Y-m-d H:i:s'), "2020-01-01 00:00:00");
+        $this->assertEquals($date->getTimezone()->getName(), 'UTC');
+
+        // Check if normal timestamp mode works and timezone is ignored
+        $date = Workday::create('@1577836800', new DateTimeZone('Europe/Paris'));
+        $this->assertEquals($date->format('Y-m-d H:i:s'), "2020-01-01 00:00:00");
+        $this->assertEquals($date->getTimezone()->getName(), 'UTC');
+    }
+
     /**
      * @param string $date
      *
      * @return Workday
+     * @throws Exception
      */
     public function createWorkdayIn2017($date)
     {
