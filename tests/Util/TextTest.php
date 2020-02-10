@@ -222,14 +222,24 @@ class TextTest extends TestCase
             Text::stripPhones("Phone: <b>+49 (0) 541 / 123 - 456</b>", '[...]')
         );
 
+        // Check that numbers not starting with leading zero (like EAN, UPC) are not striped
         $this->assertEquals(
-            '9781231231230',
-            Text::stripPhones('9781231231230')
+            '9780000000001',
+            Text::stripPhones('9780000000001')
+        );
+        $this->assertEquals(
+            '(xxx 1010101010101).',
+            Text::stripPhones('(xxx 1010101010101).')
         );
 
+        // Check that numbers starting with leading zero are striped
         $this->assertEquals(
             '[...]',
             Text::stripPhones('0123456789012', '[...]')
+        );
+        $this->assertEquals(
+            '(xxx ).',
+            Text::stripPhones('(xxx 0101010101010).')
         );
     }
 

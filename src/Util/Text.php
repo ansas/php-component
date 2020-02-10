@@ -177,7 +177,7 @@ class Text
      * Remove phone numbers in text. (ALPHA!)
      *
      * This method can remove these types:
-     * - <code>0541 123456</code> (twitter)
+     * - <code>0541 123456</code>
      * - <code>+49 (0) 541 / 123 - 456</code>
      *
      * Notes:
@@ -191,7 +191,7 @@ class Text
      */
     public static function stripPhones($text, $replaceWith = '')
     {
-        $text = preg_replace('/(?:\+\s?|0+)[1-9][\d\s\(\)\/\-]+\d{3,}[\d\s\(\)\/\-]+\d/u', $replaceWith, $text);
+        $text = preg_replace('/(?:\+\s?|(?<!\d)0+)[1-9][\d\s\(\)\/\-]+\d{3,}[\d\s\(\)\/\-]+\d/u', $replaceWith, $text);
 
         return $text;
     }
