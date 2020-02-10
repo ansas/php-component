@@ -19,6 +19,50 @@ namespace Ansas\Util;
 class Arr
 {
     /**
+     * Move element with specified key to end of array.
+     *
+     * @param array $data     The data.
+     * @param mixed $old
+     * @param mixed $new
+     * @param bool  $preserve [optional]
+     *
+     * @return array The result.
+     */
+    public static function replaceKey(array $data, $old, $new, $preserve = false)
+    {
+        if (array_key_exists($old, $data)) {
+            if ($preserve) {
+                $keys       = array_keys($data);
+                $pos        = array_search($old, $keys);
+                $keys[$pos] = $new;
+                $data       = array_combine($keys, $data);
+            } else {
+                $data[$new] = $data[$old];
+                unset($data[$old]);
+            }
+        }
+
+        return $data;
+    }
+    /**
+     * Move element with specified key to end of array.
+     *
+     * @param array $data     The data.
+     * @param array $map
+     * @param bool  $preserve [optional]
+     *
+     * @return array The result.
+     */
+    public static function replaceKeys(array $data, array $map, $preserve = false)
+    {
+        foreach ($map as $old => $new) {
+            $data = self::replaceKey($data, $old, $new, $preserve);
+        }
+
+        return $data;
+    }
+
+    /**
      * Append $old array by $new array (recursive) and override existing keys.
      *
      * @param array $old
@@ -40,7 +84,7 @@ class Arr
     }
 
     /**
-     * Get specified collection item.
+     * Move element with specified key to end of array.
      *
      * @param array $data The data.
      * @param mixed $key  The key to move to end of data.

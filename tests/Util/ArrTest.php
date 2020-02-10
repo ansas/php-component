@@ -20,6 +20,42 @@ use PHPUnit\Framework\TestCase;
  */
 class ArrTest extends TestCase
 {
+    public function testReplaceKey()
+    {
+        $this->assertSame(
+            ['foo', 'bar'],
+            Arr::replaceKey(['foo', 'bar'], 'baz', 'BAZ')
+        );
+
+        $this->assertSame(
+            ['BAZ', 'baz' => ['bar' => 1]],
+            Arr::replaceKey(['foo' => ['bar' => 1], 'BAZ'], 'foo', 'baz')
+        );
+
+        $this->assertSame(
+            ['two' => 2, 'three' => 1],
+            Arr::replaceKey(['one' => 1, 'two' => 2], 'one', 'three')
+        );
+
+        $this->assertSame(
+            ['three' => 1, 'two' => 2],
+            Arr::replaceKey(['one' => 1, 'two' => 2], 'one', 'three', true)
+        );
+    }
+
+    public function testReplaceKeys()
+    {
+        $this->assertSame(
+            ['TWO' => 2, 'ONE' => 1],
+            Arr::replaceKeys(['one' => 1, 'two' => 2], ['two' => 'TWO', 'one' => 'ONE'], false)
+        );
+
+        $this->assertSame(
+            ['ONE' => 1, 'TWO' => 2],
+            Arr::replaceKeys(['one' => 1, 'two' => 2], ['two' => 'TWO', 'one' => 'ONE'], true)
+        );
+    }
+
     public function testPath()
     {
         $data = ['foo' => ['bar' => 1]];
