@@ -373,7 +373,7 @@ class Text
      *
      * @return string
      */
-    function toSlug($string)
+    public static function toSlug($string)
     {
         $string = preg_replace('/[^\p{L}\d]+/u', '-', $string);
         $string = iconv('UTF-8', 'US-ASCII//TRANSLIT', $string);
