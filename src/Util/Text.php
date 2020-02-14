@@ -369,7 +369,9 @@ class Text
     /**
      * Convert into slug.
      *
-     * @return String
+     * @param string $string
+     *
+     * @return string
      */
     function toSlug($string)
     {
