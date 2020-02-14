@@ -367,6 +367,23 @@ class Text
     }
 
     /**
+     * Convert into slug.
+     *
+     * @return String
+     */
+    function toSlug($string)
+    {
+        $string = preg_replace('/[^\p{L}\d]+/u', '-', $string);
+        $string = iconv('UTF-8', 'US-ASCII//TRANSLIT', $string);
+        $string = preg_replace('/[^-\w]+/', '', $string);
+        $string = trim($string, '-');
+        $string = preg_replace('/-+/', '-', $string);
+        $string = strtolower($string);
+
+        return $string;
+    }
+
+    /**
      * Convert to upper string.
      *
      * @param string $string
