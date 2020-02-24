@@ -326,16 +326,20 @@ class Text
     }
 
     /**
-     * Convert to single line string without multiple whitespaces.
+     * Convert to [trimmed] [single line] string without multiple whitespaces.
      *
      * @param string $string
-     * @param bool   $trim [optional]
+     * @param bool   $trim       [optional]
+     * @param bool   $singleLine [optional]
      *
      * @return string
      */
-    public static function toSingleWhitespace($string, $trim = true)
+    public static function toSingleWhitespace($string, $trim = true, $singleLine = true)
     {
-        $string = preg_replace("/[\r\n\t]/", " ", $string);
+        if ($singleLine) {
+            $string = preg_replace("/[\r\n\t]/", " ", $string);
+        }
+
         $string = preg_replace("/ {2,}/", " ", $string);
 
         if ($trim) {
