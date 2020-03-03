@@ -14,9 +14,6 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 /**
- * Class ForceRoute
- *
- * @package Ansas\Slim\Middleware
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class ForceRoute
@@ -39,7 +36,7 @@ class ForceRoute
      */
     public function __construct($path, array $params = null)
     {
-        $this->path   = DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR);
+        $this->path   = '/' . ltrim($path, '/');
         $this->params = $params;
     }
 
