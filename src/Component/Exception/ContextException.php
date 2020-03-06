@@ -43,6 +43,10 @@ class ContextException extends Exception
      */
     public static function createFromException($e, array $context = [])
     {
+        if ($e instanceof self) {
+            return $e->addContext($context);
+        }
+
         return new static($e->getMessage(), $context, $e->getCode(), $e->getPrevious());
     }
 
