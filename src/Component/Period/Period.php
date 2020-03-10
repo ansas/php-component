@@ -10,7 +10,6 @@
 
 namespace Ansas\Component\Period;
 
-use Ansas\Util\Debug;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -26,14 +25,25 @@ use Exception;
 class Period
 {
     /**
-     * Add time values to periods
+     * Do not manipulate time values => time will be (if range exist) related to startingPoint for "min" and "max"
+     */
+    const DAYS_AND_TIME_ORIGINAL = 2;
+
+    /**
+     * Add time values for whole day to periods => time will be (if range exist) 00:00:00 for "min" and 23:59:59 for
+     * "max"
      */
     const DAYS_AND_TIME = 1;
 
     /**
-     * Do not add time values to periods (time will be 00:00:00 for "max" value as well)
+     * Do not add time values to periods => time will be (if range exist) 00:00:00 for "min" and "max"
      */
     const DAYS_ONLY = 0;
+
+    /**
+     * Default starting point if none set
+     */
+    const DEFAULT_STARTING_POINT = 'now';
 
     /**
      * @var string[] List of available periods
@@ -73,17 +83,24 @@ class Period
     protected $timezoneTo;
 
     /**
+     * @var DateTime
+     */
+    protected $startingPoint;
+
+    /**
      * Period constructor.
      *
-     * @param string|DateTimeZone $timezoneFrom [optional]
-     * @param string|DateTimeZone $timezoneTo   [optional]
+     * @param string|DateTimeZone $timezoneFrom  [optional]
+     * @param string|DateTimeZone $timezoneTo    [optional]
+     * @param string|DateTime     $startingPoint [optional]
      *
      * @throws Exception
      */
-    public function __construct($timezoneFrom = null, $timezoneTo = null)
+    public function __construct($timezoneFrom = null, $timezoneTo = null, $startingPoint = null)
     {
         $this->setTimezoneFrom($timezoneFrom);
         $this->setTimezoneTo($timezoneTo);
+        $this->setStartingPoint($startingPoint);
     }
 
     /**
@@ -97,14 +114,16 @@ class Period
     /**
      * Create new instance via static method.
      *
-     * @param string|DateTimeZone $timezoneFrom [optional]
-     * @param string|DateTimeZone $timezoneTo   [optional]
+     * @param string|DateTimeZone $timezoneFrom  [optional]
+     * @param string|DateTimeZone $timezoneTo    [optional]
+     * @param string|DateTime     $startingPoint [optional]
      *
      * @return static
+     * @throws Exception
      */
-    public static function create($timezoneFrom = null, $timezoneTo = null)
+    public static function create($timezoneFrom = null, $timezoneTo = null, $startingPoint = null)
     {
-        return new static($timezoneFrom, $timezoneTo);
+        return new static($timezoneFrom, $timezoneTo, $startingPoint);
     }
 
     /**
@@ -120,14 +139,21 @@ class Period
     {
         $result = $this->parsePeriod($period);
 
-        if ($result['max'] && $mode == self::DAYS_AND_TIME) {
-            $result['max']->modify("+1 day -1 second");
+        // Remove empty keys (if min/max is not set)
+        $result = array_filter($result);
+
+        // Consider "whole day"
+        if ($mode == self::DAYS_AND_TIME) {
+            if ($result['min']) {
+                $result['min']->setTime(0, 0, 0);
+            }
+            if ($result['max']) {
+                $result['max']->setTime(23, 59, 59);
+            }
         }
 
         foreach ($result as $key => $value) {
-            if (!$value) {
-                unset($result[$key]);
-            } elseif ($mode == self::DAYS_ONLY) {
+            if ($mode == self::DAYS_ONLY) {
                 $result[$key] = new DateTime($result[$key]->format('Y-m-d'), $this->getTimezoneTo());
             } elseif ($this->getTimezoneTo()) {
                 $result[$key]->setTimezone($this->getTimezoneTo());
@@ -143,10 +169,21 @@ class Period
      * @param string $period Period name
      *
      * @return array
+     * @throws Exception
      */
     public function getPeriodWithTime($period)
     {
         return $this->getPeriod($period, self::DAYS_AND_TIME);
+    }
+
+    /**
+     * Note: Always returns clone so initial starting point is not changed.
+     *
+     * @return DateTime
+     */
+    public function getStartingPoint()
+    {
+        return clone $this->startingPoint;
     }
 
     /**
@@ -166,9 +203,30 @@ class Period
     }
 
     /**
+     * @param string|DateTime|null $startingPoint
+     *
+     * @return $this
+     * @throws Exception
+     */
+    public function setStartingPoint($startingPoint)
+    {
+        if ($startingPoint instanceof DateTime) {
+            $this->startingPoint = $startingPoint->setTimezone($this->getTimezoneFrom());
+        } else {
+            if (!$startingPoint) {
+                $startingPoint = static::DEFAULT_STARTING_POINT;
+            }
+            $this->startingPoint = new DateTime($startingPoint, $this->getTimezoneFrom());
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string|DateTimeZone|null $timezoneFrom
      *
      * @return $this
+     * @throws Exception
      */
     public function setTimezoneFrom($timezoneFrom)
     {
@@ -181,6 +239,7 @@ class Period
      * @param string|DateTimeZone|null $timezoneTo
      *
      * @return $this
+     * @throws Exception
      */
     public function setTimezoneTo($timezoneTo)
     {
@@ -193,6 +252,7 @@ class Period
      * @param string|DateTimeZone|null $timezone
      *
      * @return DateTimeZone|null
+     * @throws Exception
      */
     protected function toTimezone($timezone)
     {
@@ -215,7 +275,7 @@ class Period
      */
     protected function parsePeriod($period)
     {
-        if (false !== strpos($period, '-')) {
+        if (preg_match('/^\d*-\d*$/u', $period)) {
             return $this->parsePeriodFromDates($period);
         }
 
@@ -264,7 +324,7 @@ class Period
         $min = null;
         $max = null;
 
-        $date = new DateTime('today', $this->getTimezoneFrom());
+        $date = $this->getStartingPoint();
 
         switch ($period) {
             case 'today' :
@@ -343,11 +403,18 @@ class Period
                     $days = $found[1];
                     $min  = clone $date->modify("-{$days} day");
                     $max  = clone $date;
+                } elseif ($period[0] === '-') {
+                    $max = clone $date;
+                    $min = clone $date->modify($period);
+                } elseif ($period[0] === '+') {
+                    $min = clone $date;
+                    $max = clone $date->modify($period);
                 } else {
                     throw new Exception("Period {$period} not supported");
                 }
         }
 
+        /** @noinspection PhpUnnecessaryLocalVariableInspection */
         $result = [
             'min' => $min,
             'max' => $max,
