@@ -240,6 +240,14 @@ class Workday extends DateTime
     /**
      * @return bool
      */
+    public function hasTime()
+    {
+        return $this->format('H:i:s') != '00:00:00';
+    }
+
+    /**
+     * @return bool
+     */
     public function isHoliday()
     {
         return in_array($this->format(static::DAY_DATE_FORMAT), array_keys($this->holidays));
