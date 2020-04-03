@@ -52,7 +52,7 @@ class LoggerException extends Exception
      */
     public static function createFromException($e, $level, array $context = [])
     {
-        return new static($e->getMessage(), $level, $context, $e->getCode(), $e->getPrevious());
+        return new static($e->getMessage(), $level, $context, $e->getCode(), $e);
     }
 
     /**
@@ -66,6 +66,28 @@ class LoggerException extends Exception
     {
         if ($context) {
             $this->context = array_merge($this->context, $context);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add exception details to context.
+     *
+     * @param bool $withTrace [optional]
+     *
+     * @return $this
+     */
+    public function addExceptionDetailsToContext($withTrace = false)
+    {
+        $this->addContext([
+            'exceptionCode' => $this->getCode(),
+            'exceptionFile' => $this->getFile(),
+            'exceptionLine' => $this->getLine(),
+        ]);
+
+        if ($withTrace) {
+            $this->addContext(['exceptionTrace' => $this->getTraceAsString()]);
         }
 
         return $this;
