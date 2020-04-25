@@ -145,6 +145,16 @@ class Workday extends DateTime
     }
 
     /**
+     * Clone instance.
+     *
+     * @return static
+     */
+    public function clone()
+    {
+        return clone $this;
+    }
+
+    /**
      * @inheritdoc
      */
     public function modify($modify)
