@@ -275,12 +275,12 @@ class ExtendedRequest extends Request
     {
         /** @noinspection SpellCheckingInspection */
         $referrer = $this->getHeaderLine('HTTP_REFERER');
-
         if ($cutBaseUrl) {
             /** @var Uri $uri */
             $uri = $this->getUri();
 
             $referrer = str_replace($uri->getBaseUrl(), '', $referrer);
+            $referrer = str_replace($uri->withUserInfo('')->getBaseUrl(), '', $referrer);
         }
 
         return $referrer;
