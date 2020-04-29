@@ -76,6 +76,19 @@ class Number
     }
 
     /**
+     * Check if two numbers have same sign.
+     *
+     * @param float|int $v1
+     * @param float|int $v2
+     *
+     * @return bool
+     */
+    public static function isSameSign($v1, $v2)
+    {
+        return ($v1 < 0) == ($v2 < 0);
+    }
+
+    /**
      * Convert to readable size.
      *
      * @param int    $bytes
