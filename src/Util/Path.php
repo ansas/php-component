@@ -141,7 +141,8 @@ class Path
      *
      * @return bool
      */
-    public static function isWritable($path){
+    public static function isWritable($path)
+    {
         return self::exists($path) && is_writable($path);
     }
 
