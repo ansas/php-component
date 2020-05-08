@@ -137,6 +137,15 @@ class Path
     }
 
     /**
+     * @param $path
+     *
+     * @return bool
+     */
+    public static function isWritable($path){
+        return self::exists($path) && is_writable($path);
+    }
+
+    /**
      * Change go/to/path into goToPath (/go/to/path => GoToPath)
      *
      * @param string $path
