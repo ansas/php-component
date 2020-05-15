@@ -51,19 +51,20 @@ class Path
      *
      * @param string $part1
      * @param string $part2
+     * @param string $separator
      *
      * @return string
      * @throws InvalidArgumentException
      */
-    public static function combine($part1, $part2)
+    public static function combine($part1, $part2, $separator = DIRECTORY_SEPARATOR)
     {
         if ($part1 && $part2) {
-            $part1 = str_replace('/', DIRECTORY_SEPARATOR, $part1);
-            $part1 = str_replace('\\', DIRECTORY_SEPARATOR, $part1);
-            $part2 = str_replace('/', DIRECTORY_SEPARATOR, $part2);
-            $part2 = str_replace('\\', DIRECTORY_SEPARATOR, $part2);
+            $part1 = str_replace('/', $separator, $part1);
+            $part1 = str_replace('\\', $separator, $part1);
+            $part2 = str_replace('/', $separator, $part2);
+            $part2 = str_replace('\\', $separator, $part2);
 
-            return sprintf("%s".DIRECTORY_SEPARATOR."%s", rtrim($part1, DIRECTORY_SEPARATOR), ltrim($part2, DIRECTORY_SEPARATOR));
+            return sprintf("%s".$separator."%s", rtrim($part1, $separator), ltrim($part2, $separator));
         }
 
         throw new InvalidArgumentException("All parts must be filled");
