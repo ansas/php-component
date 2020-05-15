@@ -85,4 +85,47 @@ class PathTest extends TestCase
             Path::toCamelCase('/a/b/c')
         );
     }
+
+    public function testCombine()
+    {
+        $this->assertEquals(
+            'aaa'.DIRECTORY_SEPARATOR.'bbb'.DIRECTORY_SEPARATOR.'ccc',
+            Path::combine('aaa\bbb', '/ccc')
+        );
+
+        $this->assertEquals(
+            'aaa'.DIRECTORY_SEPARATOR.'bbb'.DIRECTORY_SEPARATOR.'ccc',
+            Path::combine('aaa/bbb/', '/ccc')
+        );
+
+        $this->assertEquals(
+            'aaa'.DIRECTORY_SEPARATOR.'bbb'.DIRECTORY_SEPARATOR.'ccc'.DIRECTORY_SEPARATOR,
+            Path::combine('aaa/bbb/', '/ccc\\')
+        );
+
+        $this->assertEquals(
+            'aaa'.DIRECTORY_SEPARATOR.'bbb'.DIRECTORY_SEPARATOR.'ccc'.DIRECTORY_SEPARATOR,
+            Path::combine('aaa/bbb/', '/ccc/')
+        );
+
+        $this->assertEquals(
+            'aaa'.DIRECTORY_SEPARATOR.'bbb'.DIRECTORY_SEPARATOR.'ccc',
+            Path::combine('aaa\bbb/', '/ccc')
+        );
+
+        $this->assertEquals(
+            DIRECTORY_SEPARATOR.'aaa'.DIRECTORY_SEPARATOR.'bbb'.DIRECTORY_SEPARATOR.'ccc',
+            Path::combine('\aaa/bbb/', '/ccc')
+        );
+
+        $this->assertEquals(
+            DIRECTORY_SEPARATOR.'aaa'.DIRECTORY_SEPARATOR.'bbb'.DIRECTORY_SEPARATOR.'ccc'.DIRECTORY_SEPARATOR,
+            Path::combine('/aaa\bbb\\', '/ccc\\')
+        );
+
+        $this->assertEquals(
+            'aaa'.DIRECTORY_SEPARATOR.'bbb',
+            Path::combine('aaa', 'bbb')
+        );
+    }
 }

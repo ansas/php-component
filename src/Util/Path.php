@@ -58,7 +58,12 @@ class Path
     public static function combine($part1, $part2)
     {
         if ($part1 && $part2) {
-            return sprintf("%s/%s", rtrim($part1, '/'), ltrim($part2, '/'));
+            $part1 = str_replace('/', DIRECTORY_SEPARATOR, $part1);
+            $part1 = str_replace('\\', DIRECTORY_SEPARATOR, $part1);
+            $part2 = str_replace('/', DIRECTORY_SEPARATOR, $part2);
+            $part2 = str_replace('\\', DIRECTORY_SEPARATOR, $part2);
+
+            return sprintf("%s".DIRECTORY_SEPARATOR."%s", rtrim($part1, DIRECTORY_SEPARATOR), ltrim($part2, DIRECTORY_SEPARATOR));
         }
 
         throw new InvalidArgumentException("All parts must be filled");
