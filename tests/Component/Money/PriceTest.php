@@ -10,6 +10,7 @@
 
 namespace Ansas\Component\Money;
 
+use LogicException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -28,11 +29,9 @@ class PriceTest extends TestCase
         $this->assertInstanceOf(Price::class, $price);
     }
 
-    /**
-     * @expectedException \LogicException
-     */
     public function testEmpty()
     {
+        $this->expectException(LogicException::class);
         $price = new Price();
         $price->toJson();
     }
@@ -94,20 +93,16 @@ class PriceTest extends TestCase
         $this->assertEquals("119", "$price");
     }
 
-    /**
-     * @expectedException \LogicException
-     */
     public function testTaxPercentException()
     {
+        $this->expectException(LogicException::class);
         $price = new Price(119);
         $price->getTaxPercent();
     }
 
-    /**
-     * @expectedException \LogicException
-     */
     public function testTaxRateException()
     {
+        $this->expectException(LogicException::class);
         $price = new Price(119);
         $price->getTaxRate();
     }

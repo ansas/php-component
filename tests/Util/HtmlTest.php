@@ -52,6 +52,7 @@ class HtmlTest extends TestCase
         );
     }
 
+    /** @noinspection SpellCheckingInspection */
     public function testStripAttributes()
     {
         $this->assertEquals(
@@ -100,6 +101,7 @@ class HtmlTest extends TestCase
         );
     }
 
+    /** @noinspection HtmlRequiredLangAttribute */
     public function testFix()
     {
         $this->assertEquals(
@@ -120,7 +122,7 @@ class HtmlTest extends TestCase
         );
         $this->assertEquals(
             '<body>abc</body>',
-            Html::fix('<html><body>abc</body></html>')
+            Html::fix('<html lang="de"><body>abc</body></html>')
         );
         $this->assertEquals(
             '<body>abc</body>',

@@ -6,12 +6,12 @@
         </testsuite>
     </testsuites>
     <filter>
-        <blacklist>
-            <directory>vendor/</directory>
-            <directory>tests/</directory>
-        </blacklist>
         <whitelist>
             <directory suffix=".php">src/</directory>
+            <exclude>
+                <directory>vendor/</directory>
+                <directory>tests/</directory>
+            </exclude>
         </whitelist>
     </filter>
 </phpunit>

@@ -29,7 +29,7 @@
         "ext-simplexml": "*"
     },
     "require-dev": {
-        "phpunit/phpunit" : "^6"
+        "phpunit/phpunit" : "^9"
     },
     "suggest": {
         "monolog/monolog": "Needed when using Ansas\\Monolog classes"

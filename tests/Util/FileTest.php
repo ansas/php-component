@@ -21,14 +21,13 @@ use PHPUnit\Framework\TestCase;
  */
 class FileTest extends TestCase
 {
-    /** @noinspection PhpUnhandledExceptionInspection */
     public function testToXmlInvalid()
     {
         $this->expectException(ContextException::class);
         try {
             File::toXml('invalid.file');
         } catch (ContextException $e) {
-            $this->assertContains("failed to load", ($e->getContext())[0]['message'], '', true);
+            $this->assertStringContainsStringIgnoringCase("failed to load", ($e->getContext())[0]['message']);
             throw $e;
         }
     }

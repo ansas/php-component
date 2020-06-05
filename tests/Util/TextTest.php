@@ -8,6 +8,10 @@
  * @link    https://github.com/ansas/php-component
  */
 
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUnhandledExceptionInspection */
+/** @noinspection SpellCheckingInspection */
+
 namespace Ansas\Util;
 
 use Ansas\Component\Exception\ContextException;
@@ -286,21 +290,19 @@ class TextTest extends TestCase
         );
     }
 
-    /** @noinspection PhpUnhandledExceptionInspection */
     public function testToXmlValid()
     {
         $xml = Text::toXml('<root><name>Test</name></root>');
         $this->assertEquals('Test', (string) $xml->name);
     }
 
-    /** @noinspection PhpUnhandledExceptionInspection */
     public function testToXmlInvalid()
     {
         $this->expectException(ContextException::class);
         try {
             Text::toXml('invalid xml');
         } catch (ContextException $e) {
-            $this->assertContains("start tag expected", ($e->getContext())[0]['message'], '', true);
+            $this->assertStringContainsStringIgnoringCase("start tag expected", ($e->getContext())[0]['message']);
             throw $e;
         }
     }
