@@ -111,6 +111,28 @@ class Text
     /**
      * Replace first occurrence to $search in $text by $replace.
      *
+     * @param string $prefix
+     * @param string $text
+     * @param bool   $ignoreCase [optional]
+     *
+     * @return string
+     */
+    public static function removePrefix($prefix, $text, $ignoreCase = false)
+    {
+        $length = mb_strlen($prefix);
+        if ($length) {
+            $function = $ignoreCase ? 'mb_stripos' : 'mb_strpos';
+            if (0 === $function($text, $prefix)) {
+                $text = mb_substr($text, $length);
+            }
+        }
+
+        return $text;
+    }
+
+    /**
+     * Replace first occurrence to $search in $text by $replace.
+     *
      * @param string $search
      * @param string $replace
      * @param string $text
@@ -119,9 +141,12 @@ class Text
      */
     public static function replaceFirst($search, $replace, $text)
     {
-        $pos = strpos($text, $search);
-        if ($pos !== false) {
-            $text = substr_replace($text, $replace, $pos, strlen($search));
+        $length = strlen($search);
+        if ($length) {
+            $pos = strpos($text, $search);
+            if ($pos !== false) {
+                $text = substr_replace($text, $replace, $pos, $length);
+            }
         }
 
         return $text;

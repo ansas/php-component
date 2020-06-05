@@ -63,6 +63,52 @@ class TextTest extends TestCase
         );
     }
 
+    public function testRemovePrefix()
+    {
+        $this->assertEquals(
+            'abc',
+            Text::removePrefix('', 'abc')
+        );
+
+        $this->assertEquals(
+            'äbc def',
+            Text::removePrefix('ÄBC', 'äbc def')
+        );
+
+        $this->assertEquals(
+            ' def',
+            Text::removePrefix('ÄBC', 'äbc def', true)
+        );
+    }
+
+    public function testReplaceFirst()
+    {
+        $this->assertEquals(
+            '',
+            Text::replaceFirst('', 'def', '')
+        );
+
+        $this->assertEquals(
+            'abc',
+            Text::replaceFirst('', 'def', 'abc')
+        );
+
+        $this->assertEquals(
+            'def',
+            Text::replaceFirst('äbc', 'def', 'äbc')
+        );
+
+        $this->assertEquals(
+            'abc',
+            Text::replaceFirst('äbc', 'def', 'abc')
+        );
+
+        $this->assertEquals(
+            'def abc',
+            Text::replaceFirst('abc', 'def', 'abc abc')
+        );
+    }
+
     public function testStripEmails()
     {
         $this->assertEquals(
