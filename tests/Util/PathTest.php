@@ -127,5 +127,15 @@ class PathTest extends TestCase
             'aaa'.DIRECTORY_SEPARATOR.'bbb',
             Path::combine('aaa', 'bbb')
         );
+
+        $this->assertEquals(
+            'aaa'.DIRECTORY_SEPARATOR,
+            Path::combine('aaa', '')
+        );
+
+        $this->assertEquals(
+            DIRECTORY_SEPARATOR.'bbb',
+            Path::combine('', 'bbb')
+        );
     }
 }

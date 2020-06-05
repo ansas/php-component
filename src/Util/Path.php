@@ -51,14 +51,14 @@ class Path
      *
      * @param string $part1
      * @param string $part2
-     * @param string $separator
+     * @param string $separator [optional]
      *
      * @return string
      * @throws InvalidArgumentException
      */
     public static function combine($part1, $part2, $separator = DIRECTORY_SEPARATOR)
     {
-        if ($part1 && $part2) {
+        if ($part1 || $part2) {
             $part1 = str_replace('/', $separator, $part1);
             $part1 = str_replace('\\', $separator, $part1);
             $part2 = str_replace('/', $separator, $part2);
@@ -67,7 +67,7 @@ class Path
             return sprintf("%s".$separator."%s", rtrim($part1, $separator), ltrim($part2, $separator));
         }
 
-        throw new InvalidArgumentException("All parts must be filled");
+        throw new InvalidArgumentException("At least one parts must be filled");
     }
 
     /**
