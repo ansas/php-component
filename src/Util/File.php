@@ -74,6 +74,36 @@ class File
 
     /**
      * @param string $file
+     * @param string $mode [optional]
+     *
+     * @return resource
+     */
+    public static function getStream($file, $mode = 'r')
+    {
+        if (!self::isReadable($file)) {
+            throw new IOException(sprintf("File %s is not readable", $file));
+        }
+
+        $stream = fopen($file, $mode);
+        if (!$stream) {
+            throw new IOException(sprintf("Cannot get stream from file %s", $file));
+        }
+
+        return $stream;
+    }
+
+    /**
+     * @param $file
+     *
+     * @return bool
+     */
+    public static function isReadable($file)
+    {
+        return self::exists($file) && is_readable($file);
+    }
+
+    /**
+     * @param string $file
      * @param mixed  $content
      * @param int    $flags [optional]
      *
