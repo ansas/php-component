@@ -101,6 +101,34 @@ class WorkdayTest extends TestCase
         $this->assertEquals(true, $date->isHoliday(), $date->format($date::DAY_DATE_FORMAT));
     }
 
+    public function testIsSunday()
+    {
+        $date = $this->createWorkdayIn2017("2017-04-16");
+        $this->assertEquals(true, $date->isSunday(), $date->format($date::DAY_DATE_FORMAT));
+
+        $date->modify("+1 day");
+        $this->assertEquals(false, $date->isSunday(), $date->format($date::DAY_DATE_FORMAT));
+    }
+
+    public function testIsSundayOrHoliday()
+    {
+        // Sunday and holiday
+        $date = $this->createWorkdayIn2017("2017-04-16");
+        $this->assertEquals(true, $date->isSundayOrHoliday(), $date->format($date::DAY_DATE_FORMAT));
+
+        // Holiday
+        $date->modify("+1 day");
+        $this->assertEquals(true, $date->isSundayOrHoliday(), $date->format($date::DAY_DATE_FORMAT));
+
+        // None
+        $date->modify("+1 day");
+        $this->assertEquals(false, $date->isSundayOrHoliday(), $date->format($date::DAY_DATE_FORMAT));
+
+        // Sunday
+        $date->modify("+5 day");
+        $this->assertEquals(true, $date->isSundayOrHoliday(), $date->format($date::DAY_DATE_FORMAT));
+    }
+
     public function testIsWeekend()
     {
         $date = new Workday();

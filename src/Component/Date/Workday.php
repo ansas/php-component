@@ -266,6 +266,22 @@ class Workday extends DateTime
     /**
      * @return bool
      */
+    public function isSunday()
+    {
+        return $this->format(static::DAY_WEEKDAY_FORMAT) == 7;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSundayOrHoliday()
+    {
+        return $this->isSunday() || $this->isHoliday();
+    }
+
+    /**
+     * @return bool
+     */
     public function isWeekend()
     {
         return in_array($this->format(static::DAY_WEEKDAY_FORMAT), $this->weekend);
