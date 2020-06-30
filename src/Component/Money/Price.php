@@ -452,8 +452,6 @@ class Price extends PriceBase
                 $diffLeast = $diffCurrent;
                 $taxNew    = $taxCurrent;
             }
-
-            $taxDifferences[$taxNew] = abs($taxOld - $taxNew);
         }
 
         if ($taxOld != $taxNew) {
