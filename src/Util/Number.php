@@ -148,6 +148,25 @@ class Number
     }
 
     /**
+     * Compare $v1 and $v2 and calculate factor
+     *
+     * @param float|int $v1
+     * @param float|int $v2
+     * @param bool      $withZero  [optional]
+     * @param int       $precision [optional]
+     *
+     * @return int
+     */
+    public static function toFactor($v1, $v2, $withZero = false, $precision = 2)
+    {
+        if ($withZero && static::isEqual($v1, $v2, $precision)) {
+            return 0;
+        }
+
+        return ($v1 < $v2) ? -1 : 1;
+    }
+
+    /**
      * @param mixed $value
      * @param mixed $max
      *
