@@ -34,6 +34,7 @@ class PhpErrorLoggerProvider extends AbstractProvider
         return [
             'bubble' => false,
             'level'  => E_ALL,
+            'logger' => 'logger',
         ];
     }
 
@@ -43,12 +44,13 @@ class PhpErrorLoggerProvider extends AbstractProvider
     public function register(Container $container)
     {
         // Append custom settings with missing params from default settings
-        $container['settings']['phpError'] = self::mergeWithDefaultSettings($container['settings']['phpError']);
-
-        /** @var Logger $logger */
-        $logger = $container['logger'];
+        $container['settings']['phpError'] = self::mergeWithDefaultSettings($container['settings']['phpError'] ?? []);
 
         $settings = $container['settings']['phpError'];
+
+        /** @var Logger $logger */
+        $logger = $container[$settings['logger']];
+
 
         $errorHandler = new ErrorHandler($logger);
         $errorHandler->registerErrorHandler([], $settings['bubble'], $settings['level']);
