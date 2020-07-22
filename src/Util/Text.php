@@ -89,6 +89,18 @@ class Text
     }
 
     /**
+     * Check if string is UTF-8.
+     *
+     * @param string $string
+     *
+     * @return bool
+     */
+    public static function isUtf8($string)
+    {
+        return mb_detect_encoding($string, 'UTF-8', true) !== false;
+    }
+
+    /**
      * Get max bytes needed per char.
      *
      * @param string $string
@@ -424,6 +436,18 @@ class Text
     public static function toUpper($string)
     {
         return self::toCase($string, self::UPPER);
+    }
+
+    /**
+     * Convert string to UFT-8.
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public static function toUtf8($string)
+    {
+        return self::isUtf8($string) ? $string : utf8_encode($string);
     }
 
     /**
