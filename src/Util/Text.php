@@ -53,6 +53,11 @@ class Text
     const NONE = 'none';
 
     /**
+     * @var string UTF-8 ByteOrderMark sequence
+     */
+    protected static $bom = "\xEF\xBB\xBF";
+
+    /**
      * @param string $string
      * @param int    $first [optional]
      * @param int    $from  [optional]
@@ -62,6 +67,23 @@ class Text
     public static function firstChar($string, $first = 1, $from = 0)
     {
         return mb_substr($string, $from, $first);
+    }
+
+    /**
+     * Replace first occurrence to $search in $text by $replace.
+     *
+     * @param string $text
+     * @param bool   $anywhere [optional]
+     *
+     * @return bool
+     */
+    public static function hasBom($text, $anywhere = false)
+    {
+        if ($anywhere) {
+            return !!preg_match("/" . static::$bom . "/u", $text);
+        }
+
+        return substr($text, 0, 3) === static::$bom;
     }
 
     /**
@@ -118,6 +140,27 @@ class Text
         $sizes = array_map('strlen', $chars);
 
         return max($sizes);
+    }
+
+    /**
+     * Replace first occurrence to $search in $text by $replace.
+     *
+     * @param string $text
+     * @param bool   $anywhere [optional]
+     *
+     * @return string
+     */
+    public static function removeBom($text, $anywhere = false)
+    {
+        if ($anywhere) {
+            return preg_replace("/" . static::$bom . "/u", '', $text);
+        }
+
+        if (substr($text, 0, 3) === static::$bom) {
+            return substr($text, 3);
+        }
+
+        return $text;
     }
 
     /**

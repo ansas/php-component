@@ -10,6 +10,7 @@
 
 namespace Ansas\Component\File;
 
+use Ansas\Util\Text;
 use Exception;
 use Generator;
 use IteratorAggregate;
@@ -370,9 +371,8 @@ class CsvReader extends CsvBase implements IteratorAggregate
         }
 
         if ($this->removeBom) {
-            if (substr($set[0], 0, 3) == pack("CCC", 0xef, 0xbb, 0xbf)) {
-                $set[0] = substr($set[0], 3);
-            }
+            $set[0] = Text::removeBom($set[0]);
+
             $this->removeBom = false;
         }
 
