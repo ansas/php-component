@@ -11,10 +11,7 @@
 namespace Ansas\Util;
 
 /**
- * Class Arr
- *
- * @package Ansas\Util
- * @author  Ansas Meyer <mail@ansas-meyer.de>
+ * @author  Ansas Meyer <ansas@ansas-meyer.de>
  */
 class Arr
 {
@@ -44,6 +41,7 @@ class Arr
 
         return $data;
     }
+
     /**
      * Move element with specified key to end of array.
      *
@@ -205,5 +203,27 @@ class Arr
         $current = $value;
 
         return $data;
+    }
+
+    /**
+     * Swap array keys of level 1 and level 2 in multidimensional array
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    public static function transpose(array $data): array
+    {
+        $return = [];
+        foreach ($data as $key1 => $value1) {
+            if (!is_array($value1)) {
+                return $data;
+            }
+            foreach ($value1 as $key2 => $value2) {
+                $return[$key2][$key1] = $value2;
+            }
+        }
+
+        return $return;
     }
 }

@@ -100,4 +100,48 @@ class ArrTest extends TestCase
             Arr::setPath($data, 'foo.new', 2)
         );
     }
+
+    public function testTranspose()
+    {
+        $this->assertEquals(
+            [
+                0 => [
+                    'id' => 'x',
+                    'quantity' => 1,
+                    'ref' => ['a1', 'b1'],
+                ],
+                1 => [
+                    'id' => 'y',
+                    'quantity' => 2,
+                    'ref' => null,
+                ],
+                2 => [
+                    'id' => 'z',
+                    'quantity' => 3,
+                    'ref' => ['a3', 'b3'],
+                    'once' => true,
+                ],
+            ],
+            Arr::transpose([
+                'id' => [
+                    'x',
+                    'y',
+                    'z'
+                ],
+                'quantity' => [
+                    1,
+                    2,
+                    3
+                ],
+                'ref' => [
+                    ['a1', 'b1'],
+                    null,
+                    ['a3', 'b3'],
+                ],
+                'once' => [
+                    2 => true,
+                ],
+            ])
+        );
+    }
 }
