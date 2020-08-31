@@ -8,6 +8,8 @@
  * @link    https://github.com/ansas/php-component
  */
 
+/** @noinspection SpellCheckingInspection */
+
 namespace Ansas\Component\File;
 
 use Exception;
@@ -31,6 +33,11 @@ class FtpClient
     private $ftp;
 
     /**
+     * @var string Error message
+     */
+    private $error;
+
+    /**
      * FTP constructor.
      *
      * @param string $host
@@ -43,8 +50,8 @@ class FtpClient
     {
         $this->host = $host;
 
-        if (!$this->ftp = @ftp_connect($this->host, $port, $timeout)) {
-            throw new Exception(sprintf("Cannot connect to host %s", $this->host));
+        if (!$this->ftp = $this->execute('ftp_connect', $this->host, $port, $timeout)) {
+            $this->throwException("Cannot connect to host %s", $this->host);
         }
     }
 
@@ -53,7 +60,7 @@ class FtpClient
      */
     public function __destruct()
     {
-        @ftp_close($this->ftp);
+        $this->execute('ftp_close', $this->ftp);
     }
 
     /**
@@ -69,14 +76,14 @@ class FtpClient
      */
     public function login(string $user, string $password, $attempts = 1, $sleepBetweenAttempts = 5)
     {
-        if (!@ftp_login($this->ftp, $user, $password)) {
+        if (!$this->execute('ftp_login', $this->ftp, $user, $password)) {
             if (--$attempts > 0) {
                 sleep($sleepBetweenAttempts);
 
                 return $this->login($user, $password, $attempts, $sleepBetweenAttempts);
             }
 
-            throw new Exception(sprintf("Cannot login to host %s", $this->host));
+            $this->throwException("Cannot login to host %s", $this->host);
         }
 
         return $this;
@@ -96,11 +103,11 @@ class FtpClient
             $dir = rtrim($dir, '/');
         }
         if (!$dir) {
-            throw new Exception("First argument must not be empty");
+            $this->throwException("Remote dir must not be empty");
         }
 
-        if (!@ftp_chdir($this->ftp, $dir)) {
-            throw new Exception(sprintf("Cannot chdir to %s", $dir));
+        if (!$this->execute('ftp_chdir', $this->ftp, $dir)) {
+            $this->throwException("Cannot chdir to %s", $dir);
         }
 
         return $this;
@@ -115,9 +122,7 @@ class FtpClient
      */
     public function exists(string $remoteFile)
     {
-        $size = @ftp_size($this->ftp, $remoteFile);
-
-        return $size >= 0;
+        return $this->execute('ftp_size', $this->ftp, $remoteFile) >= 0;
     }
 
     /**
@@ -133,11 +138,14 @@ class FtpClient
      * @throws Exception
      */
     public function listFiles(
-        string $dir = ".", string $regex = "", bool $returnFirst = false, int $attempts = 5,
+        string $dir = ".",
+        string $regex = "",
+        bool $returnFirst = false,
+        int $attempts = 5,
         int $sleepBetweenAttempts = 5
     ) {
         // Get total list of files of given dir
-        $total = @ftp_nlist($this->ftp, $dir);
+        $total = $this->execute('ftp_nlist', $this->ftp, $dir);
 
         if ($total === false) {
             // Check if tries left call method again
@@ -147,7 +155,7 @@ class FtpClient
                 return $this->listFiles($dir, $regex, $returnFirst, $attempts, $sleepBetweenAttempts);
             }
 
-            throw new Exception(sprintf("Cannot list files in %s with regex %s", $dir, $regex));
+            $this->throwException("Cannot list files in %s with regex %s", $dir, $regex);
         }
 
         // Make sure results are in ascending alphabetical order
@@ -191,7 +199,7 @@ class FtpClient
      */
     public function listFilesRaw(string $dir = ".", int $attempts = 5, int $sleepBetweenAttempts = 5)
     {
-        $total = @ftp_rawlist($this->ftp, $dir);
+        $total = $this->execute('ftp_rawlist', $this->ftp, $dir);
 
         if ($total === false) {
             // Check if tries left call method again
@@ -201,7 +209,7 @@ class FtpClient
                 return $this->listFilesRaw($dir, $attempts, $sleepBetweenAttempts);
             }
 
-            throw new Exception(sprintf("Cannot list files in %s", $dir));
+            $this->throwException("Cannot list files in %s", $dir);
         }
 
         $columnMap = [
@@ -266,8 +274,8 @@ class FtpClient
     /**
      * Get a file from ftp-server.
      *
-     * @param string|null $remoteFile           Remote file path.
-     * @param string      $localFile            [optional] Local file path, default: $remoteFile.
+     * @param string      $remoteFile           Remote file path.
+     * @param string|null $localFile            [optional] Local file path, default: $remoteFile.
      * @param int         $mode                 [optional] Transfer mode, allowed: FTP_ASCII or FTP_BINARY
      * @param int         $attempts             [optional] Number of retries in case of error.
      * @param int         $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
@@ -276,21 +284,24 @@ class FtpClient
      * @throws Exception
      */
     public function get(
-        string $remoteFile, string $localFile = null, int $mode = FTP_BINARY, int $attempts = 1,
+        string $remoteFile,
+        string $localFile = null,
+        int $mode = FTP_BINARY,
+        int $attempts = 1,
         int $sleepBetweenAttempts = 5
     ) {
         if (!$localFile) {
             $localFile = $remoteFile;
         }
 
-        if (!@ftp_get($this->ftp, $localFile, $remoteFile, $mode)) {
+        if (!$this->execute('ftp_get', $this->ftp, $localFile, $remoteFile, $mode)) {
             if (--$attempts > 0) {
                 sleep($sleepBetweenAttempts);
 
                 return $this->get($remoteFile, $localFile, $mode, $attempts, $sleepBetweenAttempts);
             }
 
-            throw new Exception(sprintf("Cannot copy file from %s to %s", $remoteFile, $localFile));
+            $this->throwException("Cannot copy file from %s to %s", $remoteFile, $localFile);
         }
 
         return $this;
@@ -308,8 +319,8 @@ class FtpClient
      */
     public function fget(string $remoteFile, $handle, int $resumePos = 0)
     {
-        if (!@ftp_fget($this->ftp, $handle, $remoteFile, FTP_BINARY, $resumePos)) {
-            throw new Exception("Cannot write in file handle");
+        if (!$this->execute('ftp_fget', $this->ftp, $handle, $remoteFile, FTP_BINARY, $resumePos)) {
+            $this->throwException("Cannot write in file handle");
         }
 
         return $this;
@@ -325,8 +336,8 @@ class FtpClient
      */
     public function passive(bool $passive)
     {
-        if (!@ftp_pasv($this->ftp, $passive)) {
-            throw new Exception(sprintf("Cannot switch to passive = %s", $passive ? "true" : "false"));
+        if (!$this->execute('ftp_pasv', $this->ftp, $passive)) {
+            $this->throwException("Cannot switch to passive = %s", $passive ? "true" : "false");
         }
 
         return $this;
@@ -348,8 +359,8 @@ class FtpClient
             $localFile = $remoteFile;
         }
 
-        if (!@ftp_put($this->ftp, $remoteFile, $localFile, $mode)) {
-            throw new Exception(sprintf("Cannot copy file from %s to %s", $localFile, $remoteFile));
+        if (!$this->execute('ftp_put', $this->ftp, $remoteFile, $localFile, $mode)) {
+            $this->throwException("Cannot copy file from %s to %s", $localFile, $remoteFile);
         }
 
         return $this;
@@ -367,8 +378,8 @@ class FtpClient
      */
     public function fput(string $remoteFile, $handle, int $resumePos = 0)
     {
-        if (!@ftp_fput($this->ftp, $remoteFile, $handle, FTP_BINARY, $resumePos)) {
-            throw new Exception(sprintf("Cannot copy data from file handle to %s", $remoteFile));
+        if (!$this->execute('ftp_fput', $this->ftp, $remoteFile, $handle, FTP_BINARY, $resumePos)) {
+            $this->throwException("Cannot copy data from file handle to %s", $remoteFile);
         }
 
         return $this;
@@ -384,8 +395,8 @@ class FtpClient
      */
     public function delete(string $remoteFile)
     {
-        if (!@ftp_delete($this->ftp, $remoteFile)) {
-            throw new Exception(sprintf("Cannot delete file %s", $remoteFile));
+        if (!$this->execute('ftp_delete', $this->ftp, $remoteFile)) {
+            $this->throwException("Cannot delete file %s", $remoteFile);
         }
 
         return $this;
@@ -402,8 +413,8 @@ class FtpClient
      */
     public function rename(string $oldName, string $newName)
     {
-        if (!@ftp_rename($this->ftp, $oldName, $newName)) {
-            throw new Exception(sprintf("Cannot rename file from %s to %s", $oldName, $newName));
+        if (!$this->execute('ftp_rename', $this->ftp, $oldName, $newName)) {
+            $this->throwException("Cannot rename file from %s to %s", $oldName, $newName);
         }
 
         return $this;
@@ -419,10 +430,10 @@ class FtpClient
      */
     public function getSize(string $remoteFile)
     {
-        $size = @ftp_size($this->ftp, $remoteFile);
+        $size = $this->execute('ftp_size', $this->ftp, $remoteFile);
 
         if ($size == -1) {
-            throw new Exception("Cannot get file size");
+            $this->throwException("Cannot get file size");
         }
 
         return $size;
@@ -440,7 +451,7 @@ class FtpClient
      */
     public function getModifiedTimestamp(string $remoteFile, int $attempts = 1, int $sleepBetweenAttempts = 5)
     {
-        $timestamp = @ftp_mdtm($this->ftp, $remoteFile);
+        $timestamp = $this->execute('ftp_mdtm', $this->ftp, $remoteFile);
 
         if ($timestamp < 0) {
             if (--$attempts > 0) {
@@ -449,9 +460,58 @@ class FtpClient
                 return $this->getModifiedTimestamp($remoteFile, $attempts, $sleepBetweenAttempts);
             }
 
-            throw new Exception("Cannot get file modification timestamp");
+            $this->throwException("Cannot get file modification timestamp");
         }
 
         return $timestamp;
+    }
+
+    /**
+     * @param string $func
+     * @param mixed  ...$args [optional]
+     *
+     * @return mixed
+     */
+    protected function execute(string $func, ...$args)
+    {
+        $this->error = null;
+
+        set_error_handler([$this, 'handleError']);
+
+        $result = $func(... $args);
+
+        restore_error_handler();
+
+        return $result;
+    }
+
+    /**
+     * @param int    $code
+     * @param string $message
+     * @param string $file
+     * @param int    $line
+     * @param array  $context
+     *
+     * @noinspection PhpUnusedParameterInspection
+     */
+    protected function handleError(int $code, string $message, string $file = '', int $line = 0, array $context = [])
+    {
+        $this->error = $message;
+    }
+
+    /**
+     * @param string $message
+     * @param mixed  ...$args [optional]
+     *
+     * @throws Exception
+     */
+    protected function throwException(string $message, ...$args)
+    {
+        if ($this->error) {
+            $message .= ' [%s]';
+            $args[]  = $this->error;
+        }
+
+        throw new Exception(vsprintf($message, $args));
     }
 }
