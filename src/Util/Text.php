@@ -363,6 +363,23 @@ class Text
     }
 
     /**
+     * Compare $v1 and $v2 and calculate factor
+     *
+     * @param string $v1
+     * @param string $v2
+     * @param bool   $ignoreCase [optional]
+     *
+     * @return int
+     */
+    public static function toFactor($v1, $v2, $ignoreCase = false)
+    {
+        $function = $ignoreCase ? 'strcasecmp' : 'strcmp';
+        $result = $function($v1, $v2);
+
+        return $result > 0 ? 1 : ($result < 0 ? -1 : 0);
+    }
+
+    /**
      * Convert to float (remove nun numeric chars).
      *
      * @param string $string
