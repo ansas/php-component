@@ -42,6 +42,11 @@ class CsvReader extends CsvBase implements IteratorAggregate
     protected $line;
 
     /**
+     * @var array|null CSV current set (data)
+     */
+    protected $set;
+
+    /**
      * @var array Malformed statistic
      */
     protected $malformedStatistic = [
@@ -241,6 +246,16 @@ class CsvReader extends CsvBase implements IteratorAggregate
     }
 
     /**
+     * Get current line set (data) in file.
+     *
+     * @return array|null
+     */
+    public function getLineSet()
+    {
+        return $this->set;
+    }
+
+    /**
      * Get malformed statistic.
      *
      * @return array
@@ -379,6 +394,7 @@ class CsvReader extends CsvBase implements IteratorAggregate
         $set = $this->convertEncoding($set);
 
         $this->line++;
+        $this->set = $set;
 
         return $set;
     }
