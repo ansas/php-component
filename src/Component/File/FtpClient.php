@@ -25,17 +25,17 @@ class FtpClient
     /**
      * @var string Host
      */
-    private $host;
+    protected $host;
 
     /**
      * @var resource FTP handle
      */
-    private $ftp;
+    protected $ftp;
 
     /**
      * @var string Error message
      */
-    private $error;
+    protected $error;
 
     /**
      * FTP constructor.
