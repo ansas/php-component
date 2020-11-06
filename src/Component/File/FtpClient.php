@@ -20,43 +20,29 @@ use Exception;
  * @package Ansas\Component\File
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
-class FtpClient
+class FtpClient extends FtpClientBase
 {
-    /**
-     * @var string Host
-     */
-    protected $host;
-
     /**
      * @var resource FTP handle
      */
     protected $ftp;
 
     /**
-     * @var string Error message
-     */
-    protected $error;
-
-    /**
-     * FTP constructor.
+     * @inheritdoc
      *
-     * @param string $host
-     * @param int    $port    [optional]
-     * @param int    $timeout [optional]
-     *
-     * @throws Exception
+     * @param int $timeout [optional]
      */
-    public function __construct(string $host, int $port = 21, int $timeout = 30)
+    public function __construct(string $host, int $port = null, int $timeout = 30)
     {
         $this->host = $host;
 
-        if (!$this->ftp = $this->execute('ftp_connect', $this->host, $port, $timeout)) {
+        if (!$this->ftp = $this->execute('ftp_connect', $this->host, $port ?? 21, $timeout)) {
             $this->throwException("Cannot connect to host %s", $this->host);
         }
     }
 
     /**
-     * FTP destructor.
+     * @inheritdoc
      */
     public function __destruct()
     {
@@ -64,15 +50,10 @@ class FtpClient
     }
 
     /**
-     * Login to server.
+     * @inheritdoc
      *
-     * @param string $user
-     * @param string $password
-     * @param int    $attempts             [optional] Number of retries in case of error.
-     * @param int    $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
-     *
-     * @return $this
-     * @throws Exception
+     * @param int $attempts             [optional] Number of retries in case of error.
+     * @param int $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
      */
     public function login(string $user, string $password, $attempts = 1, $sleepBetweenAttempts = 5)
     {
@@ -90,12 +71,7 @@ class FtpClient
     }
 
     /**
-     * Change into $dir on ftp-server.
-     *
-     * @param string $dir Remote dir path.
-     *
-     * @return $this
-     * @throws Exception
+     * @inheritdoc
      */
     public function chdir(string $dir)
     {
@@ -114,11 +90,7 @@ class FtpClient
     }
 
     /**
-     * Check if file exists on ftp-server.
-     *
-     * @param string $remoteFile Remote file path.
-     *
-     * @return bool
+     * @inheritdoc
      */
     public function exists(string $remoteFile)
     {
@@ -126,16 +98,10 @@ class FtpClient
     }
 
     /**
-     * List (specified) files in directory on ftp-server.
+     * @inheritdoc
      *
-     * @param string $dir                  [optional] Directory to search in.
-     * @param string $regex                [optional] Match files against regex.
-     * @param bool   $returnFirst          [optional] Return first result only?
-     * @param int    $attempts             [optional] Number of retries in case of error.
-     * @param int    $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
-     *
-     * @return array|string
-     * @throws Exception
+     * @param int $attempts             [optional] Number of retries in case of error.
+     * @param int $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
      */
     public function listFiles(
         string $dir = ".",
@@ -145,9 +111,9 @@ class FtpClient
         int $sleepBetweenAttempts = 5
     ) {
         // Get total list of files of given dir
-        $total = $this->execute('ftp_nlist', $this->ftp, $dir);
+        $files = $this->execute('ftp_nlist', $this->ftp, $dir);
 
-        if ($total === false) {
+        if ($files === false) {
             // Check if tries left call method again
             if (--$attempts > 0) {
                 sleep($sleepBetweenAttempts);
@@ -158,33 +124,8 @@ class FtpClient
             $this->throwException("Cannot list files in %s with regex %s", $dir, $regex);
         }
 
-        // Make sure results are in ascending alphabetical order
-        sort($total, SORT_STRING);
+        return $this->filterFiles($files, $regex, $returnFirst);
 
-        $result = [];
-
-        foreach ($total as $file) {
-            // Remove path info from file (some ftp servers send file name incl. path)
-            $file = pathinfo($file, PATHINFO_BASENAME);
-
-            // Match files against regex (if set)
-            if ($regex and !preg_match($regex, $file)) {
-                continue;
-            }
-
-            // Return first result if flag is set
-            if ($returnFirst) {
-                return $file;
-            }
-
-            $result[] = $file;
-        }
-
-        if ($returnFirst) {
-            return "";
-        }
-
-        return $result;
     }
 
     /**
@@ -272,16 +213,11 @@ class FtpClient
     }
 
     /**
-     * Get a file from ftp-server.
+     * @inheritdoc
      *
-     * @param string      $remoteFile           Remote file path.
-     * @param string|null $localFile            [optional] Local file path, default: $remoteFile.
-     * @param int         $mode                 [optional] Transfer mode, allowed: FTP_ASCII or FTP_BINARY
-     * @param int         $attempts             [optional] Number of retries in case of error.
-     * @param int         $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
-     *
-     * @return $this
-     * @throws Exception
+     * @param int $mode                 [optional] Transfer mode, allowed: FTP_ASCII or FTP_BINARY
+     * @param int $attempts             [optional] Number of retries in case of error.
+     * @param int $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
      */
     public function get(
         string $remoteFile,
@@ -327,12 +263,7 @@ class FtpClient
     }
 
     /**
-     * Switch to active or passive mode.
-     *
-     * @param bool $passive
-     *
-     * @return $this
-     * @throws Exception
+     * @inheritdoc
      */
     public function passive(bool $passive)
     {
@@ -344,14 +275,9 @@ class FtpClient
     }
 
     /**
-     * Put a file on ftp-server.
+     * @inheritdoc
      *
-     * @param string      $remoteFile Remote file path.
-     * @param string|null $localFile  [optional] Local file path, default: $remoteFile.
-     * @param int         $mode       [optional] Transfer mode, allowed: FTP_ASCII or FTP_BINARY
-     *
-     * @return $this
-     * @throws Exception
+     * @param int $mode [optional] Transfer mode, allowed: FTP_ASCII or FTP_BINARY
      */
     public function put(string $remoteFile, string $localFile = null, int $mode = FTP_BINARY)
     {
@@ -386,12 +312,7 @@ class FtpClient
     }
 
     /**
-     * Delete a file from ftp-server.
-     *
-     * @param string $remoteFile Remote file path.
-     *
-     * @return $this
-     * @throws Exception
+     * @inheritdoc
      */
     public function delete(string $remoteFile)
     {
@@ -403,13 +324,7 @@ class FtpClient
     }
 
     /**
-     * Put a file on ftp-server.
-     *
-     * @param string $oldName
-     * @param string $newName
-     *
-     * @return $this
-     * @throws Exception
+     * @inheritdoc
      */
     public function rename(string $oldName, string $newName)
     {
@@ -421,12 +336,7 @@ class FtpClient
     }
 
     /**
-     * Get size of file on ftp-server.
-     *
-     * @param string $remoteFile Remote file path.
-     *
-     * @return int File size in byte.
-     * @throws Exception
+     * @inheritdoc
      */
     public function getSize(string $remoteFile)
     {
@@ -440,14 +350,10 @@ class FtpClient
     }
 
     /**
-     * Get timestamp of last modification of file on ftp-server.
+     * @inheritdoc
      *
-     * @param string $remoteFile           Remote file path.
-     * @param int    $attempts             [optional] Number of retries in case of error.
-     * @param int    $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
-     *
-     * @return int Timestamp.
-     * @throws Exception
+     * @param int $attempts             [optional] Number of retries in case of error.
+     * @param int $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
      */
     public function getModifiedTimestamp(string $remoteFile, int $attempts = 1, int $sleepBetweenAttempts = 5)
     {
@@ -464,54 +370,5 @@ class FtpClient
         }
 
         return $timestamp;
-    }
-
-    /**
-     * @param string $func
-     * @param mixed  ...$args [optional]
-     *
-     * @return mixed
-     */
-    protected function execute(string $func, ...$args)
-    {
-        $this->error = null;
-
-        set_error_handler([$this, 'handleError']);
-
-        $result = $func(... $args);
-
-        restore_error_handler();
-
-        return $result;
-    }
-
-    /**
-     * @param int    $code
-     * @param string $message
-     * @param string $file
-     * @param int    $line
-     * @param array  $context
-     *
-     * @noinspection PhpUnusedParameterInspection
-     */
-    protected function handleError(int $code, string $message, string $file = '', int $line = 0, array $context = [])
-    {
-        $this->error = $message;
-    }
-
-    /**
-     * @param string $message
-     * @param mixed  ...$args [optional]
-     *
-     * @throws Exception
-     */
-    protected function throwException(string $message, ...$args)
-    {
-        if ($this->error) {
-            $message .= ' [%s]';
-            $args[]  = $this->error;
-        }
-
-        throw new Exception(vsprintf($message, $args));
     }
 }

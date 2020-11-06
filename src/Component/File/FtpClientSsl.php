@@ -10,25 +10,20 @@
 
 namespace Ansas\Component\File;
 
-use Exception;
-
 /**
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class FtpClientSsl extends FtpClient
 {
     /**
-     * @param string $host
-     * @param int    $port    [optional]
-     * @param int    $timeout [optional]
-     *
-     * @throws Exception
+     * @inheritdoc
+     * @noinspection PhpMissingParentConstructorInspection
      */
-    public function __construct(string $host, int $port = 21, int $timeout = 30)
+    public function __construct(string $host, int $port = null, int $timeout = 30)
     {
         $this->host = $host;
 
-        if (!$this->ftp = $this->execute('ftp_ssl_connect', $this->host, $port, $timeout)) {
+        if (!$this->ftp = $this->execute('ftp_ssl_connect', $this->host, $port ?? 21, $timeout)) {
             $this->throwException("Cannot connect to host %s", $this->host);
         }
     }
