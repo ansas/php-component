@@ -374,7 +374,7 @@ class Text
     public static function toFactor($v1, $v2, $ignoreCase = false)
     {
         $function = $ignoreCase ? 'strcasecmp' : 'strcmp';
-        $result = $function($v1, $v2);
+        $result   = $function($v1, $v2);
 
         return $result > 0 ? 1 : ($result < 0 ? -1 : 0);
     }
@@ -548,5 +548,32 @@ class Text
     public static function trim($string)
     {
         return trim($string);
+    }
+
+    /**
+     * Truncate text.
+     *
+     * Preserves words and adds suffix "..." by default
+     *
+     * @param string $string
+     * @param int    $limit
+     * @param bool   $preserve [optional] Preservce words if possible
+     * @param string $suffix   [optional]
+     *
+     * @return string
+     */
+    public static function truncate($string, int $limit, $preserve = true, $suffix = '...')
+    {
+        if (mb_strlen($string) > $limit) {
+            $breakpoint = $limit - mb_strlen($suffix);
+
+            if ($preserve) {
+                $breakpoint = mb_strrpos(mb_substr($string, 0, $breakpoint + 1), ' ') ?: $breakpoint;
+            }
+
+            $string = rtrim(mb_substr($string, 0, $breakpoint)) . $suffix;
+        }
+
+        return $string;
     }
 }

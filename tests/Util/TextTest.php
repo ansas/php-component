@@ -352,4 +352,17 @@ class TextTest extends TestCase
             throw $e;
         }
     }
+
+    public function testTruncate()
+    {
+        $this->assertEquals('MyTooLo...', Text::truncate('MyTooLongTestText', 10));
+        $this->assertEquals('MyTooLongT', Text::truncate('MyTooLongTestText', 10, false, ''));
+        $this->assertEquals('MyTooLongT', Text::truncate('MyTooLongTestText', 10, true, ''));
+        $this->assertEquals('MyTooL ...', Text::truncate('MyTooLongTest Text', 10, true, ' ...'));
+        $this->assertEquals('My Too ...', Text::truncate('My Too Long Test Text', 10, true, ' ...'));
+
+        $this->assertEquals('MyNotTooLongTestText', Text::truncate('MyNotTooLongTestText', 20));
+        $this->assertEquals('My Too Long Test ...', Text::truncate('My Too Long Test Text', 20, true, ' ...'));
+        $this->assertEquals('A Too Long Test ...', Text::truncate('A Too Long Test Textpart', 20, true, ' ...'));
+    }
 }
