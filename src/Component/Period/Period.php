@@ -144,10 +144,10 @@ class Period
 
         // Consider "whole day"
         if ($mode == self::DAYS_AND_TIME) {
-            if ($result['min']) {
+            if ($result['min'] ?? null) {
                 $result['min']->setTime(0, 0, 0);
             }
-            if ($result['max']) {
+            if ($result['max'] ?? null) {
                 $result['max']->setTime(23, 59, 59);
             }
         }
