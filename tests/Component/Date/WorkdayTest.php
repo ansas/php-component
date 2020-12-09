@@ -18,6 +18,7 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use PHPUnit\Framework\TestCase;
+use function PHPUnit\Framework\assertEquals;
 
 /**
  * Class WorkdayTest
@@ -36,6 +37,47 @@ class WorkdayTest extends TestCase
         $date = new Workday("now");
         $this->assertInstanceOf(Workday::class, $date);
         $this->assertInstanceOf(DateTime::class, $date);
+        $this->assertEquals($date->getHolidayTemplate(), Workday::DEFAULT_TEMPLATE_NAME);
+
+        $date = Workday::create("now");
+        $this->assertInstanceOf(Workday::class, $date);
+        $this->assertInstanceOf(DateTime::class, $date);
+        $this->assertEquals($date->getHolidayTemplate(), Workday::DEFAULT_TEMPLATE_NAME);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testHolidaysPathNotSet()
+    {
+        $this->expectExceptionMessage('Call setHolidayPath() first');
+        Workday::create()->getHolidays();
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testHolidaysTemplateNotExists()
+    {
+        Workday::setHolidayPath(__DIR__ . '/../../var/component/date/workday');
+
+        $this->expectExceptionMessage('Holiday template does not exist');
+        $date = Workday::create()->setHolidayTemplate('unknown')->getHolidays();
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testHolidaysTemplateNotValid()
+    {
+        $this->expectExceptionMessage('Holiday template not valid');
+        $date = Workday::create()->setHolidayTemplate('invalid')->getHolidays();
+    }
+
+    public function testGetHolidaysTemplateValid()
+    {
+        $date = Workday::create();
+        $this->assertIsArray($date->getHolidays());
     }
 
     public function testEqualsBetweenDateTimeAndWorkdayWorks()

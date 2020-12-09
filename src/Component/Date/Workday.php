@@ -14,6 +14,8 @@
 
 namespace Ansas\Component\Date;
 
+use Ansas\Util\File;
+use Ansas\Util\Path;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -26,52 +28,24 @@ use Exception;
  */
 class Workday extends DateTime
 {
-    const DAY_DATE_FORMAT    = 'Y-m-d';
-    const DAY_WEEKDAY_FORMAT = 'N';
+    const DAY_DATE_FORMAT       = 'Y-m-d';
+    const DAY_WEEKDAY_FORMAT    = 'N';
+    const DEFAULT_TEMPLATE_NAME = 'default';
 
     /**
-     * @var array List of dates to consider as holiday
+     * @var string Path to holiday templates
      */
-    protected $holidays = [
-        "2018-01-01" => "Neujahrstag",
-        "2018-03-30" => "Karfreitag",
-        "2018-04-02" => "Ostermontag",
-        "2018-05-01" => "Tag der Arbeit",
-        "2018-05-10" => "Christi Himmelfahrt",
-        "2018-05-21" => "Pfingstmontag",
-        "2018-05-31" => "Fronleichnam",
-        "2018-10-03" => "Tag der Deutschen Einheit",
-        "2018-10-31" => "Reformationstag",
-        "2018-11-01" => "Allerheiligen",
-        "2018-12-25" => "1. Weihnachtstag",
-        "2018-12-26" => "2. Weihnachtstag",
+    private static $holidayTemplatePath;
 
-        "2019-01-01" => "Neujahrstag",
-        "2019-04-19" => "Karfreitag",
-        "2019-04-22" => "Ostermontag",
-        "2019-05-01" => "Tag der Arbeit",
-        "2019-05-30" => "Christi Himmelfahrt",
-        "2019-06-10" => "Pfingstmontag",
-        "2019-06-20" => "Fronleichnam",
-        "2019-10-03" => "Tag der Deutschen Einheit",
-        "2019-10-31" => "Reformationstag",
-        "2019-11-01" => "Allerheiligen",
-        "2019-12-25" => "1. Weihnachtstag",
-        "2019-12-26" => "2. Weihnachtstag",
+    /**
+     * @var string Name of holiday template
+     */
+    protected $holidayTemplate;
 
-        "2020-01-01" => "Neujahrstag",
-        "2020-04-10" => "Karfreitag",
-        "2020-04-13" => "Ostermontag",
-        "2020-05-01" => "Tag der Arbeit",
-        "2020-05-21" => "Christi Himmelfahrt",
-        "2020-06-01" => "Pfingstmontag",
-        "2020-06-11" => "Fronleichnam",
-        "2020-10-03" => "Tag der Deutschen Einheit",
-        "2020-10-31" => "Reformationstag",
-        "2020-11-01" => "Allerheiligen",
-        "2020-12-25" => "1. Weihnachtstag",
-        "2020-12-26" => "2. Weihnachtstag",
-    ];
+    /**
+     * @var array|null List of dates to consider as holiday
+     */
+    protected $holidays;
 
     /**
      * @var array List of days to consider as weekend
@@ -84,8 +58,13 @@ class Workday extends DateTime
     /**
      * @inheritdoc
      */
-    public function __construct($time = 'now', DateTimeZone $timezone = null)
-    {
+    public function __construct(
+        $time = 'now',
+        DateTimeZone $timezone = null,
+        string $holidayTemplate = self::DEFAULT_TEMPLATE_NAME
+    ) {
+        $this->setHolidayTemplate($holidayTemplate);
+
         // Auto-detect timestamps missing prefix '@'
         if (ctype_digit((string) $time)) {
             $time = '@' . $time;
@@ -125,9 +104,12 @@ class Workday extends DateTime
      * @return static
      * @throws Exception
      */
-    public static function create($time = 'now', DateTimeZone $timezone = null)
-    {
-        return new static($time, $timezone);
+    public static function create(
+        $time = 'now',
+        DateTimeZone $timezone = null,
+        string $holidayTemplate = self::DEFAULT_TEMPLATE_NAME
+    ) {
+        return new static($time, $timezone, $holidayTemplate);
     }
 
     /**
@@ -142,6 +124,22 @@ class Workday extends DateTime
         $workday->setTimezone($date->getTimezone());
 
         return $workday;
+    }
+
+    /**
+     * @return string
+     */
+    final public static function getHolidayPath()
+    {
+        return static::$holidayTemplatePath;
+    }
+
+    /**
+     * @param string $path
+     */
+    final public static function setHolidayPath(string $path)
+    {
+        self::$holidayTemplatePath = $path;
     }
 
     /**
@@ -236,7 +234,34 @@ class Workday extends DateTime
      */
     public function getHolidays()
     {
+        if ($this->holidays === null) {
+            $path = $this->getHolidayPath();
+            if (!$path) {
+                throw new Exception("Call setHolidayPath() first");
+            }
+
+            $filename = Path::combine($path, $this->getHolidayTemplate() . '.json');
+            if (!File::exists($filename)) {
+                throw new Exception("Holiday template does not exist");
+            }
+
+            $holidays = json_decode(File::getContent($filename), true);
+            if (!is_array($holidays)) {
+                throw new Exception("Holiday template not valid");
+            }
+
+            $this->setHolidays($holidays);
+        }
+
         return $this->holidays;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHolidayTemplate()
+    {
+        return $this->holidayTemplate;
     }
 
     /**
@@ -260,7 +285,7 @@ class Workday extends DateTime
      */
     public function isHoliday()
     {
-        return in_array($this->format(static::DAY_DATE_FORMAT), array_keys($this->holidays));
+        return in_array($this->format(static::DAY_DATE_FORMAT), array_keys($this->getHolidays()));
     }
 
     /**
@@ -296,13 +321,26 @@ class Workday extends DateTime
     }
 
     /**
-     * @param array $holidays
+     * @param array|null $holidays
      *
      * @return $this
      */
-    public function setHolidays(array $holidays)
+    public function setHolidays(?array $holidays)
     {
         $this->holidays = $holidays;
+
+        return $this;
+    }
+
+    /**
+     * @param string $holidayTemplate
+     */
+    public function setHolidayTemplate(string $holidayTemplate)
+    {
+        if ($this->getHolidayTemplate() != $holidayTemplate) {
+            $this->holidayTemplate = $holidayTemplate;
+            $this->setHolidays(null);
+        }
 
         return $this;
     }
