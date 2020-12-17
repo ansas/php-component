@@ -138,6 +138,31 @@ class Arr
     }
 
     /**
+     * Does the path exist in the array?
+     *
+     * @param array        $data The array.
+     * @param array|string $path The path of array keys.
+     * @param string       $glue [optional]
+     *
+     * @return bool
+     */
+    public static function hasPath(array $data, $path, $glue = '.')
+    {
+        if (!is_array($path)) {
+            $path = explode($glue, $path);
+        }
+
+        foreach ($path as $key) {
+            if (!is_array($data) || !array_key_exists($key, $data)) {
+                return false;
+            }
+            $data = $data[$key];
+        }
+
+        return true;
+    }
+
+    /**
      * Get specified value in array path.
      *
      * @param array $data
