@@ -76,6 +76,31 @@ class ArrTest extends TestCase
         );
     }
 
+    public function testHasPath()
+    {
+        $data = ['foo' => ['bar' => false]];
+
+        $this->assertTrue(
+            Arr::hasPath($data, 'foo')
+        );
+
+        $this->assertTrue(
+            Arr::hasPath($data, 'foo.bar')
+        );
+
+        $this->assertTrue(
+            Arr::hasPath($data, ['foo','bar'])
+        );
+
+        $this->assertFalse(
+            Arr::hasPath($data, 'bar.foo')
+        );
+
+        $this->assertTrue(
+            Arr::hasPath($data, 'foo-bar', '-')
+        );
+    }
+
     public function testSetPath()
     {
         $data = ['foo' => ['bar' => 1]];
