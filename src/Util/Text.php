@@ -1,7 +1,7 @@
 <?php
 
-/** @noinspection PhpUnused */
-/** @noinspection RegExpRedundantEscape */
+/** @noinspection PhpComposerExtensionStubsInspection */
+/** @noinspection PhpMissingParamTypeInspection */
 /** @noinspection SpellCheckingInspection */
 
 /**
@@ -62,9 +62,9 @@ class Text
      * @param int    $first [optional]
      * @param int    $from  [optional]
      *
-     * @return int
+     * @return string
      */
-    public static function firstChar($string, $first = 1, $from = 0)
+    public static function firstChar($string, $first = 1, $from = 0): string
     {
         return mb_substr($string, $from, $first);
     }
@@ -77,7 +77,7 @@ class Text
      *
      * @return bool
      */
-    public static function hasBom($text, $anywhere = false)
+    public static function hasBom($text, $anywhere = false): bool
     {
         if ($anywhere) {
             return !!preg_match("/" . static::$bom . "/u", $text);
@@ -93,7 +93,7 @@ class Text
      *
      * @return bool
      */
-    public static function isLower($string)
+    public static function isLower($string): bool
     {
         return ctype_lower($string);
     }
@@ -105,7 +105,7 @@ class Text
      *
      * @return bool
      */
-    public static function isUpper($string)
+    public static function isUpper($string): bool
     {
         return ctype_upper($string);
     }
@@ -117,7 +117,7 @@ class Text
      *
      * @return bool
      */
-    public static function isUtf8($string)
+    public static function isUtf8($string): bool
     {
         return mb_detect_encoding($string, 'UTF-8', true) !== false;
     }
@@ -129,7 +129,7 @@ class Text
      *
      * @return int
      */
-    public static function maxCharWidth($string)
+    public static function maxCharWidth($string): int
     {
         $chars = preg_split('//u', $string, null, PREG_SPLIT_NO_EMPTY);
 
@@ -150,7 +150,7 @@ class Text
      *
      * @return string
      */
-    public static function removeBom($text, $anywhere = false)
+    public static function removeBom($text, $anywhere = false): string
     {
         if ($anywhere) {
             return preg_replace("/" . static::$bom . "/u", '', $text);
@@ -172,7 +172,7 @@ class Text
      *
      * @return string
      */
-    public static function removePrefix($prefix, $text, $ignoreCase = false)
+    public static function removePrefix($prefix, $text, $ignoreCase = false): string
     {
         $length = mb_strlen($prefix);
         if ($length) {
@@ -194,7 +194,7 @@ class Text
      *
      * @return string
      */
-    public static function replaceFirst($search, $replace, $text)
+    public static function replaceFirst($search, $replace, $text): string
     {
         $length = strlen($search);
         if ($length) {
@@ -217,11 +217,9 @@ class Text
      *
      * @return string
      */
-    public static function stripEmails($text, $replaceWith = '')
+    public static function stripEmails($text, $replaceWith = ''): string
     {
-        $text = preg_replace('/[^@\s>]+@[^@\s<>]+\.[^@\s<]+/u', $replaceWith, $text);
-
-        return $text;
+        return preg_replace('/[^@\s>]+@[^@\s<>]+\.[^@\s<]+/u', $replaceWith, $text);
     }
 
     /**
@@ -240,7 +238,7 @@ class Text
      *
      * @return string
      */
-    public static function stripLinks($text, $replaceWith = '', $topLevelDomains = [])
+    public static function stripLinks($text, $replaceWith = '', $topLevelDomains = []): string
     {
         $text = preg_replace('/(?:(?:[^\s\:>]+:)?\/\/|www\.)[^\s\.]+\.\w+[^\s<]+/u', $replaceWith, $text);
         $text = preg_replace('/[^\s\.>]+\.[a-z]{2,}\/[^\s<]+/u', $replaceWith, $text);
@@ -269,11 +267,9 @@ class Text
      *
      * @return string
      */
-    public static function stripPhones($text, $replaceWith = '')
+    public static function stripPhones($text, $replaceWith = ''): string
     {
-        $text = preg_replace('/(?:\+\s?|(?<!\d)0+)[1-9][\d\s\(\)\/\-]+\d{3,}[\d\s\(\)\/\-]+\d/u', $replaceWith, $text);
-
-        return $text;
+        return preg_replace('/(?:\+\s?|(?<!\d)0+)[1-9][\d\s\(\)\/\-]+\d{3,}[\d\s\(\)\/\-]+\d/u', $replaceWith, $text);
     }
 
     /**
@@ -288,12 +284,11 @@ class Text
      *
      * @return string
      */
-    public static function stripSocials($text, $replaceWith = '')
+    public static function stripSocials($text, $replaceWith = ''): string
     {
         $text = preg_replace('/(?<=\s|^|>)@[^\s<]+/u', $replaceWith, $text);
-        $text = preg_replace('/(?:[^\s>]+\.)?facebook.com\/[^\s<]+/u', $replaceWith, $text);
 
-        return $text;
+        return preg_replace('/(?:[^\s>]+\.)?facebook.com\/[^\s<]+/u', $replaceWith, $text);
     }
 
     /**
@@ -304,7 +299,7 @@ class Text
      * @return bool
      * @throws InvalidArgumentException
      */
-    public static function toBool($string)
+    public static function toBool($string): bool
     {
         if (is_null($string)) {
             return false;
@@ -324,20 +319,16 @@ class Text
     /**
      * Convert case of a string.
      *
-     * @param string $string
-     * @param string $case
+     * @param string|null $string
+     * @param string      $case
      *
      * @return string
      * @throws InvalidArgumentException
      */
-    public static function toCase($string, $case)
+    public static function toCase(?string $string, string $case): string
     {
         if (is_null($string)) {
             $string = '';
-        }
-
-        if (!is_scalar($string)) {
-            throw new InvalidArgumentException("Param string must be a scalar");
         }
 
         switch ($case) {
@@ -371,7 +362,7 @@ class Text
      *
      * @return int
      */
-    public static function toFactor($v1, $v2, $ignoreCase = false)
+    public static function toFactor($v1, $v2, $ignoreCase = false): int
     {
         $function = $ignoreCase ? 'strcasecmp' : 'strcmp';
         $result   = $function($v1, $v2);
@@ -386,7 +377,7 @@ class Text
      *
      * @return float
      */
-    public static function toFloat($string)
+    public static function toFloat($string): float
     {
         return (float) preg_replace('/[^0-9\.]/u', '', $string);
     }
@@ -398,7 +389,7 @@ class Text
      *
      * @return string
      */
-    public static function toLower($string)
+    public static function toLower($string): string
     {
         return self::toCase($string, self::LOWER);
     }
@@ -411,7 +402,7 @@ class Text
      *
      * @return string
      */
-    public static function toRegex($string, $modifiers = 'u')
+    public static function toRegex($string, $modifiers = 'u'): string
     {
         // Check if string is already a regular expression
         if (substr($string, 0, 1) == '/') {
@@ -431,7 +422,7 @@ class Text
      *
      * @return string
      */
-    public static function toSingleWhitespace($string, $trim = true, $singleLine = true)
+    public static function toSingleWhitespace($string, $trim = true, $singleLine = true): string
     {
         if ($singleLine) {
             $string = preg_replace("/[\r\n\t]/", " ", $string);
@@ -454,7 +445,7 @@ class Text
      *
      * @return int
      */
-    public static function toSizeInByte($string, $system = 'metric')
+    public static function toSizeInByte($string, $system = 'metric'): int
     {
         $mod = ($system === 'binary') ? 1024 : 1000;
 
@@ -468,22 +459,39 @@ class Text
     }
 
     /**
+     * @param string|null $string
+     * @param string      $case [optional]
+     *
+     * @return string
+     */
+    public static function toNormalized(?string $string, $case = self::LOWER): string
+    {
+        if (is_null($string)) {
+            return '';
+        }
+
+        $string = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
+        $string = preg_replace('/[^0-9a-zA-Z]/', '', $string);
+
+        return self::toCase($string, $case);
+    }
+
+    /**
      * Convert into slug.
      *
      * @param string $string
      *
      * @return string
      */
-    public static function toSlug($string)
+    public static function toSlug($string): string
     {
         $string = preg_replace('/[^\p{L}\d]+/u', '-', $string);
         $string = iconv('UTF-8', 'US-ASCII//TRANSLIT', $string);
         $string = preg_replace('/[^-\w]+/', '', $string);
         $string = trim($string, '-');
         $string = preg_replace('/-+/', '-', $string);
-        $string = strtolower($string);
 
-        return $string;
+        return strtolower($string);
     }
 
     /**
@@ -493,7 +501,7 @@ class Text
      *
      * @return string
      */
-    public static function toUpper($string)
+    public static function toUpper($string): string
     {
         return self::toCase($string, self::UPPER);
     }
@@ -505,7 +513,7 @@ class Text
      *
      * @return string
      */
-    public static function toUtf8($string)
+    public static function toUtf8($string): string
     {
         return self::isUtf8($string) ? $string : utf8_encode($string);
     }
@@ -519,7 +527,7 @@ class Text
      * @return SimpleXMLElement
      * @throws ContextException
      */
-    public static function toXml($string, $isFile = false)
+    public static function toXml($string, $isFile = false): SimpleXMLElement
     {
         $useErrors = libxml_use_internal_errors(true);
         if ($isFile) {
@@ -545,7 +553,7 @@ class Text
      *
      * @return string
      */
-    public static function trim($string)
+    public static function trim($string): string
     {
         return trim($string);
     }
@@ -557,12 +565,12 @@ class Text
      *
      * @param string $string
      * @param int    $limit
-     * @param bool   $preserve [optional] Preservce words if possible
+     * @param bool   $preserve [optional] Preserve words if possible
      * @param string $suffix   [optional]
      *
      * @return string
      */
-    public static function truncate($string, int $limit, $preserve = true, $suffix = '...')
+    public static function truncate($string, int $limit, $preserve = true, $suffix = '...'): string
     {
         if (mb_strlen($string) > $limit) {
             $breakpoint = $limit - mb_strlen($suffix);

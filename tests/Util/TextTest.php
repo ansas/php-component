@@ -336,7 +336,21 @@ class TextTest extends TestCase
         );
     }
 
-    public function testToXmlValid()
+    public function testToNormalized()
+    {
+        $this->assertEquals('', Text::toNormalized(null));
+        $this->assertEquals('abc', Text::toNormalized('ABC'));
+        $this->assertEquals('woerter', Text::toNormalized('Wörter'));
+        $this->assertEquals('masse', Text::toNormalized(' M a ß e '));
+    }
+
+    public function testToNormalizedInvalid()
+    {
+        $this->expectException(\TypeError::class);
+        Text::toNormalized(new \DateTime());
+    }
+
+    public function testToXml()
     {
         $xml = Text::toXml('<root><name>Test</name></root>');
         $this->assertEquals('Test', (string) $xml->name);
