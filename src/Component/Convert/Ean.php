@@ -211,7 +211,7 @@ class Ean
         // Calculate (sum)
         $sum = 0;
         for ($i = 0; $i < 12; $i++) {
-            $sum += $ean{$i} * ($i % 2 ? 3 : 1);
+            $sum += $ean[$i] * ($i % 2 ? 3 : 1);
         }
 
         // Calculate (check digit)
@@ -241,7 +241,7 @@ class Ean
         // Calculate (sum)
         $sum = 0;
         for ($i = 0; $i < 9; $i++) {
-            $sum += (10 - $i) * $isbn{$i};
+            $sum += (10 - $i) * $isbn[$i];
         }
 
         // Calculate (check digit)
