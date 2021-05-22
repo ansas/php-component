@@ -73,7 +73,6 @@ class ConsoleLoggerProvider extends AbstractProvider
             }
             $logger->pushProcessor(new CleanupProcessor($settings['trimPaths']));
             $logger->pushProcessor(new IntrospectionProcessor(Logger::WARNING));
-            $logger->pushProcessor(new ProcessIdProcessor());
             $logger->pushProcessor(new PsrLogMessageProcessor());
 
             $logger->setTimezone($loggerTimeZone);
