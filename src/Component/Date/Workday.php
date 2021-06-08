@@ -315,6 +315,14 @@ class Workday extends DateTime
     /**
      * @return bool
      */
+    public function isWeekendOrHoliday()
+    {
+        return $this->isWeekend() || $this->isHoliday();
+    }
+
+    /**
+     * @return bool
+     */
     public function isWorkday()
     {
         return !$this->isWeekend() && !$this->isHoliday();
@@ -334,6 +342,8 @@ class Workday extends DateTime
 
     /**
      * @param string $holidayTemplate
+     *
+     * @return $this
      */
     public function setHolidayTemplate(string $holidayTemplate)
     {
@@ -341,6 +351,20 @@ class Workday extends DateTime
             $this->holidayTemplate = $holidayTemplate;
             $this->setHolidays(null);
         }
+
+        return $this;
+    }
+
+    /**
+     * array of integer, 1 (for Monday) through 7 (for Sunday)
+     *
+     * @param array $weekend
+     *
+     * @return $this
+     */
+    public function setWeekendDays(array $weekend)
+    {
+        $this->weekend = $weekend;
 
         return $this;
     }
