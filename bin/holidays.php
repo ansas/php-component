@@ -8,7 +8,7 @@ use Ansas\Util\Text;
  * @link https://feiertage-api.de/
  */
 const VALID_COUNTRIES = ['DE'];
-const VALID_STATES    = ['BW', 'BY', 'BE', 'BB', 'HB', 'HE', 'MV', 'NI', 'NW', 'RP', 'SL', 'SN', 'ST', 'SH', 'TH'];
+const VALID_STATES    = ['BW', 'BY', 'BE', 'BB', 'HB', 'HE', 'HH', 'MV', 'NI', 'NW', 'RP', 'SL', 'SN', 'ST', 'SH', 'TH'];
 
 try {
     if (!file_exists($file = __DIR__ . '/../../../autoload.php') && !file_exists($file = __DIR__ . '/../autoload.php')) {
