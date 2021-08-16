@@ -10,6 +10,7 @@
 
 namespace Ansas\Component\Convert;
 
+use Ansas\Util\Text;
 use InvalidArgumentException;
 
 /**
@@ -167,26 +168,9 @@ class ConvertPrice
             return $this;
         }
 
+        // convert: to internal int structure
         if ($format == self::EURO) {
-            // remove: all not allowed chars
-            $price = preg_replace('/[^0-9,\-\.\+]/', '', $price);
-
-            // sanitize: +/- at end of number
-            $price = preg_replace('/^(.*)(\-|\+)$/', '$2$1', $price);
-
-            // sanitize: , in price
-            if (mb_strpos($price, ',') !== false) {
-                if (preg_match('/,\./', $price)) {
-                    $price = str_replace(',', '', $price);
-                } else {
-                    $price = str_replace('.', '', $price);
-                    $price = str_replace(',', '.', $price);
-                }
-            }
-
-            // convert: to internal int structure
-            $price = (float) $price;
-            $price = $price * 100;
+            $price = Text::toFloat($price) * 100;
         } else {
             $price = (float) $price;
         }

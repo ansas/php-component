@@ -372,14 +372,30 @@ class Text
 
     /**
      * Convert to float (remove nun numeric chars).
-     *
-     * @param string $string
-     *
-     * @return float
      */
     public static function toFloat($string): float
     {
-        return (float) preg_replace('/[^0-9\.]/u', '', $string);
+        $string = (string) $string;
+
+        if (mb_strlen($string)) {
+            // Remove all not allowed chars
+            $string = preg_replace('/[^0-9,\-\.\+]/', '', $string);
+
+            // Sanitize sign (+/-) at end of number
+            $string = preg_replace('/^(.*)(\-|\+)$/', '$2$1', $string);
+
+            // Sanitize comma (,) in price
+            if (mb_strpos($string, ',') !== false) {
+                if (preg_match('/,\d+\./', $string)) {
+                    $string = str_replace(',', '', $string);
+                } else {
+                    $string = str_replace('.', '', $string);
+                    $string = str_replace(',', '.', $string);
+                }
+            }
+        }
+
+        return (float) $string;
     }
 
     /**

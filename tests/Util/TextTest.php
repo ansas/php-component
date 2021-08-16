@@ -8,19 +8,12 @@
  * @link    https://github.com/ansas/php-component
  */
 
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUnhandledExceptionInspection */
-/** @noinspection SpellCheckingInspection */
-
 namespace Ansas\Util;
 
 use Ansas\Component\Exception\ContextException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class TextTest
- *
- * @package Ansas\Util
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class TextTest extends TestCase
@@ -334,6 +327,16 @@ class TextTest extends TestCase
             '<u>at: </u>[...]<b>now</b>',
             Text::stripSocials('<u>at: </u>facebook.com/test<b>now</b>', '[...]')
         );
+    }
+
+    public function testToFloat()
+    {
+        $this->assertEquals(0, Text::toFloat(null));
+        $this->assertEquals(0, Text::toFloat(''));
+        $this->assertEquals(0, Text::toFloat('0.000.000,00'));
+        $this->assertEquals(-12345.67, Text::toFloat('12.345,67-'));
+        $this->assertEquals(12345.67, Text::toFloat('12,345.67'));
+        $this->assertEquals(12345.67, Text::toFloat('the price is 12,345.67 EUR'));
     }
 
     public function testToNormalized()
