@@ -162,7 +162,7 @@ class CsvReader extends CsvBase implements IteratorAggregate
      */
     public function getHeader()
     {
-        if (null == $this->header) {
+        if (null === $this->header) {
             $header = $this->getNextDataSet();
             if (null === $header) {
                 throw new Exception("Cannot retrieve header");

@@ -74,7 +74,7 @@ class CsvBuilder extends CsvBuilderBase
      */
     public function getCsv()
     {
-        if (null == $this->csv) {
+        if (null === $this->csv) {
             $this->csv = "";
 
             // Build header
