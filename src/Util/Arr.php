@@ -16,16 +16,14 @@ namespace Ansas\Util;
 class Arr
 {
     /**
-     * Move element with specified key to end of array.
+     * Replace an array key.
      *
      * @param array $data     The data.
      * @param mixed $old
      * @param mixed $new
      * @param bool  $preserve [optional]
-     *
-     * @return array The result.
      */
-    public static function replaceKey(array $data, $old, $new, $preserve = false)
+    public static function replaceKey(array $data, $old, $new, $preserve = false): array
     {
         if (array_key_exists($old, $data)) {
             if ($preserve) {
@@ -43,7 +41,7 @@ class Arr
     }
 
     /**
-     * Move element with specified key to end of array.
+     * Replace / map multiple array keys.
      *
      * @param array $data     The data.
      * @param array $map
@@ -55,6 +53,35 @@ class Arr
     {
         foreach ($map as $old => $new) {
             $data = self::replaceKey($data, $old, $new, $preserve);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Replace an array value.
+     *
+     * @param array $data
+     * @param mixed $old
+     * @param mixed $new
+     */
+    public static function replaceValue(array $data, $old, $new): array
+    {
+        $pos = array_search($old, $data);
+        if (false !== $pos) {
+            $data[$pos] = $new;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Replace / map multiple array values.
+     */
+    public static function replaceValues(array $data, array $map): array
+    {
+        foreach ($map as $old => $new) {
+            $data = self::replaceValue($data, $old, $new);
         }
 
         return $data;
