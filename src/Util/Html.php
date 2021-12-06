@@ -21,13 +21,15 @@ class Html
     /**
      * Decode HTML from escaped version.
      *
+     * Uses HTML 5 version including &apos; to ' conversion
+     *
      * @param string $html
      *
      * @return string
      */
     public static function decode($html)
     {
-        return html_entity_decode($html);
+        return html_entity_decode($html, ENT_QUOTES|ENT_SUBSTITUTE|ENT_HTML5);
     }
 
     /**
