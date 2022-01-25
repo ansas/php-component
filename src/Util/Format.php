@@ -3,6 +3,8 @@
 namespace Ansas\Util;
 
 use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
 use DateTimeZone;
 use Exception;
 use IntlDateFormatter;
@@ -11,14 +13,14 @@ use NumberFormatter;
 
 class Format
 {
-    protected static string $locale         = 'de_DE';
-    protected static string $calendarFormat = 'gregorian';
-    protected static string $currencySymbol = 'EUR';
-    protected static string $dateFormat     = 'medium';
-    protected static string $timeFormat     = 'medium';
-    protected static string $numberStyle    = 'decimal';
-    protected static string $timezone       = 'Europe/Berlin';
-    protected static int    $textLimit      = 250;
+    protected static string  $locale         = 'de_DE';
+    protected static string  $calendarFormat = 'gregorian';
+    protected static string  $dateFormat     = 'medium';
+    protected static string  $timeFormat     = 'medium';
+    protected static string  $numberStyle    = 'decimal';
+    protected static string  $timezone       = 'Europe/Berlin';
+    protected static int     $textLimit      = 250;
+    protected static ?string $currencySymbol = null;
 
     public static function setLocale(string $locale): void
     {
@@ -30,7 +32,7 @@ class Format
         self::$calendarFormat = $calendarFormat;
     }
 
-    public static function setCurrencySymbol(string $currencySymbol): void
+    public static function setCurrencySymbol(?string $currencySymbol): void
     {
         self::$currencySymbol = $currencySymbol;
     }
@@ -71,10 +73,12 @@ class Format
 
     public static function number($value, array $options = []): string
     {
-        $formatter = new NumberFormatter(
-            $options['locale'] ?? self::$locale,
-            $options['style'] ?? self::$numberStyle ?? NumberFormatter::DECIMAL
-        );
+
+        $formatter = new NumberFormatter($options['locale'] ?? self::$locale, NumberFormatter::DECIMAL);
+
+        if (isset($options['fractionDigits']) && is_int($options['fractionDigits'])) {
+            $formatter->setAttribute(NumberFormatter::FRACTION_DIGITS, $options['fractionDigits']);
+        }
 
         $string = $formatter->format($value);
 
@@ -90,9 +94,17 @@ class Format
         $formatter = new NumberFormatter($options['locale'] ?? self::$locale, NumberFormatter::CURRENCY);
         $formatter->setAttribute(NumberFormatter::MAX_FRACTION_DIGITS, 2);
 
-        $symbol = $options['currencySymbol'] ?? self::$currencySymbol ?? $formatter->getSymbol(NumberFormatter::INTL_CURRENCY_SYMBOL);
+        $customSymbol = $options['currencySymbol'] ?? self::$currencySymbol;
+        if ($customSymbol) {
+            $formatter->setSymbol(NumberFormatter::CURRENCY_SYMBOL, $customSymbol);
+            $symbol = $formatter->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
+        } else {
+            $symbol = $formatter->getSymbol(NumberFormatter::INTL_CURRENCY_SYMBOL);
+        }
 
-        return $formatter->formatCurrency($value, $symbol);
+        $formatted = $formatter->formatCurrency($value, $symbol);
+
+        return str_replace("\xc2\xa0", ' ', $formatted);
     }
 
     public static function date($value, array $options = []): string
@@ -147,7 +159,16 @@ class Format
     private static function getDateTimeFormatted($value, array $options = [])
     {
         $timezone = new DateTimeZone($options['timezone'] ?? self::$timezone);
-        $dateTime = new DateTime($value, $timezone);
+
+        if ($value instanceof DateTimeInterface) {
+            $value = DateTime::createFromInterface($value);
+        } elseif ($value instanceof DateTimeImmutable) {
+            $value = DateTime::createFromImmutable($value);
+        } else {
+            $value = new DateTime($value, $timezone);
+        }
+
+        $value->setTimezone($timezone);
 
         $formatValues = [
             'none'   => IntlDateFormatter::NONE,
@@ -171,6 +192,6 @@ class Format
             $options['customFormat'] ?? null
         );
 
-        return $formatter->format($dateTime->getTimestamp());
+        return $formatter->format($value->getTimestamp());
     }
 }
