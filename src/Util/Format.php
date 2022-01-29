@@ -17,7 +17,6 @@ class Format
     protected static string  $calendarFormat = 'gregorian';
     protected static string  $dateFormat     = 'medium';
     protected static string  $timeFormat     = 'medium';
-    protected static string  $numberStyle    = 'decimal';
     protected static string  $timezone       = 'Europe/Berlin';
     protected static int     $textLimit      = 250;
     protected static ?string $currencySymbol = null;
@@ -47,11 +46,6 @@ class Format
         self::$timeFormat = $timeFormat;
     }
 
-    public static function setNumberStyle(string $numberStyle): void
-    {
-        self::$numberStyle = $numberStyle;
-    }
-
     public static function setTimezone(string $timezone): void
     {
         self::$timezone = $timezone;
@@ -73,11 +67,14 @@ class Format
 
     public static function number($value, array $options = []): string
     {
-
         $formatter = new NumberFormatter($options['locale'] ?? self::$locale, NumberFormatter::DECIMAL);
 
         if (isset($options['fractionDigits']) && is_int($options['fractionDigits'])) {
             $formatter->setAttribute(NumberFormatter::FRACTION_DIGITS, $options['fractionDigits']);
+        }
+
+        if (isset($options['groupingSeparator'])) {
+            $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, $options['groupingSeparator']);
         }
 
         $string = $formatter->format($value);
