@@ -158,9 +158,7 @@ class Format
         $timezone = new DateTimeZone($options['timezone'] ?? self::$timezone);
 
         if ($value instanceof DateTimeInterface) {
-            $value = DateTime::createFromInterface($value);
-        } elseif ($value instanceof DateTimeImmutable) {
-            $value = DateTime::createFromImmutable($value);
+            $value = clone $value;
         } else {
             $value = new DateTime($value, $timezone);
         }
