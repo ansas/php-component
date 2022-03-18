@@ -12,6 +12,7 @@ namespace Ansas\Util;
 
 use Ansas\Component\Exception\ContextException;
 use Ansas\Component\Exception\IOException;
+use InvalidArgumentException;
 use SimpleXMLElement;
 
 /**
@@ -201,6 +202,26 @@ class File
         if (true !== $touch) {
             throw new IOException(sprintf("Cannot touch %s", $file));
         }
+    }
+
+    /**
+     * Convert file with json string to array.
+     *
+     * @throws InvalidArgumentException
+     */
+    public static function toArray(string $file): array
+    {
+        return self::toObject($file, true);
+    }
+
+    /**
+     * Convert file with json string to object or array.
+     *
+     * @throws InvalidArgumentException|IOException
+     */
+    public static function toObject(string $file, bool $assoc = false)
+    {
+        return Text::toObject(self::getContent($file), $assoc);
     }
 
     /**

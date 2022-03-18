@@ -196,7 +196,7 @@ class Path
         while (!is_dir($rootForPath . DIRECTORY_SEPARATOR . $rootHasDir)) {
             $rootForPath = dirname($rootForPath);
             if ($rootForPath == DIRECTORY_SEPARATOR) {
-                throw new Exception("Cannot determine root path.");
+                throw new Exception("Cannot determine root path");
             }
         }
 
@@ -244,16 +244,16 @@ class Path
     protected static function validatePath($path)
     {
         if (!$path) {
-            throw new InvalidArgumentException("Path must not be empty.");
+            throw new InvalidArgumentException("Path must not be empty");
         }
         if ($path == DIRECTORY_SEPARATOR) {
-            throw new InvalidArgumentException("Path must not be root path.");
+            throw new InvalidArgumentException("Path must not be root path");
         }
         if ($path == '.' || $path == '..') {
-            throw new InvalidArgumentException("Path must not be dot path.");
+            throw new InvalidArgumentException("Path must not be dot path");
         }
         if (!is_dir($path)) {
-            throw new InvalidArgumentException("Path must be an existing path.");
+            throw new InvalidArgumentException("Path must be an existing path");
         }
     }
 }

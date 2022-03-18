@@ -292,6 +292,16 @@ class Text
     }
 
     /**
+     * Convert json string to array.
+     *
+     * @throws InvalidArgumentException
+     */
+    public static function toArray(string $string): array
+    {
+        return self::toObject($string, true);
+    }
+
+    /**
      * Convert string into bool value.
      *
      * @param mixed $string
@@ -396,6 +406,25 @@ class Text
         }
 
         return (float) $string;
+    }
+
+    /**
+     * Convert json string to object or array.
+     *
+     * @param string $string
+     * @param bool   $assoc [optional]
+     *
+     * @return mixed
+     * @throws InvalidArgumentException
+     */
+    public static function toObject($string, $assoc = false)
+    {
+        $obj = json_decode($string, $assoc);
+        if (null === $obj) {
+            throw new InvalidArgumentException("Invalid JSON string");
+        }
+
+        return $obj;
     }
 
     /**
