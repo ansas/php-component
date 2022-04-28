@@ -273,6 +273,27 @@ class Text
     }
 
     /**
+     * Remove prices in text.
+     *
+     * This method can remove these types:
+     * - <code>USD 1.23</code>
+     * - <code>USD1,234.56</code>
+     * - <code>$ 1.23</code>
+     * - <code>$12.3</code>
+     * - <code>1.230,00 EUR</code>
+     * - <code>12,3EUR</code>
+     * - <code>1,23 €</code>
+     * - <code>12,3€</code>
+     */
+    public static function stripPrices(string $text, string $replaceWith = '', array $currencies = ['€', 'EUR', '$', 'USD']): string
+    {
+        // Make sure to quote special chars (like symbol $) correctly
+        $currencies = str_replace(' ', '|', preg_quote(implode(' ', $currencies)));
+
+        return preg_replace("/((?:{$currencies})\s*[\d,.]+\d|\d[\d,.]+\s*(?:{$currencies}))/ui", $replaceWith, $text);
+    }
+
+    /**
      * Remove social hints in text.
      *
      * This method can remove these types:

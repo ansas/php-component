@@ -286,6 +286,61 @@ class TextTest extends TestCase
         );
     }
 
+    public function testStripPrices()
+    {
+        $this->assertEquals(
+            '',
+            Text::stripPrices('')
+        );
+
+        $this->assertEquals(
+            'Hier steht [...] als Preis',
+            Text::stripPrices('Hier steht 1.234,56 EUR als Preis', '[...]')
+        );
+
+        $this->assertEquals(
+            'nur ?.',
+            Text::stripPrices('nur 1,23 GBP.', '?', ['gbp'])
+        );
+        $this->assertEquals(
+            'nur 1,23 GBP.',
+            Text::stripPrices('nur 1,23 GBP.')
+        );
+
+        $list = [
+            'USD 1.23',
+            'USD1,234.56',
+            '$ 1.23',
+            '$12.3',
+            '1.230,00 EUR',
+            '12,3EUR',
+            '1,23 €',
+            '12,3€',
+        ];
+        foreach ($list as $string) {
+            $this->assertEquals(
+                '',
+                Text::stripPrices($string)
+            );
+            $this->assertEquals(
+                'nur .',
+                Text::stripPrices('nur ' . $string . '.')
+            );
+            $this->assertEquals(
+                'nur [...],',
+                Text::stripPrices('nur ' . $string . ',', '[...]')
+            );
+            $this->assertEquals(
+                ',.',
+                Text::stripPrices(',' . $string . '.')
+            );
+            $this->assertEquals(
+                '.[...],',
+                Text::stripPrices('.' . $string . ',', '[...]')
+            );
+        }
+    }
+
     public function testStripSocials()
     {
         $this->assertEquals(
