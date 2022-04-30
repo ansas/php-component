@@ -208,6 +208,14 @@ class Text
     }
 
     /**
+     * Remove 4-byte-chars (like emojis) in text.
+     */
+    public static function strip4ByteChars($text, $replaceWith = ''): string
+    {
+        return preg_replace('/[\xF0-\xF7].../s', $replaceWith, $text);
+    }
+
+    /**
      * Remove emails in text.
      *
      * The email must at least contain an @ and have a second-level domain.

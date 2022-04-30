@@ -102,6 +102,24 @@ class TextTest extends TestCase
         );
     }
 
+    public function testStrip4ByteChars()
+    {
+        $this->assertEquals(
+            '',
+            Text::strip4ByteChars('', '[...]')
+        );
+
+        $this->assertEquals(
+            'abcäöüß€@.,!?',
+            Text::strip4ByteChars('abcäöüß€@.,!?')
+        );
+
+        $this->assertEquals(
+            'The duck #',
+            Text::strip4ByteChars('The duck 🦆', '#')
+        );
+    }
+
     public function testStripEmails()
     {
         $this->assertEquals(
