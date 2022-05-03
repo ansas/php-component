@@ -87,7 +87,7 @@ class Workday extends DateTime
 
         // Sanitize timezone (always use UTC if offset ist 0)
         if (!$this->getOffset()) {
-            $this->setTimezone(new DateTimeZone('UTC'));
+            $this->toUtc();
         }
     }
 
@@ -150,6 +150,11 @@ class Workday extends DateTime
     public function clone()
     {
         return clone $this;
+    }
+
+    public function getWeekday(): int
+    {
+        return (int) $this->format(static::DAY_WEEKDAY_FORMAT);
     }
 
     /**
@@ -293,7 +298,7 @@ class Workday extends DateTime
      */
     public function isSunday()
     {
-        return $this->format(static::DAY_WEEKDAY_FORMAT) == 7;
+        return $this->getWeekday() == 7;
     }
 
     /**
@@ -309,7 +314,7 @@ class Workday extends DateTime
      */
     public function isWeekend()
     {
-        return in_array($this->format(static::DAY_WEEKDAY_FORMAT), $this->weekend);
+        return in_array($this->getWeekday(), $this->weekend);
     }
 
     /**
@@ -379,6 +384,16 @@ class Workday extends DateTime
         $date->setTimezone($this->getTimezone());
 
         return $date;
+    }
+
+    /**
+     * @return $this
+     */
+    public function toUtc()
+    {
+        $this->setTimezone(new DateTimeZone('UTC'));
+
+        return $this;
     }
 
     /**
