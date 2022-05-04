@@ -7,6 +7,12 @@ use PHPUnit\Framework\TestCase;
 
 class FormatTest extends TestCase
 {
+    public static function setUpBeforeClass(): void
+    {
+        setlocale(LC_ALL, 'de_DE.utf8', 'de_DE');
+        setlocale(LC_NUMERIC, 'C');
+    }
+
     public function testCurreny()
     {
         Format::setLocale('en_US');
@@ -26,15 +32,18 @@ class FormatTest extends TestCase
         Format::setLocale('en_US');
         $this->assertEquals('$1.55', Format::currency("1.55"));
 
-        Format::setLocale('cn_CN');
-        $this->assertEquals('CN¥ 1.55', Format::currency("1.55"));
-
         Format::setCurrencySymbol('USD');
         $this->assertEquals('USD 1.55', Format::currency("1.55"));
         $this->assertEquals('1,55 USD', Format::currency("1.55", ['locale' => 'de_DE']));
 
-        $this->expectExceptionMessage('must be of type float');
+        $this->expectExceptionMessage('type float');
         Format::currency('20?$%HFÄ20');
+    }
+
+    public function testLocaleException()
+    {
+        $this->expectExceptionMessage('locale "not_AVAILABLE" not available');
+        Format::setLocale('not_AVAILABLE');
     }
 
     public function testDate()
@@ -117,7 +126,7 @@ class FormatTest extends TestCase
         Format::setTextLimit(10);
         $this->assertEquals('aaaaa...', Format::text('aaaaa aaaaa'));
 
-        $this->expectExceptionMessage('must be of type string');
+        $this->expectExceptionMessage('type string');
         Format::text(null);
     }
 
@@ -135,7 +144,7 @@ class FormatTest extends TestCase
         $this->assertEquals("15.00", Format::number(15, ['fractionDigits' => 2]));
         $this->assertEquals("1,500.00", Format::number(1500, ['fractionDigits' => 2]));
 
-        $this->expectExceptionMessage('must be of type int|float');
+        $this->expectExceptionMessage('type int|float');
         Format::number('20?$%HFÄ20');
     }
 
