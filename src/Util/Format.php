@@ -100,10 +100,8 @@ class Format
         $customSymbol = $options['currencySymbol'] ?? self::$currencySymbol;
         if ($customSymbol) {
             $formatter->setSymbol(NumberFormatter::CURRENCY_SYMBOL, $customSymbol);
-            $symbol = $formatter->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
-        } else {
-            $symbol = $formatter->getSymbol(NumberFormatter::INTL_CURRENCY_SYMBOL);
         }
+        $symbol = $formatter->getSymbol(NumberFormatter::INTL_CURRENCY_SYMBOL);
 
         $formatted = $formatter->formatCurrency($value, $symbol);
 

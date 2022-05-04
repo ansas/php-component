@@ -36,8 +36,10 @@ class FormatTest extends TestCase
         $this->assertEquals('USD 1.55', Format::currency("1.55"));
         $this->assertEquals('1,55 USD', Format::currency("1.55", ['locale' => 'de_DE']));
 
-        $this->expectExceptionMessage('type float');
-        Format::currency('20?$%HFÄ20');
+        if (((float) phpversion()) >= 8.0) {
+            $this->expectExceptionMessage('type float');
+            Format::currency('20?$%HFÄ20');
+        }
     }
 
     public function testLocaleException()
