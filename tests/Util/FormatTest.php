@@ -144,8 +144,10 @@ class FormatTest extends TestCase
         $this->assertEquals("15.00", Format::number(15, ['fractionDigits' => 2]));
         $this->assertEquals("1,500.00", Format::number(1500, ['fractionDigits' => 2]));
 
-        $this->expectExceptionMessage('type int|float');
-        Format::number('20?$%HFÄ20');
+        if (((float) phpversion()) >= 8.0) {
+            $this->expectExceptionMessage('type int|float');
+            Format::number('20?$%HFÄ20');
+        }
     }
 
     public function testFormat()
