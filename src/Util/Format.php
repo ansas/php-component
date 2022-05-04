@@ -2,6 +2,7 @@
 
 namespace Ansas\Util;
 
+use Ansas\Util\Exception\FormatException;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -10,6 +11,7 @@ use Exception;
 use IntlDateFormatter;
 use IntlTimeZone;
 use NumberFormatter;
+use ResourceBundle;
 
 class Format
 {
@@ -23,6 +25,10 @@ class Format
 
     public static function setLocale(string $locale): void
     {
+        if (!in_array($locale, ResourceBundle::getLocales(''))) {
+            throw new FormatException("locale \"$locale\" not available");
+        }
+
         self::$locale = $locale;
     }
 
