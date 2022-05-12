@@ -47,8 +47,8 @@ class File
      */
     public static function create($file)
     {
-        if (!File::exists($file)) {
-            File::touch($file);
+        if (!self::exists($file)) {
+            self::touch($file);
         }
     }
 
@@ -60,7 +60,7 @@ class File
      */
     public static function getContent($file)
     {
-        if (!File::exists($file)) {
+        if (!self::exists($file)) {
             throw new IOException(sprintf("File %s does not exist", $file));
         }
 
@@ -146,7 +146,7 @@ class File
      */
     public static function delete($file)
     {
-        if (!is_file($file)) {
+        if (!self::exists($file)) {
             return;
         }
 
