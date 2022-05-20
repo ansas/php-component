@@ -321,6 +321,19 @@ class WorkdayTest extends TestCase
         $this->assertEquals($date->getTimezone()->getName(), 'UTC');
     }
 
+    public function testDiffWorkdays()
+    {
+        $date  = $this->createWorkdayIn2017("2017-04-28");
+        $date2 = $this->createWorkdayIn2017("2017-04-29");
+        $this->assertEquals(1, Workday::diffWorkdays($date, $date2));
+        $this->assertEquals(1, $date->diffWorkdaysUntil($date2));
+        $this->assertEquals(-1, $date->diffWorkdaysSince($date2));
+
+        $this->assertEquals(1, $date->diffWorkdaysUntil($this->createWorkdayIn2017("2017-05-02")));
+        $this->assertEquals(2, $date->diffWorkdaysUntil($this->createWorkdayIn2017("2017-05-03")));
+        $this->assertEquals(-1, $date->diffWorkdaysUntil($this->createWorkdayIn2017("2017-04-27")));
+    }
+
     /**
      * @param string $date
      *
@@ -335,7 +348,7 @@ class WorkdayTest extends TestCase
             "2017-01-01" => "Neujahrstag",
             "2017-04-14" => "Karfreitag",
             "2017-04-17" => "Ostermontag",
-            "2017-05-01" => "Tag der Arbeit",
+            "2017-05-01" => "Tag der Arbeit", // monday
             "2017-05-25" => "Christi Himmelfahrt",
             "2017-06-05" => "Pfingstmontag",
             "2017-10-03" => "Tag der Deutschen Einheit",

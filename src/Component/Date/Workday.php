@@ -112,6 +112,32 @@ class Workday extends DateTime
         return new static($time, $timezone, $holidayTemplate);
     }
 
+    public static function diffWorkdays(Workday $start, Workday $end): int
+    {
+        // Make sure we don't change original objects
+        $start = clone $start;
+        $end   = clone $end;
+
+        // Compare without time
+        $start->withoutTime();
+        $end->withoutTime();
+
+        $diff   = 0;
+        $factor = $start > $end ? -1 : 1;
+
+        while ($start != $end) {
+            $start->addWorkdays($factor);
+            $diff += $factor;
+
+            // Stop if start has overtaken end
+            if ($factor != ($start > $end ? -1 : 1)) {
+                break;
+            }
+        }
+
+        return $diff;
+    }
+
     /**
      * @param DateTime $date
      *
@@ -208,6 +234,16 @@ class Workday extends DateTime
         }
 
         return $this;
+    }
+
+    public function diffWorkdaysSince(Workday $since): int
+    {
+        return static::diffWorkdays($since, $this);
+    }
+
+    public function diffWorkdaysUntil(Workday $until): int
+    {
+        return static::diffWorkdays($this, $until);
     }
 
     /**
