@@ -13,7 +13,6 @@ namespace Ansas\Component\Iterator;
 use Countable;
 use Generator;
 use IteratorAggregate;
-use Traversable;
 
 /**
  * Class CollectionIterator
@@ -23,28 +22,13 @@ use Traversable;
  */
 class CollectionIterator implements IteratorAggregate, Countable
 {
-    /**
-     * @var Traversable Iterator
-     */
-    protected $iterator;
+    protected iterable $iterator;
 
-    /**
-     * @var int Current position
-     */
-    protected $position;
+    protected int $position;
 
-    /**
-     * @var int Total positions
-     */
-    protected $positions;
+    protected int $positions;
 
-    /**
-     * CollectionIterator constructor.
-     *
-     * @param Traversable $iterator
-     * @param int         $count [optional]
-     */
-    public function __construct(Traversable $iterator, int $count = null)
+    public function __construct(iterable $iterator, int $count = null)
     {
         $this->iterator = $iterator;
 
@@ -52,22 +36,16 @@ class CollectionIterator implements IteratorAggregate, Countable
             $this->positions = $count;
         } elseif (method_exists($iterator, 'count')) {
             $this->positions = $iterator->count();
-        } else {
+        } elseif($iterator instanceof \Traversable) {
             $this->positions = iterator_count($iterator);
+        } elseif(is_array($iterator)) {
+            $this->positions = count($iterator);
         }
 
         $this->reset();
     }
 
-    /**
-     * Create new instance.
-     *
-     * @param Traversable $iterator
-     * @param int         $count [optional]
-     *
-     * @return static
-     */
-    public static function create(Traversable $iterator, int $count = null)
+    public static function create(iterable $iterator, int $count = null): self
     {
         return new static($iterator, $count);
     }
