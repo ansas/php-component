@@ -132,6 +132,42 @@ class HtmlTest extends TestCase
             '<body>abc</body>',
             Html::fix('<html><body>abc</u></body></b></html>')
         );
+        $this->assertEquals(
+            '<b><b>abc</b></b>',
+            Html::fix('<b><b>abc</b>')
+        );
+    }
+
+    public function testIsValid()
+    {
+        $this->assertSame(
+            true,
+            Html::isValid(null)
+        );
+        $this->assertSame(
+            true,
+            Html::isValid('')
+        );
+        $this->assertEquals(
+            false,
+            Html::isValid('<p>äöü</p></p>')
+        );
+        $this->assertEquals(
+            false,
+            Html::isValid('</p><p>äöü</p>')
+        );
+        $this->assertEquals(
+            true,
+            Html::isValid('<p>abc</p> def')
+        );
+        $this->assertEquals(
+            false,
+            Html::isValid('<p>abc <p>abc</p><br><p>abc</p><br /><img> abc ')
+        );
+        $this->assertEquals(
+            true,
+            Html::isValid('<!DOCTYPE html><html><body><p>abc</p><br><p>abc</p><br /><img></body></html>')
+        );
     }
 
     public function testStripTags()

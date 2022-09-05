@@ -29,7 +29,7 @@ class Html
      */
     public static function decode($html)
     {
-        return html_entity_decode($html, ENT_QUOTES|ENT_SUBSTITUTE|ENT_HTML5);
+        return html_entity_decode($html, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5);
     }
 
     /**
@@ -80,6 +80,43 @@ class Html
         $html = preg_replace('/^.*<dummy>|<\/dummy>.*$/', '', $html);
 
         return $html;
+    }
+
+    public static function isValid(?string $html): bool
+    {
+        // Check for tags
+        if (null === $html || false === strpos($html, '<')) {
+            return true;
+        }
+
+        // Get all tags in html string
+        preg_match_all(
+            "/<(?<closing>\/?)\s*(?<tag>[a-z]+)[^<>]*?(?<void>\/?)>/uis",
+            strtolower($html),
+            $matches,
+            PREG_SET_ORDER
+        );
+
+        // Set of all void elements in HTML
+        // @see https://www.w3.org/TR/2011/WD-html-markup-20110113/syntax.html
+        $void = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+
+        // Validate if HTML is nested correctly
+        $stack = [];
+        foreach ($matches as $match) {
+            if (!$match['closing']) {
+                if (!$match['void'] && !in_array($match['tag'], $void)) {
+                    $stack[] = $match['tag'];
+                }
+            } else {
+                $last = array_pop($stack);
+                if (null === $last || $match['tag'] != $last) {
+                    return false;
+                }
+            }
+        }
+
+        return !$stack;
     }
 
     /**
