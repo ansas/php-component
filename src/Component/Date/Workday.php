@@ -112,18 +112,27 @@ class Workday extends DateTime
         return new static($time, $timezone, $holidayTemplate);
     }
 
-    public static function diffWorkdays(Workday $start, Workday $end): int
+    public static function diffWorkdays(Workday $start, Workday $end, DateTimeZone $timezone = null): int
     {
         // Make sure we don't change original objects
         $start = clone $start;
         $end   = clone $end;
 
+        // Both dates must use same timezone
+        if ($timezone) {
+            $start->setTimezone($timezone);
+            $end->setTimezone($timezone);
+        } else {
+            $end->setTimezone($start->getTimezone());
+        }
+
         // Compare without time
         $start->withoutTime();
         $end->withoutTime();
 
-        $diff   = 0;
-        $factor = $start > $end ? -1 : 1;
+        $diff    = 0;
+        $factor  = $start > $end ? -1 : 1;
+        $special = !$start->isWorkday() && !$end->isWorkday();
 
         while ($start != $end) {
             $start->addWorkdays($factor);
@@ -133,6 +142,11 @@ class Workday extends DateTime
             if ($factor != ($start > $end ? -1 : 1)) {
                 break;
             }
+        }
+
+        // Special case: both dates were not workdays and diff would be one workday
+        if ($special && $diff == $factor) {
+            return 0;
         }
 
         return $diff;
@@ -238,12 +252,12 @@ class Workday extends DateTime
 
     public function diffWorkdaysSince(Workday $since): int
     {
-        return static::diffWorkdays($since, $this);
+        return static::diffWorkdays($since, $this, $this->getTimezone());
     }
 
     public function diffWorkdaysUntil(Workday $until): int
     {
-        return static::diffWorkdays($this, $until);
+        return static::diffWorkdays($this, $until, $this->getTimezone());
     }
 
     /**

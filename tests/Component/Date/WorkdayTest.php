@@ -323,15 +323,39 @@ class WorkdayTest extends TestCase
 
     public function testDiffWorkdays()
     {
-        $date  = $this->createWorkdayIn2017("2017-04-28");
-        $date2 = $this->createWorkdayIn2017("2017-04-29");
-        $this->assertEquals(1, Workday::diffWorkdays($date, $date2));
-        $this->assertEquals(1, $date->diffWorkdaysUntil($date2));
-        $this->assertEquals(-1, $date->diffWorkdaysSince($date2));
+        $date1 = $this->createWorkdayIn2017("2017-04-28"); // friday
+        $date2 = $this->createWorkdayIn2017("2017-04-29"); // saturday & weekend
+        $date3 = $this->createWorkdayIn2017("2017-05-01"); // monday & holiday
+        $date4 = $this->createWorkdayIn2017("2017-05-02"); // tuesday
+        $date5 = $this->createWorkdayIn2017("2017-05-03"); // wednesday
 
-        $this->assertEquals(1, $date->diffWorkdaysUntil($this->createWorkdayIn2017("2017-05-02")));
-        $this->assertEquals(2, $date->diffWorkdaysUntil($this->createWorkdayIn2017("2017-05-03")));
-        $this->assertEquals(-1, $date->diffWorkdaysUntil($this->createWorkdayIn2017("2017-04-27")));
+        $this->assertEquals(true, $date1->isWorkday());
+        $this->assertEquals(false, $date2->isWorkday());
+        $this->assertEquals(false, $date3->isWorkday());
+        $this->assertEquals(true, $date4->isWorkday());
+        $this->assertEquals(true, $date5->isWorkday());
+
+        $this->assertEquals(0, $date1->diffWorkdaysUntil($date1));
+        $this->assertEquals(0, $date2->diffWorkdaysUntil($date2));
+        $this->assertEquals(0, $date2->diffWorkdaysUntil($date3));
+
+        $date1->setTimezone(new DateTimeZone('Europe/Berlin'));
+        $date2->setTimezone(new DateTimeZone('UTC'));
+        $date4->setTimezone(new DateTimeZone('America/New_York'));
+
+        $this->assertEquals(1, Workday::diffWorkdays($date1, $date2));
+        $this->assertEquals(1, $date1->diffWorkdaysUntil($date2));
+        $this->assertEquals(1, $date1->diffWorkdaysUntil($date3));
+        $this->assertEquals(-1, $date1->diffWorkdaysSince($date2));
+
+        $this->assertEquals(1, $date1->diffWorkdaysUntil($date4));
+        $this->assertEquals(1, $date2->diffWorkdaysUntil($date4));
+        $this->assertEquals(1, $date3->diffWorkdaysUntil($date4));
+
+        $this->assertEquals(2, $date1->diffWorkdaysUntil($date5));
+        $this->assertEquals(2, $date2->diffWorkdaysUntil($date5));
+        $this->assertEquals(2, $date3->diffWorkdaysUntil($date5));
+        $this->assertEquals(1, $date4->diffWorkdaysUntil($date5));
     }
 
     /**
