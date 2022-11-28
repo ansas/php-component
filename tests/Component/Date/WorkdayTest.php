@@ -321,7 +321,29 @@ class WorkdayTest extends TestCase
         $this->assertEquals($date->getTimezone()->getName(), 'UTC');
     }
 
-    public function testDiffWorkdays()
+    public function testDiffWorkdaysBridgeDay()
+    {
+        $date1 = $this->createWorkdayIn2017("2017-05-24"); // wednesday
+        $date2 = $this->createWorkdayIn2017("2017-05-25"); // thursday & holiday
+        $date3 = $this->createWorkdayIn2017("2017-05-26"); // friday
+        $date4 = $this->createWorkdayIn2017("2017-05-27"); // saturday & weekend
+
+        $this->assertEquals(true, $date1->isWorkday());
+        $this->assertEquals(false, $date2->isWorkday());
+        $this->assertEquals(true, $date3->isWorkday());
+        $this->assertEquals(false, $date4->isWorkday());
+
+        $this->assertEquals(1, $date1->diffWorkdaysUntil($date2));
+        $this->assertEquals(1, $date1->diffWorkdaysUntil($date3));
+        $this->assertEquals(2, $date1->diffWorkdaysUntil($date4));
+
+        $this->assertEquals(1, $date2->diffWorkdaysUntil($date3));
+        $this->assertEquals(2, $date2->diffWorkdaysUntil($date4));
+
+        $this->assertEquals(1, $date3->diffWorkdaysUntil($date4));
+    }
+
+    public function testDiffWorkdaysWeekend()
     {
         $date1 = $this->createWorkdayIn2017("2017-04-28"); // friday
         $date2 = $this->createWorkdayIn2017("2017-04-29"); // saturday & weekend
