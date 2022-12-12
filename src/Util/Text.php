@@ -55,18 +55,16 @@ class Text
     /**
      * @var string UTF-8 ByteOrderMark sequence
      */
-    protected static $bom = "\xEF\xBB\xBF";
+    protected static string $bom = "\xEF\xBB\xBF";
 
-    /**
-     * @param string $string
-     * @param int    $first [optional]
-     * @param int    $from  [optional]
-     *
-     * @return string
-     */
-    public static function firstChar($string, $first = 1, $from = 0): string
+    public static function firstChar(string $string, int $first = 1, int $from = 0): string
     {
         return mb_substr($string, $from, $first);
+    }
+
+    public static function firstLine(string $string): string
+    {
+        return preg_replace('/\r?\n.+$/us', '', $string);
     }
 
     /**
