@@ -30,7 +30,7 @@ class ProductionConnectionWrapper extends ConnectionWrapper
     /**
      * @inheritdoc
      */
-    public function log($msg)
+    public function log($msg): void
     {
     }
 }

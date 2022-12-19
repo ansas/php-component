@@ -36,7 +36,7 @@ class PropelProvider extends AbstractProvider
             'adapter'    => 'mysql',
             'classname'  => null,
             'connection' => 'default',
-            'version'    => '2.0.0-dev',
+            'version'    => 2,
             'dsn'        => '',
             'user'       => '',
             'password'   => '',
@@ -72,7 +72,7 @@ class PropelProvider extends AbstractProvider
             }
         }
 
-        $manager = new ConnectionManagerSingle();
+        $manager = new ConnectionManagerSingle($settings['connection']);
         $manager->setConfiguration([
             'classname' => $className,
             'dsn'       => $settings['dsn'],
@@ -86,7 +86,7 @@ class PropelProvider extends AbstractProvider
         $serviceContainer = Propel::getServiceContainer();
         $serviceContainer->checkVersion($settings['version']);
         $serviceContainer->setAdapterClass($settings['connection'], $settings['adapter']);
-        $serviceContainer->setConnectionManager($settings['connection'], $manager);
+        $serviceContainer->setConnectionManager($manager);
         $serviceContainer->setDefaultDatasource($settings['connection']);
 
         if ($logPath && $logLevel) {
