@@ -20,7 +20,7 @@
         "homepage": "https://ansas-meyer.de"
     }],
     "require": {
-        "php": ">=7.0",
+        "php": "^8.1",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
