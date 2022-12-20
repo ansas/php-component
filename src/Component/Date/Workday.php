@@ -192,7 +192,7 @@ class Workday extends DateTime
      * @inheritdoc
      * @throws Exception
      */
-    public function modify($modifier)
+    public function modify($modifier): Workday|false
     {
         if (preg_match('/(?<direction>next|last)\s+workday/ui', $modifier, $matches)) {
             if (strtolower($matches['direction']) == 'next') {
