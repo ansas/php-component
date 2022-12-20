@@ -189,7 +189,7 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      *
      * @return int
      */
-    public function count($when = null)
+    public function count($when = null): int
     {
         return count($this->all($when));
     }
@@ -217,7 +217,7 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      *
      * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         $messages = $this->all();
 
@@ -263,7 +263,7 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      *
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->has($offset);
     }
@@ -277,7 +277,7 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      *
      * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->get($offset);
     }
@@ -292,7 +292,7 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      *
      * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->set($offset, $value);
     }
@@ -306,7 +306,7 @@ class FlashHandler implements ArrayAccess, IteratorAggregate, Countable
      *
      * @return void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->remove($offset);
     }
