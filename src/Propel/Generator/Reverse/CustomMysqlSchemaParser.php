@@ -26,7 +26,7 @@ class CustomMysqlSchemaParser extends MysqlSchemaParser
      *
      * @param Table $table The Table model class to add columns to.
      */
-    protected function addColumns(Table $table)
+    protected function addColumns(Table $table): void
     {
         $platform = $this->getPlatform();
 

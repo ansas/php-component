@@ -21,7 +21,7 @@ use Propel\Generator\Platform\MysqlPlatform;
  */
 class CustomMysqlPlatform extends MysqlPlatform
 {
-    protected function getTableOptions(Table $table)
+    protected function getTableOptions(Table $table): array
     {
         $tableOptions = parent::getTableOptions($table);
 
