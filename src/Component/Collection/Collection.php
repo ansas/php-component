@@ -160,10 +160,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Appends specified items to collection
-     * (overwrites existing keys).
-     *
-     * @throws InvalidArgumentException
+     * Appends specified items to collection (overwrites existing keys).
      */
     public function append(iterable $items): static
     {
