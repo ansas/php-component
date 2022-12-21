@@ -17,8 +17,6 @@ use Countable;
 use Exception;
 use InvalidArgumentException;
 use IteratorAggregate;
-use Serializable;
-use Traversable;
 
 /**
  * Class Collection
@@ -29,7 +27,7 @@ use Traversable;
  * @package Ansas\Component\Collection
  * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
-class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializable
+class Collection implements ArrayAccess, IteratorAggregate, Countable
 {
     /** Sort collection by keys (ascending order) */
     const SORT_BY_KEYS_ASC = 1;
@@ -58,85 +56,78 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * @var array Holds complete collection data
      */
-    protected $data = [];
+    protected array $data = [];
 
     /**
      * Collection constructor.
-     *
-     * @param array|Traversable $items [optional] The initial items
      */
-    public function __construct($items = [])
+    public function __construct(iterable $items = [])
     {
         $this->replace($items);
     }
 
     /**
      * Get specified collection item.
-     *
-     * @param mixed $key The item key.
-     *
-     * @return mixed The item value.
      */
-    public function __get($key)
+    public function __get(mixed $key): mixed
     {
         return $this->get($key);
     }
 
     /**
      * Check if specified collection item exists.
-     *
-     * @param mixed $key The item key.
-     *
-     * @return bool
      */
-    public function __isset($key)
+    public function __isset(mixed $key): bool
     {
         return $this->has($key, self::HAS_ISSET);
     }
 
     /**
      * Set specified collection item.
-     *
-     * @param mixed $key   The item key.
-     * @param mixed $value The item value.
-     *
-     * @return void
      */
-    public function __set($key, $value)
+    public function __set(mixed $key, mixed $value): void
     {
         $this->set($key, $value);
     }
 
     /**
      * Converts object to string.
-     *
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->serialize();
+        return (string) $this->asJson();
     }
 
     /**
      * Removes specified collection item.
-     *
-     * @param mixed $key The item key.
-     *
-     * @return $this
      */
-    public function __unset($key)
+    public function __unset(mixed $key)
     {
-        return $this->remove($key);
+        $this->remove($key);
+    }
+
+    /**
+     * Convert object into string to make it storable (freeze, store).
+     */
+    public function __serialize(): array
+    {
+        return ['data' => $this->asJson()];
+    }
+
+    /**
+     * Convert string back into object from storage (unfreeze, restore).
+     *
+     * @noinspection SpellCheckingInspection
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->data = $data['data'];
     }
 
     /**
      * Create new instance.
-     *
-     * @param array|Traversable $items [optional] The initial items
-     *
-     * @return static
      */
-    public static function create($items = [])
+    public static function create(iterable $items = []): static
     {
         return new static($items);
     }
@@ -144,14 +135,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Adds item to collection for specified key
      * (converts item to array if key already exists).
-     *
-     * @param mixed $key   The item key.
-     * @param mixed $value The item value to add / set.
-     * @param int   $mode  The mode to compare if value exists [optional]
-     *
-     * @return $this
      */
-    public function add($key, $value, $mode = self::HAS_ISSET)
+    public function add(mixed $key, mixed $value, int $mode = self::HAS_ISSET): static
     {
         if (!$this->has($key, $mode)) {
             $this->set($key, $value);
@@ -168,10 +153,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Get complete collection as array
      * (with original key => value pairs).
-     *
-     * @return array All items
      */
-    public function all()
+    public function all(): array
     {
         return $this->data;
     }
@@ -180,17 +163,10 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      * Appends specified items to collection
      * (overwrites existing keys).
      *
-     * @param array|Traversable $items The items to append / overwrite to collection.
-     *
-     * @return $this
      * @throws InvalidArgumentException
      */
-    public function append($items)
+    public function append(iterable $items): static
     {
-        if (!is_array($items) && !$items instanceof Traversable) {
-            throw new InvalidArgumentException("Argument must be an array or instance of Traversable");
-        }
-
         foreach ($items as $key => $value) {
             $this->set($key, $value);
         }
@@ -200,42 +176,32 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
 
     /**
      * Get collection as array.
-     *
-     * @return array
      */
-    public function asArray()
+    public function asArray(): array
     {
         return $this->all();
     }
 
     /**
      * Get collection as json string.
-     *
-     * @param int $options [optional] JSON_ constants (e. g. JSON_PRETTY_PRINT)
-     *
-     * @return string|false
      */
-    public function asJson($options = 0)
+    public function asJson(int $options = 0): string|false
     {
         return json_encode($this->all(), $options);
     }
 
     /**
      * Get collection as object.
-     *
-     * @return object
      */
-    public function asObject()
+    public function asObject(): object
     {
         return (object) $this->all();
     }
 
     /**
      * Clears the collection (remove all items).
-     *
-     * @return $this
      */
-    public function clear()
+    public function clear(): static
     {
         $this->replace([]);
 
@@ -244,24 +210,16 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
 
     /**
      * Count collection elements.
-     *
-     * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->data);
     }
 
     /**
      * Get specified collection item.
-     *
-     * @param mixed $key     The item key.
-     * @param mixed $default [optional] The default value (if key does not exist).
-     * @param int   $mode    The mode to check if key exists [optional]
-     *
-     * @return mixed The item value.
      */
-    public function get($key, $default = null, $mode = self::HAS_ISSET)
+    public function get(mixed $key, mixed $default = null, int $mode = self::HAS_ISSET): mixed
     {
         if (!$this->has($key, $mode)) {
             return $default;
@@ -274,10 +232,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
 
     /**
      * Create an iterator to be able to traverse items via foreach.
-     *
-     * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->data);
     }
@@ -285,64 +241,41 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Check if specified collection item exists.
      *
-     * @param mixed $key  The item key.
-     * @param int   $mode The mode to check if key exists [optional]
-     *
-     * @return bool
      * @throws InvalidArgumentException
      */
-    public function has($key, $mode = self::HAS_EXISTS)
+    public function has(mixed $key, int $mode = self::HAS_EXISTS): bool
     {
         $key = $this->normalizeKey($key);
 
-        switch ($mode) {
-            case self::HAS_EXISTS:
-                return array_key_exists($key, $this->data);
-
-            case self::HAS_ISSET:
-                return isset($this->data[$key]);
-
-            case self::HAS_NONEMPTY:
-                return !empty($this->data[$key]);
-
-            case self::HAS_LENGTH:
-                return isset($this->data[$key]) && strlen($this->data[$key]);
-
-            default:
-                throw new InvalidArgumentException("Mode {$mode} not supported");
-        }
+        return match ($mode) {
+            self::HAS_EXISTS   => array_key_exists($key, $this->data),
+            self::HAS_ISSET    => isset($this->data[$key]),
+            self::HAS_NONEMPTY => !empty($this->data[$key]),
+            self::HAS_LENGTH   => isset($this->data[$key]) && strlen($this->data[$key]),
+            default            => throw new InvalidArgumentException("Mode {$mode} not supported"),
+        };
     }
 
     /**
      * Check if collection is empty.
-     *
-     * @return bool
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return !$this->count();
     }
 
     /**
      * Get collection keys.
-     *
-     * @return array All item keys.
      */
-    public function keys()
+    public function keys(): array
     {
         return array_keys($this->data);
     }
 
     /**
      * Check if specified collection item exists.
-     *
-     * @param mixed   $key     The item key.
-     * @param string  $regex
-     * @param array  &$matches [optional]
-     *
-     * @return bool
      */
-    public function matches($key, $regex, &$matches = [])
+    public function matches(mixed $key, string $regex, array &$matches = []): bool
     {
         if (!$this->has($key, self::HAS_ISSET)) {
             return false;
@@ -354,13 +287,9 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     /**
      * Get specified collection item.
      *
-     * @param mixed $key  The item key.
-     * @param int   $mode The mode to check if key exists [optional]
-     *
-     * @return mixed The item value.
      * @throws Exception
      */
-    public function need($key, $mode = self::HAS_ISSET)
+    public function need(mixed $key, int $mode = self::HAS_ISSET): mixed
     {
         if (!$this->has($key, $mode)) {
             throw new Exception("Key {$key} is required");
@@ -371,63 +300,42 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
 
     /**
      * Check if specified collection item exists.
-     *
-     * @param mixed $key The item key.
-     *
-     * @return bool
      */
-    public function offsetExists($key)
+    public function offsetExists(mixed $offset): bool
     {
-        return $this->has($key, self::HAS_EXISTS);
+        return $this->has($offset);
     }
 
     /**
      * Get specified collection item.
-     *
-     * @param mixed $key The item key.
-     *
-     * @return mixed The item value.
      */
-    public function offsetGet($key)
+    public function offsetGet(mixed $offset): mixed
     {
-        return $this->get($key);
+        return $this->get($offset);
     }
 
     /**
      * Set specified collection item.
-     *
-     * @param mixed $key   The item key.
-     * @param mixed $value The item value.
-     *
-     * @return void
      */
-    public function offsetSet($key, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
-        $this->set($key, $value);
+        $this->set($offset, $value);
     }
 
     /**
      * Removes specified collection item.
-     *
-     * @param mixed $key The item key.
-     *
-     * @return void
      */
-    public function offsetUnset($key)
+    public function offsetUnset(mixed $offset): void
     {
-        $this->remove($key);
+        $this->remove($offset);
     }
 
     /**
      * Get filtered collection as array
      * (with original key => value pairs).
      * $keys can be an array or a comma separated string of keys.
-     *
-     * @param mixed $keys The item keys to export.
-     *
-     * @return array Filtered items.
      */
-    public function only($keys)
+    public function only(array|string $keys): array
     {
         // Convert $keys to array if necessary
         if (!is_array($keys)) {
@@ -444,29 +352,18 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
 
     /**
      * Get specified collection item.
-     *
-     * @param array|string $path    The path of array keys.
-     * @param mixed        $default [optional] The default value (if key does not exist).
-     * @param string       $glue    [optional]
-     *
-     * @return mixed The item value.
      */
-    public function path($path, $default = null, $glue = '.')
+    public function path(array|string $path, mixed $default = null, string $glue = '.'): mixed
     {
         return Arr::path($this->data, $path, $default, $glue);
     }
 
     /**
      * Removes specified collection item.
-     *
-     * @param mixed $key    The item key.
-     * @param bool  $remove [optional] Conditional remove statement.
-     *
-     * @return $this
      */
-    public function remove($key, $remove = true)
+    public function remove(mixed $key, bool $remove = true): static
     {
-        if ($remove && $this->has($key, self::HAS_EXISTS)) {
+        if ($remove && $this->has($key)) {
             $key = $this->normalizeKey($key);
             unset($this->data[$key]);
         }
@@ -476,12 +373,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
 
     /**
      * Removes empty collection items.
-     *
-     * @param array $considerEmpty [optional]
-     *
-     * @return $this
      */
-    public function removeEmpty($considerEmpty = [''])
+    public function removeEmpty(array $considerEmpty = ['']): static
     {
         foreach ($this->all() as $key => $value) {
             if (!is_scalar($value) && !is_null($value)) {
@@ -500,12 +393,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
 
     /**
      * Replaces the collection with the specified items.
-     *
-     * @param array|Traversable $items The items to replace collection with.
-     *
-     * @return $this
      */
-    public function replace($items)
+    public function replace(iterable $items): static
     {
         $this->data = [];
 
@@ -513,24 +402,9 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
-     * Convert object into string to make it storable (freeze, store).
-     *
-     * @return string
-     */
-    public function serialize()
-    {
-        return (string) $this->asJson();
-    }
-
-    /**
      * Set specified collection item.
-     *
-     * @param mixed $key   The item key.
-     * @param mixed $value The item value.
-     *
-     * @return $this
      */
-    public function set($key, $value)
+    public function set(mixed $key, mixed $value): static
     {
         $key = $this->normalizeKey($key);
 
@@ -545,12 +419,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
 
     /**
      * Set specified collection item.
-     *
-     * @param mixed $key The item key. [optional]
-     *
-     * @return $this
      */
-    public function trim($key = null)
+    public function trim(mixed $key = null): static
     {
         if (null === $key) {
             foreach ($this->all() as $key => $value) {
@@ -574,10 +444,9 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      * @param int $sortBy    Sort by flag (see self::SORT_ constants)
      * @param int $sortFlags Sort flags (see PHP SORT_ constants)
      *
-     * @return $this
      * @throws InvalidArgumentException
      */
-    public function sort($sortBy = self::SORT_BY_KEYS_ASC, $sortFlags = SORT_REGULAR)
+    public function sort(int $sortBy = self::SORT_BY_KEYS_ASC, int $sortFlags = SORT_REGULAR): static
     {
         /** @noinspection SpellCheckingInspection */
         $sortFunctions = [
@@ -599,13 +468,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
 
     /**
      * Swap / switch values of two keys.
-     *
-     * @param mixed $a
-     * @param mixed $b
-     *
-     * @return $this
      */
-    public function swap($a, $b)
+    public function swap(mixed $a, mixed $b): static
     {
         $oldA = $this->get($a);
         $oldB = $this->get($b);
@@ -617,23 +481,9 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
     }
 
     /**
-     * Convert string back into object from storage (unfreeze, restore).
-     *
-     * @param string $data
-     *
-     * @return void
-     */
-    public function unserialize($data)
-    {
-        $this->data = json_decode($data);
-    }
-
-    /**
      * Get collection values.
-     *
-     * @return array All item values.
      */
-    public function values()
+    public function values(): array
     {
         return array_values($this->data);
     }
@@ -642,12 +492,8 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, Serializa
      * Normalize key.
      *
      * Useful in child classes to make keys upper case for example.
-     *
-     * @param string $key
-     *
-     * @return string
      */
-    protected function normalizeKey($key)
+    protected function normalizeKey(mixed $key): mixed
     {
         return $key;
     }
