@@ -272,7 +272,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Check if specified collection item exists.
      */
-    public function matches(mixed $key, string $regex, array &$matches = []): bool
+    public function matches(mixed $key, string $regex, ?array &$matches = []): bool
     {
         if (!$this->has($key, self::HAS_ISSET)) {
             return false;
