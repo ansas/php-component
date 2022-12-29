@@ -38,12 +38,19 @@ class CustomMysqlSchemaParser extends MysqlSchemaParser
             // Add support for generated columns
             $generated = ' GENERATED';
             if (isset($row['Extra']) && strpos($row['Extra'], $generated)) {
+                // Calculate schema
+                $schema = $table->guessSchemaName();
+                if (!$schema) {
+                    // Use database of connection if no schema is provided via schema.xml
+                    $schema = $this->dbh->query('SELECT DATABASE()')->fetchColumn();
+                }
+
                 // Build SQL do get generate "expression"
                 $sql = sprintf("
                     SELECT `GENERATION_EXPRESSION`
                     FROM `information_schema`.`COLUMNS`
                     WHERE `TABLE_SCHEMA`= %s AND `TABLE_NAME` = %s AND `COLUMN_NAME` = %s",
-                    $platform->quote($table->guessSchemaName()),
+                    $platform->quote($schema),
                     $platform->quote($table->getCommonName()),
                     $platform->quote($column->getName()),
                 );
