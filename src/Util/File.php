@@ -55,16 +55,23 @@ class File
     /**
      * @param string $file
      *
-     * @return mixed
      * @throws IOException
      */
-    public static function getContent($file)
+    public static function getContent($file): string
+    {
+        return static::getContentPartial($file);
+    }
+
+    /**
+     * @throws IOException
+     */
+    public static function getContentPartial(string $file, ?int $length = null, int $offset = 0): string
     {
         if (!self::exists($file)) {
             throw new IOException(sprintf("File %s does not exist", $file));
         }
 
-        $content = file_get_contents($file);
+        $content = file_get_contents($file, false, null, $offset, $length);
 
         if (false === $content) {
             throw new IOException(sprintf("Cannot get content from file %s", $file));
