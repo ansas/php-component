@@ -12,12 +12,12 @@ namespace Ansas\Util;
 
 class Obj
 {
-    public static function toArray(array|object $object): array
+    public static function toArray($object): array
     {
         return json_decode(json_encode((array) $object), true);
     }
 
-    public static function toString(object $object): string
+    public static function toString($object): string
     {
         return (string) $object;
     }
