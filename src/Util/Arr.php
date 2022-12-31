@@ -15,6 +15,23 @@ namespace Ansas\Util;
  */
 class Arr
 {
+    public static function onlyChanged(array $old, array $new): array
+    {
+        foreach (array_keys($old) as $key) {
+            if (array_key_exists($key, $new)) {
+                if (is_array($old[$key])) {
+                    [$old[$key], $new[$key]] = static::onlyChanged($old[$key], $new[$key]);
+                }
+                if ($old[$key] === $new[$key]) {
+                    unset($old[$key]);
+                    unset($new[$key]);
+                }
+            }
+        }
+
+        return [$old, $new];
+    }
+
     /**
      * Replace an array key.
      *
@@ -89,13 +106,8 @@ class Arr
 
     /**
      * Append $old array by $new array (recursive) and override existing keys.
-     *
-     * @param array $old
-     * @param array $new
-     *
-     * @return array
      */
-    public static function merge(array $old, array $new)
+    public static function merge(array $old, array $new): array
     {
         foreach ($new as $key => $value) {
             if (isset($old[$key]) && is_array($old[$key]) && is_array($value)) {

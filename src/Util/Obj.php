@@ -10,34 +10,14 @@
 
 namespace Ansas\Util;
 
-/**
- * Class Obj
- *
- * @package Ansas\Util
- * @author  Ansas Meyer <mail@ansas-meyer.de>
- */
 class Obj
 {
-    /**
-     * Convert object to array.
-     *
-     * @param array|object $object
-     *
-     * @return array
-     */
-    public static function toArray($object)
+    public static function toArray(array|object $object): array
     {
         return json_decode(json_encode((array) $object), true);
     }
 
-    /**
-     * Convert object to string.
-     *
-     * @param Obj $object
-     *
-     * @return string
-     */
-    public static function toString($object)
+    public static function toString(object $object): string
     {
         return (string) $object;
     }
