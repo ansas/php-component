@@ -292,6 +292,11 @@ class Workday extends DateTime
         return $this;
     }
 
+    public function getDateFormatted(): string
+    {
+        return $this->format(static::DAY_DATE_FORMAT);
+    }
+
     /**
      * @throws Exception
      */
@@ -325,32 +330,30 @@ class Workday extends DateTime
             return null;
         }
 
-        return $this->getHolidays()[$this->format(static::DAY_DATE_FORMAT)] ?? null;
+        return $this->getHolidays()[$this->getDateFormatted()] ?? null;
     }
 
     public function getHolidayNext(): ?Workday
     {
-        $dates = array_keys($this->getHolidays());
+        $holidays = $this->getHolidays();
 
-        $nextHoliDay = null;
+        if (!$holidays) {
+            return null;
+        }
 
-        foreach ($dates as $date) {
-            $holiday = static
-                ::create($date, $this->getTimezone(), $this->getHolidayTemplate())
-                ->setHolidays($this->getHolidays())
-                ->setTime(0, 0, 0, 0)
-            ;
+        ksort($holidays);
 
-            if ($holiday->getTimestamp() <= $this->getTimestamp()) {
-                continue;
-            }
+        foreach ($holidays as $date => $name) {
 
-            if (!$nextHoliDay || $nextHoliDay->getTimestamp() > $holiday->getTimestamp()) {
-                $nextHoliDay = $holiday;
+            if ($date >= $this->getDateFormatted()) {
+                return static
+                    ::create($date, $this->getTimezone(), $this->getHolidayTemplate())
+                    ->setHolidays($this->getHolidays())
+                ;
             }
         }
 
-        return $nextHoliDay;
+        return null;
     }
 
     public function getHolidayTemplate(): ?string
@@ -379,7 +382,7 @@ class Workday extends DateTime
      */
     public function isHoliday(): bool
     {
-        return in_array($this->format(static::DAY_DATE_FORMAT), array_keys($this->getHolidays()));
+        return in_array($this->getDateFormatted(), array_keys($this->getHolidays()));
     }
 
     public function isSunday(): bool
