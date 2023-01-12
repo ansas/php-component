@@ -319,6 +319,40 @@ class Workday extends DateTime
         return $this->holidays;
     }
 
+    public function getHolidayName(): ?string
+    {
+        if (!$this->isHoliday()) {
+            return null;
+        }
+
+        return $this->getHolidays()[$this->format(static::DAY_DATE_FORMAT)] ?? null;
+    }
+
+    public function getHolidayNext(): ?Workday
+    {
+        $dates = array_keys($this->getHolidays());
+
+        $nextHoliDay = null;
+
+        foreach ($dates as $date) {
+            $holiday = static
+                ::create($date, $this->getTimezone(), $this->getHolidayTemplate())
+                ->setHolidays($this->getHolidays())
+                ->setTime(0, 0, 0, 0)
+            ;
+
+            if ($holiday->getTimestamp() <= $this->getTimestamp()) {
+                continue;
+            }
+
+            if (!$nextHoliDay || $nextHoliDay->getTimestamp() > $holiday->getTimestamp()) {
+                $nextHoliDay = $holiday;
+            }
+        }
+
+        return $nextHoliDay;
+    }
+
     public function getHolidayTemplate(): ?string
     {
         return $this->holidayTemplate ?? null;

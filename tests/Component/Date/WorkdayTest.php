@@ -65,6 +65,23 @@ class WorkdayTest extends TestCase
         $date = Workday::create()->setHolidayTemplate('unknown')->getHolidays();
     }
 
+    public function testGetHolidayNext()
+    {
+        $date = $this->createWorkdayIn2017("2017-01-01")->getHolidayNext();
+        $this->assertSame('2017-04-14', $date->format(Workday::DAY_DATE_FORMAT));
+
+        $date = $this->createWorkdayIn2017("2017-12-25")->setTime(23,59,59)->getHolidayNext();
+        $this->assertSame('2017-12-26', $date->format(Workday::DAY_DATE_FORMAT));
+    }
+
+    public function testGetHolidayName()
+    {
+        $date = $this->createWorkdayIn2017("2017-04-03");
+        $this->assertNull($date->getHolidayName());
+
+        $this->assertSame('Karfreitag', $date->getHolidayNext()->getHolidayName());
+    }
+
     /**
      * @expectedException Exception
      */
