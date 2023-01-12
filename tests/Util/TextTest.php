@@ -102,6 +102,29 @@ class TextTest extends TestCase
         );
     }
 
+    public function testSpace()
+    {
+        $this->assertEquals(
+            '',
+            Text::space('', 2)
+        );
+
+        $this->assertEquals(
+            '12 3',
+            Text::space('123', 2)
+        );
+
+        $this->assertEquals(
+            '1 23',
+            Text::space('123', 2, true)
+        );
+
+        $this->assertEquals(
+            '1-23-45',
+            Text::space('12345', 2, true, '-')
+        );
+    }
+
     public function testStrip4ByteChars()
     {
         $this->assertEquals(

@@ -21,12 +21,6 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 
-/**
- * Class Workday
- *
- * @package Ansas\Component\Date
- * @author  Ansas Meyer <mail@ansas-meyer.de>
- */
 class Workday extends DateTime
 {
     const DAY_DATE_FORMAT       = 'Y-m-d';
@@ -324,6 +318,9 @@ class Workday extends DateTime
         return $this->holidays;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getHolidayName(): ?string
     {
         if (!$this->isHoliday()) {
@@ -333,18 +330,15 @@ class Workday extends DateTime
         return $this->getHolidays()[$this->getDateFormatted()] ?? null;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getHolidayNext(): ?Workday
     {
         $holidays = $this->getHolidays();
-
-        if (!$holidays) {
-            return null;
-        }
-
         ksort($holidays);
 
         foreach ($holidays as $date => $name) {
-
             if ($date >= $this->getDateFormatted()) {
                 return static
                     ::create($date, $this->getTimezone(), $this->getHolidayTemplate())
