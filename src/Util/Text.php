@@ -205,6 +205,19 @@ class Text
         return $text;
     }
 
+    public static function space(mixed $text, int $step, bool $reverse = false, string $char = ' ')
+    {
+        $text = trim($text, $char);
+
+        if ($reverse) {
+            $text = strrev(chunk_split(strrev($text), $step, $char));
+        } else {
+            $text = chunk_split($text, $step, $char);
+        }
+
+        return trim($text, $char);
+    }
+
     /**
      * Remove 4-byte-chars (like emojis) in text.
      */
