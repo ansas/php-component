@@ -15,18 +15,14 @@ use Pimple\Container;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Transport;
-use Symfony\Component\Mailer\Transport\Smtp\SmtpTransport;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 
 /**
- * Class SymfonyMailerProvider
- *
  * <code>composer require symfony/mailer</code>
  *
  * @see     https://symfony.com/doc/current/mailer.html
  *
- * @package Ansas\Slim\Provider
  * @author  Ansas Meyer <ansas@preigu.com>
  * @author  Eike Grundke <eike@preigu.com>
  */
