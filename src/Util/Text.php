@@ -460,7 +460,7 @@ class Text
     public static function toObject($string, $assoc = false)
     {
         $obj = json_decode($string, $assoc);
-        if (null === $obj) {
+        if (is_null($obj) || is_scalar($obj)) {
             throw new InvalidArgumentException("Invalid JSON string");
         }
 
