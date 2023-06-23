@@ -23,16 +23,11 @@ use Monolog\Logger;
  */
 class ConsoleColorProcessor
 {
-    /**
-     * Invoke class.
-     *
-     * @param  array $record
-     *
-     * @return array
-     */
-    public function __invoke(array $record)
+    public function __invoke(array $record): array
     {
         $record['level_name'] = str_pad($record['level_name'], 9);
+
+        $record['custom']['color'] = true;
 
         switch ($record['level']) {
             case Logger::DEBUG:

@@ -13,12 +13,11 @@ namespace Ansas\Slim\Provider;
 use Ansas\Monolog\Processor\CleanupProcessor;
 use Ansas\Monolog\Processor\ConsoleColorProcessor;
 use DateTimeZone;
-use Monolog\ErrorHandler;
+use Exception;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\IntrospectionProcessor;
-use Monolog\Processor\ProcessIdProcessor;
 use Monolog\Processor\PsrLogMessageProcessor;
 use Pimple\Container;
 
@@ -32,10 +31,7 @@ use Pimple\Container;
  */
 class ConsoleLoggerProvider extends AbstractProvider
 {
-    /**
-     * {@inheritDoc}
-     */
-    public static function getDefaultSettings()
+    public static function getDefaultSettings(): array
     {
         return [
             'name'      => 'console',
@@ -45,27 +41,31 @@ class ConsoleLoggerProvider extends AbstractProvider
         ];
     }
 
+    public static function buildLineFormatter(): LineFormatter
+    {
+        $formatter = new LineFormatter(
+            "[%datetime%] %level_name% %message% %context% %extra%\n",
+            "Y-m-d H:i:s"
+        );
+        $formatter->ignoreEmptyContextAndExtra();
+
+        return $formatter;
+    }
+
     /**
-     * {@inheritDoc}
+     * @throws Exception
+     * @noinspection PhpParameterNameChangedDuringInheritanceInspection
      */
-    public function register(Container $container)
+    public function register(Container $container): void
     {
         // Append custom settings with missing params from default settings
         $container['settings']['logger'] = self::mergeWithDefaultSettings($container['settings']['logger']);
 
         /**
-         * Add dependency (DI).
-         *
-         * @param Container $c
-         *
-         * @return Logger
+         * @throws Exception
          */
-        $container['logger'] = function (Container $c) {
+        $container['logger'] = function (Container $c): Logger {
             $settings = $c['settings']['logger'];
-
-            $loggerFormat     = "[%datetime%] %level_name% %message% %context% %extra%\n";
-            $loggerTimeFormat = "Y-m-d H:i:s";
-            $loggerTimeZone   = new DateTimeZone('Europe/Berlin');
 
             $logger = new Logger($settings['name']);
             if ($settings['color']) {
@@ -75,18 +75,15 @@ class ConsoleLoggerProvider extends AbstractProvider
             $logger->pushProcessor(new IntrospectionProcessor(Logger::WARNING));
             $logger->pushProcessor(new PsrLogMessageProcessor());
 
-            $logger->setTimezone($loggerTimeZone);
+            $logger->setTimezone(new DateTimeZone('Europe/Berlin'));
             $logger->useMicrosecondTimestamps(false); // Using microseconds is buggy (2016-08-04)
 
-            $formatter = new LineFormatter($loggerFormat, $loggerTimeFormat);
-            $formatter->ignoreEmptyContextAndExtra(true);
-
-            $defaultHandler = new StreamHandler('php://stdout', $settings['level'], $bubble = false);
-            $defaultHandler->setFormatter($formatter);
+            $defaultHandler = new StreamHandler('php://stdout', $settings['level'], false);
+            $defaultHandler->setFormatter(static::buildLineFormatter());
             $logger->pushHandler($defaultHandler);
 
-            $errorHandler = new StreamHandler('php://stderr', Logger::ERROR, $bubble = false);
-            $errorHandler->setFormatter($formatter);
+            $errorHandler = new StreamHandler('php://stderr', Logger::ERROR, false);
+            $errorHandler->setFormatter(static::buildLineFormatter());
             $logger->pushHandler($errorHandler);
 
             return $logger;
