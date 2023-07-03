@@ -1,42 +1,26 @@
 <?php
 
-/** @noinspection PhpComposerExtensionStubsInspection */
-
 namespace Ansas\Component\File;
 
 use Ansas\Util\Path;
 use Ansas\Util\Text;
 use Exception;
 
-/**
- * Class FtpClientSsh
- *
- * SFTP / SCP support
- *
- * @package Ansas\Component\File
- */
 class FtpClientSsh extends FtpClientBase
 {
     /**
-     * @var resource
+     * @var resource|null
      */
     protected $ssh;
 
     /**
-     * @var resource
+     * @var resource|null
      */
     protected $sftp;
 
-    /**
-     * @var string
-     */
-    protected $dir;
+    protected string $dir = '/';
 
     /**
-     * @param string   $host
-     * @param int|null $port    [optional]
-     * @param array    $options [optional]
-     *
      * @throws Exception
      */
     public function __construct(string $host, int $port = null, array $options = [])
@@ -56,9 +40,6 @@ class FtpClientSsh extends FtpClientBase
         }
     }
 
-    /**
-     * @inheritdoc
-     */
     public function __destruct()
     {
         if ($this->sftp) {
@@ -69,10 +50,7 @@ class FtpClientSsh extends FtpClientBase
         }
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function login(string $user, string $password)
+    public function login(string $user, string $password): static
     {
         if (!$this->execute('ssh2_auth_password', $this->ssh, $user, $password)) {
             $this->throwException("Cannot login to host %s", $this->host);
@@ -83,18 +61,13 @@ class FtpClientSsh extends FtpClientBase
 
     /**
      * Get server fingerprint
-     *
-     * @return string
      */
-    public function getFingerprint()
+    public function getFingerprint(): string
     {
         return $this->execute('ssh2_fingerprint', $this->ssh);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function chdir(string $dir)
+    public function chdir(string $dir): static
     {
         if (Text::firstChar($dir) != '/') {
             $dir = Path::combine($this->pwd(), $dir, '/');
@@ -110,18 +83,14 @@ class FtpClientSsh extends FtpClientBase
     }
 
     /**
-     * @inheritdoc
      * @throws Exception
      */
-    public function exists(string $remoteFile)
+    public function exists(string $remoteFile): bool
     {
         return $this->execute('file_exists', $this->buildUrl($this->buildPath($remoteFile)));
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function listFiles(string $dir = "", string $regex = "", bool $returnFirst = false)
+    public function listFiles(string $dir = "", string $regex = "", bool $returnFirst = false): array|string
     {
         /** @noinspection SpellCheckingInspection */
         if (!$handle = $this->execute('opendir', $this->buildUrl($this->buildPath($dir)))) {
@@ -139,10 +108,7 @@ class FtpClientSsh extends FtpClientBase
         return $this->filterFiles($files, $regex, $returnFirst);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function get(string $remoteFile, string $localFile = null)
+    public function get(string $remoteFile, string $localFile = null): static
     {
         if (!$localFile) {
             $localFile = pathinfo($remoteFile, PATHINFO_BASENAME);
@@ -157,18 +123,12 @@ class FtpClientSsh extends FtpClientBase
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function passive(bool $passive)
+    public function passive(bool $passive): static
     {
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function put(string $remoteFile, string $localFile = null)
+    public function put(string $remoteFile, string $localFile = null): static
     {
         if (!$localFile) {
             $localFile = pathinfo($remoteFile, PATHINFO_BASENAME);
@@ -183,18 +143,12 @@ class FtpClientSsh extends FtpClientBase
         return $this;
     }
 
-    /**
-     * @string
-     */
-    public function pwd()
+    public function pwd(): string
     {
-        return $this->dir ?: '/';
+        return $this->dir;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function delete(string $remoteFile)
+    public function delete(string $remoteFile): static
     {
         if (!$this->execute('ssh2_sftp_unlink', $this->getSftp(), $this->buildPath($remoteFile))) {
             $this->throwException("Cannot delete remote file '%s'", $remoteFile);
@@ -203,10 +157,7 @@ class FtpClientSsh extends FtpClientBase
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function rename(string $oldName, string $newName)
+    public function rename(string $oldName, string $newName): static
     {
         if (!$this->execute('ssh2_sftp_rename',
             $this->getSftp(),
@@ -218,10 +169,7 @@ class FtpClientSsh extends FtpClientBase
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getSize(string $remoteFile)
+    public function getSize(string $remoteFile): int
     {
         $size = $this->getFileStat($remoteFile, 'size', -1);
 
@@ -232,10 +180,7 @@ class FtpClientSsh extends FtpClientBase
         return $size;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getModifiedTimestamp(string $remoteFile)
+    public function getModifiedTimestamp(string $remoteFile): int
     {
         $timestamp = $this->getFileStat($remoteFile, 'mtime', -1);
         if ($timestamp < 0) {
@@ -246,14 +191,9 @@ class FtpClientSsh extends FtpClientBase
     }
 
     /**
-     * @param string      $remoteFile
-     * @param string|null $key     [optional]
-     * @param mixed       $default [optional]
-     *
-     * @return mixed
      * @throws Exception
      */
-    protected function getFileStat(string $remoteFile, string $key = null, $default = null)
+    protected function getFileStat(string $remoteFile, string $key = null, mixed $default = null): mixed
     {
         $stat = $this->execute('ssh2_sftp_stat', $this->getSftp(), $this->buildPath($remoteFile));
 
@@ -279,23 +219,15 @@ class FtpClientSsh extends FtpClientBase
         return $this->sftp;
     }
 
-    /**
-     * @param string $path [optional]
-     *
-     * @return string
-     */
-    protected function buildPath(string $path = '')
+    protected function buildPath(string $path = ''): string
     {
         return Path::combine($this->pwd(), $path, '/');
     }
 
     /**
-     * @param string $path [optional]
-     *
-     * @return string
      * @throws Exception
      */
-    protected function buildUrl(string $path = '')
+    protected function buildUrl(string $path = ''): string
     {
         return Path::combine(sprintf('ssh2.sftp://%d', (int) $this->getSftp()), $path, '/');
     }

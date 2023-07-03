@@ -6,23 +6,10 @@ use Exception;
 
 abstract class FtpClientBase implements FtpClientInterface
 {
-    /**
-     * @var string Error message
-     */
-    protected $error;
+    protected ?string $error;
+    protected ?string $host;
 
-    /**
-     * @var string Host
-     */
-    protected $host;
-
-    /**
-     * @param string $func
-     * @param mixed  ...$args [optional]
-     *
-     * @return mixed
-     */
-    protected function execute(string $func, ...$args)
+    protected function execute(string $func, ...$args): mixed
     {
         $this->error = null;
 
@@ -35,14 +22,7 @@ abstract class FtpClientBase implements FtpClientInterface
         return $result;
     }
 
-    /**
-     * @param array  $files
-     * @param string $regex       [optional]
-     * @param bool   $returnFirst [optional]
-     *
-     * @return string|string[]
-     */
-    protected function filterFiles(array $files, string $regex, bool $returnFirst)
+    protected function filterFiles(array $files, string $regex, bool $returnFirst): array|string
     {
         // Make sure results are in ascending alphabetical order
         sort($files, SORT_STRING);
@@ -74,15 +54,9 @@ abstract class FtpClientBase implements FtpClientInterface
     }
 
     /**
-     * @param int    $code
-     * @param string $message
-     * @param string $file
-     * @param int    $line
-     * @param array  $context
-     *
      * @noinspection PhpUnusedParameterInspection
      */
-    protected function handleError(int $code, string $message, string $file = '', int $line = 0, array $context = [])
+    protected function handleError(int $code, string $message, string $file = '', int $line = 0, array $context = []): void
     {
         $this->error = $message;
     }

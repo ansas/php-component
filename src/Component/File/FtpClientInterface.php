@@ -7,12 +7,9 @@ use Exception;
 interface FtpClientInterface
 {
     /**
-     * @param string $host
-     * @param int|null $port    [optional]
-     *
      * @throws Exception
      */
-    public function __construct(string $host, int $port = 21);
+    public function __construct(string $host, ?int $port = 21, array $options = []);
 
     /**
      * Close connection.
@@ -22,115 +19,75 @@ interface FtpClientInterface
     /**
      * Login to server.
      *
-     * @param string $user
-     * @param string $password
-     *
-     * @return $this
      * @throws Exception
      */
-    public function login(string $user, string $password);
+    public function login(string $user, string $password): static;
 
     /**
      * Change into $dir on ftp-server.
      *
-     * @param string $dir Remote dir path.
-     *
-     * @return $this
      * @throws Exception
      */
-    public function chdir(string $dir);
+    public function chdir(string $dir): static;
 
     /**
      * Check if file exists on ftp-server.
-     *
-     * @param string $remoteFile Remote file path.
-     *
-     * @return bool
      */
-    public function exists(string $remoteFile);
+    public function exists(string $remoteFile): bool;
 
     /**
      * List (specified) files in directory on ftp-server.
      *
-     * @param string $dir         [optional] Directory to search in.
-     * @param string $regex       [optional] Match files against regex.
-     * @param bool   $returnFirst [optional] Return first result only?
-     *
-     * @return array|string
      * @throws Exception
      */
-    public function listFiles(string $dir = ".", string $regex = "", bool $returnFirst = false);
+    public function listFiles(string $dir = ".", string $regex = "", bool $returnFirst = false): array|string;
 
     /**
      * Get a file from ftp-server.
      *
-     * @param string      $remoteFile Remote file path.
-     * @param string|null $localFile  [optional] Local file path, default: $remoteFile.
-     *
-     * @return $this
      * @throws Exception
      */
-    public function get(string $remoteFile, string $localFile = null);
+    public function get(string $remoteFile, ?string $localFile = null): static;
 
     /**
      * Switch to active or passive mode.
      *
-     * @param bool $passive
-     *
-     * @return $this
      * @throws Exception
      */
-    public function passive(bool $passive);
+    public function passive(bool $passive): static;
 
     /**
      * Put a file on ftp-server.
      *
-     * @param string      $remoteFile Remote file path.
-     * @param string|null $localFile  [optional] Local file path, default: $remoteFile.
-     *
-     * @return $this
      * @throws Exception
      */
-    public function put(string $remoteFile, string $localFile = null);
+    public function put(string $remoteFile, ?string $localFile = null): static;
 
     /**
      * Delete a file from ftp-server.
      *
-     * @param string $remoteFile Remote file path.
-     *
-     * @return $this
      * @throws Exception
      */
-    public function delete(string $remoteFile);
+    public function delete(string $remoteFile): static;
 
     /**
      * Put a file on ftp-server.
      *
-     * @param string $oldName
-     * @param string $newName
-     *
-     * @return $this
      * @throws Exception
      */
-    public function rename(string $oldName, string $newName);
+    public function rename(string $oldName, string $newName): static;
 
     /**
      * Get size of file on ftp-server.
      *
-     * @param string $remoteFile Remote file path.
-     *
-     * @return int File size in byte.
      * @throws Exception
      */
-    public function getSize(string $remoteFile);
+    public function getSize(string $remoteFile): int;
 
     /**
      * Get timestamp of last modification of file on ftp-server.
      *
-     * @param string $remoteFile Remote file path.
-     *
-     * @return int Timestamp.
      * @throws Exception
      */
-    public function getModifiedTimestamp(string $remoteFile);
+    public function getModifiedTimestamp(string $remoteFile): int;
 }

@@ -1,12 +1,4 @@
 <?php
-/**
- * This file is part of the PHP components.
- *
- * For the full copyright and license information, please view the LICENSE.md file distributed with this source code.
- *
- * @license MIT License
- * @link    https://github.com/ansas/php-component
- */
 
 /** @noinspection SpellCheckingInspection */
 
@@ -14,48 +6,28 @@ namespace Ansas\Component\File;
 
 use Exception;
 
-/**
- * Class FtpClient
- *
- * @package Ansas\Component\File
- * @author  Ansas Meyer <mail@ansas-meyer.de>
- */
 class FtpClient extends FtpClientBase
 {
     /**
-     * @var resource FTP handle
+     * @var resource|null
      */
     protected $ftp;
 
-    /**
-     * @inheritdoc
-     *
-     * @param int $timeout [optional]
-     */
-    public function __construct(string $host, int $port = null, int $timeout = 30)
+    public function __construct(string $host, int $port = null, array $options = [])
     {
         $this->host = $host;
 
-        if (!$this->ftp = $this->execute('ftp_connect', $this->host, $port ?? 21, $timeout)) {
+        if (!$this->ftp = $this->execute('ftp_connect', $this->host, $port ?? 21, $options['timeout'] ?? 30)) {
             $this->throwException("Cannot connect to host %s", $this->host);
         }
     }
 
-    /**
-     * @inheritdoc
-     */
     public function __destruct()
     {
         $this->execute('ftp_close', $this->ftp);
     }
 
-    /**
-     * @inheritdoc
-     *
-     * @param int $attempts             [optional] Number of retries in case of error.
-     * @param int $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
-     */
-    public function login(string $user, string $password, $attempts = 1, $sleepBetweenAttempts = 5)
+    public function login(string $user, string $password, int $attempts = 1, int $sleepBetweenAttempts = 5): static
     {
         if (!$this->execute('ftp_login', $this->ftp, $user, $password)) {
             if (--$attempts > 0) {
@@ -70,10 +42,7 @@ class FtpClient extends FtpClientBase
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function chdir(string $dir)
+    public function chdir(string $dir): static
     {
         if ($dir != '/') {
             $dir = rtrim($dir, '/');
@@ -89,27 +58,18 @@ class FtpClient extends FtpClientBase
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function exists(string $remoteFile)
+    public function exists(string $remoteFile): bool
     {
         return $this->execute('ftp_size', $this->ftp, $remoteFile) >= 0;
     }
 
-    /**
-     * @inheritdoc
-     *
-     * @param int $attempts             [optional] Number of retries in case of error.
-     * @param int $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
-     */
     public function listFiles(
         string $dir = ".",
         string $regex = "",
         bool $returnFirst = false,
         int $attempts = 5,
         int $sleepBetweenAttempts = 5
-    ) {
+    ): array|string {
         // Get total list of files of given dir
         $files = $this->execute('ftp_nlist', $this->ftp, $dir);
 
@@ -131,14 +91,9 @@ class FtpClient extends FtpClientBase
     /**
      * Get raw data of files in directory on ftp-server.
      *
-     * @param string $dir                  [optional] Directory to search in.
-     * @param int    $attempts             [optional] Number of retries in case of error.
-     * @param int    $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
-     *
-     * @return array
      * @throws Exception
      */
-    public function listFilesRaw(string $dir = ".", int $attempts = 5, int $sleepBetweenAttempts = 5)
+    public function listFilesRaw(string $dir = ".", int $attempts = 5, int $sleepBetweenAttempts = 5): array
     {
         $total = $this->execute('ftp_rawlist', $this->ftp, $dir);
 
@@ -197,7 +152,7 @@ class FtpClient extends FtpClientBase
             $data['month'] = $monthMap[$data['month']];
             $data['time']  = "00:00";
 
-            if (strpos($data['year'], ':') !== false) {
+            if (str_contains($data['year'], ':')) {
                 $data['time'] = $data['year'];
                 if ((int) $data['month'] > (int) date('m')) {
                     $data['year'] = date('Y', time() - 60 * 60 * 24 * 365);
@@ -212,20 +167,13 @@ class FtpClient extends FtpClientBase
         return $files;
     }
 
-    /**
-     * @inheritdoc
-     *
-     * @param int $mode                 [optional] Transfer mode, allowed: FTP_ASCII or FTP_BINARY
-     * @param int $attempts             [optional] Number of retries in case of error.
-     * @param int $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
-     */
     public function get(
         string $remoteFile,
         string $localFile = null,
         int $mode = FTP_BINARY,
         int $attempts = 1,
         int $sleepBetweenAttempts = 5
-    ) {
+    ): static {
         if (!$localFile) {
             $localFile = $remoteFile;
         }
@@ -246,14 +194,9 @@ class FtpClient extends FtpClientBase
     /**
      * Get a file from ftp-server and write it directly into file.
      *
-     * @param string $remoteFile Remote file path.
-     * @param mixed  $handle     File handle.
-     * @param int    $resumePos  [optional] Start or resume position in file.
-     *
-     * @return $this
      * @throws Exception
      */
-    public function fget(string $remoteFile, $handle, int $resumePos = 0)
+    public function fget(string $remoteFile, mixed $handle, int $resumePos = 0): static
     {
         if (!$this->execute('ftp_fget', $this->ftp, $handle, $remoteFile, FTP_BINARY, $resumePos)) {
             $this->throwException("Cannot write in file handle");
@@ -262,10 +205,7 @@ class FtpClient extends FtpClientBase
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function passive(bool $passive)
+    public function passive(bool $passive): static
     {
         if (!$this->execute('ftp_pasv', $this->ftp, $passive)) {
             $this->throwException("Cannot switch to passive = %s", $passive ? "true" : "false");
@@ -274,12 +214,7 @@ class FtpClient extends FtpClientBase
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     *
-     * @param int $mode [optional] Transfer mode, allowed: FTP_ASCII or FTP_BINARY
-     */
-    public function put(string $remoteFile, string $localFile = null, int $mode = FTP_BINARY)
+    public function put(string $remoteFile, string $localFile = null, int $mode = FTP_BINARY): static
     {
         if (!$localFile) {
             $localFile = $remoteFile;
@@ -295,14 +230,9 @@ class FtpClient extends FtpClientBase
     /**
      * Read directly from file and put data on ftp-server.
      *
-     * @param string $remoteFile Remote file path.
-     * @param mixed  $handle     File handle.
-     * @param int    $resumePos  [optional] Start or resume position in file.
-     *
-     * @return $this
      * @throws Exception
      */
-    public function fput(string $remoteFile, $handle, int $resumePos = 0)
+    public function fput(string $remoteFile, mixed $handle, int $resumePos = 0): static
     {
         if (!$this->execute('ftp_fput', $this->ftp, $remoteFile, $handle, FTP_BINARY, $resumePos)) {
             $this->throwException("Cannot copy data from file handle to %s", $remoteFile);
@@ -311,10 +241,7 @@ class FtpClient extends FtpClientBase
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function delete(string $remoteFile)
+    public function delete(string $remoteFile): static
     {
         if (!$this->execute('ftp_delete', $this->ftp, $remoteFile)) {
             $this->throwException("Cannot delete file %s", $remoteFile);
@@ -323,10 +250,7 @@ class FtpClient extends FtpClientBase
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function rename(string $oldName, string $newName)
+    public function rename(string $oldName, string $newName): static
     {
         if (!$this->execute('ftp_rename', $this->ftp, $oldName, $newName)) {
             $this->throwException("Cannot rename file from %s to %s", $oldName, $newName);
@@ -335,10 +259,7 @@ class FtpClient extends FtpClientBase
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getSize(string $remoteFile)
+    public function getSize(string $remoteFile): int
     {
         $size = $this->execute('ftp_size', $this->ftp, $remoteFile);
 
@@ -349,13 +270,7 @@ class FtpClient extends FtpClientBase
         return $size;
     }
 
-    /**
-     * @inheritdoc
-     *
-     * @param int $attempts             [optional] Number of retries in case of error.
-     * @param int $sleepBetweenAttempts [optional] Sleep time in seconds between attempts.
-     */
-    public function getModifiedTimestamp(string $remoteFile, int $attempts = 1, int $sleepBetweenAttempts = 5)
+    public function getModifiedTimestamp(string $remoteFile, int $attempts = 1, int $sleepBetweenAttempts = 5): int
     {
         $timestamp = $this->execute('ftp_mdtm', $this->ftp, $remoteFile);
 
