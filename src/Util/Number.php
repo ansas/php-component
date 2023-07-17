@@ -218,9 +218,12 @@ class Number
             throw new InvalidArgumentException("Mode '{$mode}' not supported");
         }
 
-        $value = (float) $value;
-        $value = $mode($value / $step) * $step;
+        $digits = static::countDigits($step);
 
-        return round($value, static::countDigits($step));
+        $value = (float) $value;
+        $value = round($value / $step, $digits + 2);
+        $value = $mode($value) * $step;
+
+        return round($value, $digits);
     }
 }

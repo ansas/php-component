@@ -82,6 +82,8 @@ class NumberTest extends TestCase
 
     public function testToNearestStepExplicitMode()
     {
+        $this->assertEquals(17.9, Number::toNearestStep(17.9, 0.05, Number::NEAREST_DOWN));
+
         $this->assertEquals(7.5, Number::toNearestStep(7.6, 2.5, Number::NEAREST_ROUND));
         $this->assertEquals(7.5, Number::toNearestStep(5.1, 2.5, Number::NEAREST_UP));
         $this->assertEquals(7.5, Number::toNearestStep(9.9, 2.5, Number::NEAREST_DOWN));
