@@ -89,10 +89,8 @@ abstract class PriceBase implements JsonSerializable
 
     /**
      * This method implements the JsonSerializable interface.
-     *
-     * @return array
      */
-    function jsonSerialize()
+    function jsonSerialize(): array
     {
         return $this->toArray();
     }
@@ -107,7 +105,7 @@ abstract class PriceBase implements JsonSerializable
     /**
      * Get object as JSON string.
      *
-     * @param int $options [optional] JSON_ constants bitmask (e. g. JSON_PRETTY_PRINT)
+     * @param int $options [optional] JSON_ constants bitmask (like JSON_PRETTY_PRINT)
      *
      * @return string
      */
