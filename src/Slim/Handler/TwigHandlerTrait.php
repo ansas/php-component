@@ -19,11 +19,6 @@ use Slim\Router;
 use Slim\Views\Twig;
 
 /**
- * Trait TwigHandlerTrait
- *
- * @package Ansas\Slim\Handler
- * @author  Ansas Meyer <mail@ansas-meyer.de>
- *
  * @property Collection $data
  * @property Container  $container
  * @property Router     $router
@@ -33,17 +28,11 @@ use Slim\Views\Twig;
 trait TwigHandlerTrait
 {
     /**
-     * Fetches template with previous set data.
+     * Fetches template with previous set data
      *
-     * @param Request $request
-     * @param string  $template   The template to render
-     * @param array   $data       [optional]
-     * @param bool    $appendData [optional]
-     *
-     * @return string
      * @throws Exception
      */
-    public function fetchTemplate(Request $request, $template, $data = [], $appendData = true)
+    public function fetchTemplate(Request $request, string $template, array $data = [], bool $appendData = true): string
     {
         if (!$this->view instanceof Twig) {
             throw new Exception("Twig provider not registered.");
@@ -56,39 +45,25 @@ trait TwigHandlerTrait
         foreach ($this->settings['view']['global'] as $key => $map) {
             $key = is_numeric($key) ? $map : $key;
 
-            switch ($key) {
-                case 'request':
-                    $value = $request;
-                    break;
-
-                default:
-                    $value = isset($this->container[$key]) ? $this->container[$key] : null;
-                    break;
-            }
+            $value = match ($key) {
+                'request' => $request,
+                default   => isset($this->container[$key]) ? $this->container[$key] : null,
+            };
 
             $this->view->getEnvironment()->addGlobal($map, $value);
         }
 
-        $result = $this->view->fetch(
-            $template . $this->settings['view']['extension'],
-            $data
-        );
+        $result = $this->view->fetch($template . $this->settings['view']['extension'], $data);
 
-        return $result;
+        return trim($result);
     }
 
     /**
-     * Renders template with previous set data.
+     * Renders template with previous set data
      *
-     * @param Request  $request
-     * @param Response $response
-     * @param string   $template The template to render
-     * @param int      $status   [optional] Response status code
-     *
-     * @return Response
      * @throws Exception
      */
-    public function renderTemplate(Request $request, Response $response, $template, $status = null)
+    public function renderTemplate(Request $request, Response $response, string $template, ?int $status = null): Response
     {
         $response->getBody()->write($this->fetchTemplate($request, $template));
 
