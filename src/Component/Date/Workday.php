@@ -177,6 +177,11 @@ class Workday extends DateTime
         return clone $this;
     }
 
+    public function getHour(): int
+    {
+        return (int) $this->format('H');
+    }
+
     public function getWeekday(): int
     {
         return (int) $this->format(static::DAY_WEEKDAY_FORMAT);
