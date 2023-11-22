@@ -126,6 +126,43 @@ class ArrTest extends TestCase
         );
     }
 
+    public function testUnsetPath()
+    {
+        $data = ['foo' => ['bar' => ['buz' => 1]]];
+
+        $this->assertEquals(
+            ['foo' => ['bar' => []]],
+            Arr::unsetPath($data, ['foo', 'bar', 'buz'])
+        );
+
+        $this->assertEquals(
+            ['foo' => []],
+            Arr::unsetPath($data, ['foo', 'bar'])
+        );
+
+        $this->assertEquals(
+            [],
+            Arr::unsetPath($data, ['foo', ])
+        );
+
+        $this->assertEquals(
+            $data,
+            Arr::unsetPath($data, ['foo', 'bar', 'buz', 'qux'])
+        );
+
+        $this->assertEquals(
+            $data,
+            Arr::unsetPath($data, [])
+        );
+
+        $data = ['foo' => ['bar' => ['buz' => ['a', 'b', 'c']]]];
+
+        $this->assertEquals(
+            ['foo' => ['bar' => ['buz' => [0 => 'a', 2 => 'c']]]],
+            Arr::unsetPath($data, ['foo', 'bar', 'buz', 1])
+        );
+    }
+
     public function testTranspose()
     {
         $this->assertEquals(

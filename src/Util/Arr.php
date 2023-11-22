@@ -269,6 +269,25 @@ class Arr
         return $data;
     }
 
+    public static function unsetPath(array $data, array $path)
+    {
+        $current = &$data;
+
+        $loop = 0;
+        foreach ($path as $key) {
+            if (++$loop != count($path)) {
+                if (!is_array($current) || !isset($current[$key])) {
+                    return $data;
+                }
+                $current = &$current[$key];
+            } elseif (isset($current[$key])) {
+                unset($current[$key]);
+            }
+        }
+
+        return $data;
+    }
+
     /**
      * Swap array keys of level 1 and level 2 in multidimensional array
      *
