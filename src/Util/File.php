@@ -42,13 +42,17 @@ class File
      * Creates a file if it does not already exist.
      *
      * @param string $file
+     * @param int    $mode [optional]
      *
      * @throws IOException
      */
-    public static function create($file)
+    public static function create($file, int $mode = null)
     {
         if (!self::exists($file)) {
             self::touch($file);
+            if ($mode) {
+                self::chmod($file, $mode);
+            }
         }
     }
 
