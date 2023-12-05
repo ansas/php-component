@@ -21,6 +21,9 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 
+/**
+ * @method static static|false createFromFormat(string $format, string $datetime, ?DateTimeZone $timezone = null)
+ */
 class Workday extends DateTime
 {
     const DAY_DATE_FORMAT       = 'Y-m-d';
