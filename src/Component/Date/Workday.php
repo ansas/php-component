@@ -439,12 +439,12 @@ class Workday extends DateTime
 
     public function toMax(Workday $max): static
     {
-        return clone min($this, $max);
+        return min($this, $max);
     }
 
     public function toMin(Workday $min): static
     {
-        return clone max($this, $min);
+        return max($this, $min);
     }
 
     public function toUtc(): static
