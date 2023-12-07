@@ -92,7 +92,7 @@ class FormatTest extends TestCase
         Format::setTimezone('America/New_York');
         $this->assertEquals('10:28:12', Format::time($datetime));
 
-        $this->assertEquals('12:00:00 AM', Format::time('22-01-25', ['locale' => 'en_US']));
+        $this->assertEquals('12:00:00 AM', Format::time('22-01-25', ['locale' => 'en_US']));
 
         Format::setTimeFormat('short');
         $this->assertEquals('10:28', Format::time($datetime));
@@ -107,14 +107,14 @@ class FormatTest extends TestCase
         $this->assertEquals('10:28:12 Nordamerikanische Ostküsten-Normalzeit', Format::time($datetime));
 
         Format::setLocale('en_US');
-        $this->assertEquals('10:28:12 AM Eastern Standard Time', Format::time($datetime));
-        $this->assertEquals('10:28 AM', Format::time($datetime, ['timeFormat' => 'short']));
+        $this->assertEquals('10:28:12 AM Eastern Standard Time', Format::time($datetime));
+        $this->assertEquals('10:28 AM', Format::time($datetime, ['timeFormat' => 'short']));
 
         Format::setCalendarFormat('traditional');
         Format::setDateFormat('full');
-        $this->assertEquals('12:00:00 AM Eastern Standard Time', Format::time('2022-01-01'));
-        $this->assertEquals('4:28:12 PM Central European Standard Time', Format::time($datetime, ['timezone' => 'Europe/Berlin']));
-        $this->assertEquals('7:28:12 AM Pacific Standard Time', Format::time($datetime, ['timezone' => 'America/Los_Angeles']));
+        $this->assertEquals('12:00:00 AM Eastern Standard Time', Format::time('2022-01-01'));
+        $this->assertEquals('4:28:12 PM Central European Standard Time', Format::time($datetime, ['timezone' => 'Europe/Berlin']));
+        $this->assertEquals('7:28:12 AM Pacific Standard Time', Format::time($datetime, ['timezone' => 'America/Los_Angeles']));
 
         $this->expectExceptionMessage('Failed to parse time string');
         Format::time('20?$%HFÄ20');
@@ -166,7 +166,7 @@ class FormatTest extends TestCase
         $datetime = new DateTime();
         $datetime->setTimestamp(1643124492);
         Format::setTimezone('America/New_York');
-        $this->assertEquals('10:28 AM', Format::format($datetime, 'time',  ['timeFormat' => 'short']));
+        $this->assertEquals('10:28 AM', Format::format($datetime, 'time',  ['timeFormat' => 'short']));
 
         Format::setDateFormat('full');
         $this->assertEquals('Dienstag, 25. Januar 2022', Format::format($datetime, 'date', ['locale' => 'de_DE']));
