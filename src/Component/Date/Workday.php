@@ -437,6 +437,16 @@ class Workday extends DateTime
         return $date;
     }
 
+    public function toMax(Workday $max): static
+    {
+        return clone min($this, $max);
+    }
+
+    public function toMin(Workday $min): static
+    {
+        return clone max($this, $min);
+    }
+
     public function toUtc(): static
     {
         $this->setTimezone(new DateTimeZone('UTC'));

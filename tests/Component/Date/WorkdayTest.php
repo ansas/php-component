@@ -154,6 +154,29 @@ class WorkdayTest extends TestCase
         $this->assertEquals($date->getTimezone()->getName(), $workday->getTimezone()->getName());
     }
 
+    public function testToMax()
+    {
+        $now = new Workday('now');
+        $later = new Workday('+2 hours');
+
+        $this->assertEquals($later, $later->toMax($later));
+        $this->assertEquals($now, $now->toMax($now));
+        $this->assertEquals($now, $now->toMax($later));
+        $this->assertEquals($now, $later->toMax($now));
+    }
+
+
+    public function testToMin()
+    {
+        $now = new Workday('now');
+        $later = new Workday('+2 hours');
+
+        $this->assertEquals($now, $now->toMin($now));
+        $this->assertEquals($later, $later->toMin($later));
+        $this->assertEquals($later, $later->toMin($now));
+        $this->assertEquals($later, $now->toMin($later));
+    }
+
     public function testIsHoliday()
     {
         $date = $this->createWorkdayIn2017("2017-04-30");
