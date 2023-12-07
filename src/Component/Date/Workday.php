@@ -1,6 +1,5 @@
 <?php
 
-/** @noinspection PhpMissingReturnTypeInspection */
 /** @noinspection PhpUnused */
 /** @noinspection SpellCheckingInspection */
 
@@ -94,14 +93,13 @@ class Workday extends DateTime
     }
 
     /**
-     * @return static
      * @throws Exception
      */
     public static function create(
         $time = 'now',
         DateTimeZone $timezone = null,
         string $holidayTemplate = self::DEFAULT_TEMPLATE_NAME
-    ) {
+    ): static {
         return new static($time, $timezone, $holidayTemplate);
     }
 
@@ -149,12 +147,9 @@ class Workday extends DateTime
     }
 
     /**
-     * @param DateTime $date
-     *
-     * @return static
      * @throws Exception
      */
-    public static function fromDateTime(DateTime $date)
+    public static function fromDateTime(DateTime $date): static
     {
         $workday = new static("@" . $date->getTimestamp());
         $workday->setTimezone($date->getTimezone());
@@ -167,15 +162,12 @@ class Workday extends DateTime
         return static::$holidayTemplatePath ?? null;
     }
 
-    final public static function setHolidayPath(string $path)
+    final public static function setHolidayPath(string $path): void
     {
         self::$holidayTemplatePath = $path;
     }
 
-    /**
-     * @return static
-     */
-    public function clone()
+    public function clone(): static
     {
         return clone $this;
     }
@@ -191,10 +183,9 @@ class Workday extends DateTime
     }
 
     /**
-     * @inheritdoc
      * @throws Exception
      */
-    public function modify($modifier): Workday|false
+    public function modify($modifier): static
     {
         if (preg_match('/(?<direction>next|last)\s+workday/ui', $modifier, $matches)) {
             if (strtolower($matches['direction']) == 'next') {
@@ -219,10 +210,9 @@ class Workday extends DateTime
     }
 
     /**
-     * @return $this
      * @throws Exception
      */
-    public function addWorkdays(?int $days)
+    public function addWorkdays(?int $days): static
     {
         $done = 0;
         $days = (int) $days;
@@ -264,28 +254,25 @@ class Workday extends DateTime
     }
 
     /**
-     * @return $this
      * @throws Exception
      */
-    public function lastWorkday()
+    public function lastWorkday(): static
     {
         return $this->toWorkday(-1);
     }
 
     /**
-     * @return $this
      * @throws Exception
      */
-    public function nextWorkday()
+    public function nextWorkday(): static
     {
         return $this->toWorkday(1);
     }
 
     /**
-     * @return $this
      * @throws Exception
      */
-    public function toWorkday(int $days)
+    public function toWorkday(int $days): static
     {
         if (!$this->isWorkday()) {
             $this->addWorkdays($days);
@@ -341,7 +328,7 @@ class Workday extends DateTime
     /**
      * @throws Exception
      */
-    public function getHolidayNext(): ?Workday
+    public function getHolidayNext(): ?static
     {
         $holidays = $this->getHolidays();
         ksort($holidays);
@@ -363,18 +350,12 @@ class Workday extends DateTime
         return $this->holidayTemplate ?? null;
     }
 
-    /**
-     * @return array
-     */
-    public function getWeekendDays()
+    public function getWeekendDays(): array
     {
         return $this->weekend;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasTime()
+    public function hasTime(): bool
     {
         return $this->format('H:i:s') != '00:00:00';
     }
@@ -400,10 +381,7 @@ class Workday extends DateTime
         return $this->isSunday() || $this->isHoliday();
     }
 
-    /**
-     * @return bool
-     */
-    public function isWeekend()
+    public function isWeekend(): bool
     {
         return in_array($this->getWeekday(), $this->weekend);
     }
@@ -424,24 +402,14 @@ class Workday extends DateTime
         return !$this->isWeekend() && !$this->isHoliday();
     }
 
-    /**
-     * @param array|null $holidays
-     *
-     * @return $this
-     */
-    public function setHolidays(?array $holidays)
+    public function setHolidays(?array $holidays): static
     {
         $this->holidays = $holidays;
 
         return $this;
     }
 
-    /**
-     * @param string $holidayTemplate
-     *
-     * @return $this
-     */
-    public function setHolidayTemplate(string $holidayTemplate)
+    public function setHolidayTemplate(string $holidayTemplate): static
     {
         if ($this->getHolidayTemplate() != $holidayTemplate) {
             $this->holidayTemplate = $holidayTemplate;
@@ -451,14 +419,7 @@ class Workday extends DateTime
         return $this;
     }
 
-    /**
-     * array of integer, 1 (for Monday) through 7 (for Sunday)
-     *
-     * @param array $weekend
-     *
-     * @return $this
-     */
-    public function setWeekendDays(array $weekend)
+    public function setWeekendDays(array $weekend): static
     {
         $this->weekend = $weekend;
 
@@ -466,10 +427,9 @@ class Workday extends DateTime
     }
 
     /**
-     * @return DateTime
      * @throws Exception
      */
-    public function toDateTime()
+    public function toDateTime(): DateTime
     {
         $date = new DateTime("@" . $this->getTimestamp());
         $date->setTimezone($this->getTimezone());
@@ -477,20 +437,14 @@ class Workday extends DateTime
         return $date;
     }
 
-    /**
-     * @return $this
-     */
-    public function toUtc()
+    public function toUtc(): static
     {
         $this->setTimezone(new DateTimeZone('UTC'));
 
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function withoutTime()
+    public function withoutTime(): static
     {
         $this->setTime(0, 0);
 
