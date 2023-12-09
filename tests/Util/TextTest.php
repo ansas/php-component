@@ -425,6 +425,13 @@ class TextTest extends TestCase
         );
     }
 
+    public function testToCase()
+    {
+        $this->assertEquals('', Text::toCase(null, Text::LOWER_FIRST));
+        $this->assertEquals('äÖÜ', Text::toCase('ÄÖÜ', Text::LOWER_FIRST));
+        $this->assertEquals('Ää Öö', Text::toCase('ää öö', Text::UPPER_WORDS));
+    }
+
     public function testToFloat()
     {
         $this->assertEquals(0, Text::toFloat(null));

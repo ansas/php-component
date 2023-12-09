@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpComposerExtensionStubsInspection */
-/** @noinspection PhpMissingParamTypeInspection */
 /** @noinspection SpellCheckingInspection */
 
 /**
@@ -19,38 +17,14 @@ use Ansas\Component\Exception\ContextException;
 use InvalidArgumentException;
 use SimpleXMLElement;
 
-/**
- * Class Text
- *
- * @package Ansas\Util
- * @author  Ansas Meyer <mail@ansas-meyer.de>
- */
 class Text
 {
-    /**
-     * Set case to upper
-     */
-    const UPPER = 'upper';
-
-    /**
-     * Set case to upper (first letter)
-     */
+    const NONE        = 'none';
+    const LOWER       = 'lower';
+    const LOWER_FIRST = 'lowerFirst';
+    const UPPER       = 'upper';
     const UPPER_FIRST = 'upperFirst';
-
-    /**
-     * Set case to upper (first letter of every word)
-     */
     const UPPER_WORDS = 'upperWords';
-
-    /**
-     * Set case to lower
-     */
-    const LOWER = 'lower';
-
-    /**
-     * Use case "as is"
-     */
-    const NONE = 'none';
 
     /**
      * @var string UTF-8 ByteOrderMark sequence
@@ -69,13 +43,8 @@ class Text
 
     /**
      * Replace first occurrence to $search in $text by $replace.
-     *
-     * @param string $text
-     * @param bool   $anywhere [optional]
-     *
-     * @return bool
      */
-    public static function hasBom($text, $anywhere = false): bool
+    public static function hasBom(?string $text, bool $anywhere = false): bool
     {
         if ($anywhere) {
             return !!preg_match("/" . static::$bom . "/u", $text);
@@ -86,48 +55,26 @@ class Text
 
     /**
      * Check if string is complete lower case.
-     *
-     * @param string $string
-     *
-     * @return bool
      */
-    public static function isLower($string): bool
+    public static function isLower(?string $string): bool
     {
         return ctype_lower($string);
     }
 
-    /**
-     * Check if string is complete upper case.
-     *
-     * @param string $string
-     *
-     * @return bool
-     */
-    public static function isUpper($string): bool
+    public static function isUpper(?string $string): bool
     {
         return ctype_upper($string);
     }
 
-    /**
-     * Check if string is UTF-8.
-     *
-     * @param string $string
-     *
-     * @return bool
-     */
-    public static function isUtf8($string): bool
+    public static function isUtf8(?string $string): bool
     {
         return mb_detect_encoding($string, 'UTF-8', true) !== false;
     }
 
     /**
      * Get max bytes needed per char.
-     *
-     * @param string $string
-     *
-     * @return int
      */
-    public static function maxCharWidth($string): int
+    public static function maxCharWidth(?string $string): int
     {
         $chars = preg_split('//u', $string, null, PREG_SPLIT_NO_EMPTY);
 
@@ -142,13 +89,8 @@ class Text
 
     /**
      * Replace first occurrence to $search in $text by $replace.
-     *
-     * @param string $text
-     * @param bool   $anywhere [optional]
-     *
-     * @return string
      */
-    public static function removeBom($text, $anywhere = false): string
+    public static function removeBom(?string $text, bool $anywhere = false): string
     {
         if ($anywhere) {
             return preg_replace("/" . static::$bom . "/u", '', $text);
@@ -163,14 +105,8 @@ class Text
 
     /**
      * Replace first occurrence to $search in $text by $replace.
-     *
-     * @param string $prefix
-     * @param string $text
-     * @param bool   $ignoreCase [optional]
-     *
-     * @return string
      */
-    public static function removePrefix($prefix, $text, $ignoreCase = false): string
+    public static function removePrefix(string $prefix, string $text, bool $ignoreCase = false): string
     {
         $length = mb_strlen($prefix);
         if ($length) {
@@ -185,14 +121,8 @@ class Text
 
     /**
      * Replace first occurrence to $search in $text by $replace.
-     *
-     * @param string $search
-     * @param string $replace
-     * @param string $text
-     *
-     * @return string
      */
-    public static function replaceFirst($search, $replace, $text): string
+    public static function replaceFirst(string $search, string $replace, string $text): string
     {
         $length = strlen($search);
         if ($length) {
@@ -205,7 +135,7 @@ class Text
         return $text;
     }
 
-    public static function space(mixed $text, int $step, bool $reverse = false, string $char = ' ')
+    public static function space(mixed $text, int $step, bool $reverse = false, string $char = ' '): string
     {
         $text = trim($text, $char);
 
@@ -221,43 +151,28 @@ class Text
     /**
      * Remove 4-byte-chars (like emojis) in text.
      */
-    public static function strip4ByteChars($text, $replaceWith = ''): string
+    public static function strip4ByteChars(string $text, string $replaceWith = ''): string
     {
         return preg_replace('/[\xF0-\xF7].../s', $replaceWith, $text);
     }
 
     /**
-     * Remove emails in text.
-     *
      * The email must at least contain an @ and have a second-level domain.
-     *
-     * @param string $text
-     * @param string $replaceWith [optional]
-     *
-     * @return string
      */
-    public static function stripEmails($text, $replaceWith = ''): string
+    public static function stripEmails(string $text, string $replaceWith = ''): string
     {
         return preg_replace('/[^@\s>]+@[^@\s<>]+\.[^@\s<]+/u', $replaceWith, $text);
     }
 
     /**
-     * Remove links in text.
-     *
      * This method can remove these types:
      * - <code>http://test.de</code> (with every protocol)
      * - <code>//test.de</code> (without protocol)
      * - <code>www.test.de</code> (with www subdomain)
      * - <code>www.test.de/test/test.htm?test=1&test2=2</code> (with path, file and param suffix)
      * - <code>test.de/sub</code> (with path)
-     *
-     * @param string $text
-     * @param string $replaceWith     [optional]
-     * @param array  $topLevelDomains [optional]
-     *
-     * @return string
      */
-    public static function stripLinks($text, $replaceWith = '', $topLevelDomains = []): string
+    public static function stripLinks(string $text, string $replaceWith = '', array $topLevelDomains = []): string
     {
         $text = preg_replace('/(?:(?:[^\s\:>]+:)?\/\/|www\.)[^\s\.]+\.\w+[^\s<]+/u', $replaceWith, $text);
         $text = preg_replace('/[^\s\.>]+\.[a-z]{2,}\/[^\s<]+/u', $replaceWith, $text);
@@ -271,7 +186,7 @@ class Text
     }
 
     /**
-     * Remove phone numbers in text. (ALPHA!)
+     * Remove phone numbers in text (ALPHA!)
      *
      * This method can remove these types:
      * - <code>0541 123456</code>
@@ -280,19 +195,14 @@ class Text
      * Notes:
      * - Phone number must begin with + or 0
      * - This method will also remove UCP or EAN starting with 0
-     *
-     * @param string $text
-     * @param string $replaceWith [optional]
-     *
-     * @return string
      */
-    public static function stripPhones($text, $replaceWith = ''): string
+    public static function stripPhones(string $text, string $replaceWith = ''): string
     {
         return preg_replace('/(?:\+\s?|(?<!\d)0+)[1-9][\d\s\(\)\/\-]+\d{3,}[\d\s\(\)\/\-]+\d/u', $replaceWith, $text);
     }
 
     /**
-     * Remove prices in text.
+     * Remove prices in text
      *
      * This method can remove these types:
      * - <code>USD 1.23</code>
@@ -313,18 +223,13 @@ class Text
     }
 
     /**
-     * Remove social hints in text.
+     * Remove social hints in text
      *
      * This method can remove these types:
      * - <code>@test</code> (twitter)
      * - <code>facebook.com/test</code> (facebook)
-     *
-     * @param string $text
-     * @param string $replaceWith [optional]
-     *
-     * @return string
      */
-    public static function stripSocials($text, $replaceWith = ''): string
+    public static function stripSocials(string $text, string $replaceWith = ''): string
     {
         $text = preg_replace('/(?<=\s|^|>)@[^\s<]+/u', $replaceWith, $text);
 
@@ -332,7 +237,7 @@ class Text
     }
 
     /**
-     * Convert json string to array.
+     * Convert json string to array
      *
      * @throws InvalidArgumentException
      */
@@ -342,14 +247,11 @@ class Text
     }
 
     /**
-     * Convert string into bool value.
+     * Convert string into bool value
      *
-     * @param mixed $string
-     *
-     * @return bool
      * @throws InvalidArgumentException
      */
-    public static function toBool($string): bool
+    public static function toBool(mixed $string): bool
     {
         if (is_null($string)) {
             return false;
@@ -367,52 +269,31 @@ class Text
     }
 
     /**
-     * Convert case of a string.
+     * Convert case of a string
      *
-     * @param string|null $string
-     * @param string      $case
-     *
-     * @return string
      * @throws InvalidArgumentException
      */
     public static function toCase(?string $string, string $case): string
     {
         if (is_null($string)) {
-            $string = '';
+            return '';
         }
 
-        switch ($case) {
-            case self::UPPER:
-                $string = mb_strtoupper($string);
-                break;
-            case self::LOWER:
-                $string = mb_strtolower($string);
-                break;
-            case self::UPPER_FIRST:
-                $string = mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1);
-                break;
-            case self::UPPER_WORDS:
-                $string = mb_convert_case($string, MB_CASE_TITLE);
-                break;
-            case self::NONE:
-                break;
-            default:
-                throw new InvalidArgumentException("Cannot set case {$case}");
-        }
-
-        return $string;
+        return match ($case) {
+            self::LOWER       => mb_strtolower($string),
+            self::LOWER_FIRST => mb_strtolower(mb_substr($string, 0, 1)) . mb_substr($string, 1),
+            self::UPPER       => mb_strtoupper($string),
+            self::UPPER_FIRST => mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1),
+            self::UPPER_WORDS => mb_convert_case($string, MB_CASE_TITLE),
+            self::NONE        => $string,
+            default           => throw new InvalidArgumentException("Cannot set case {$case}")
+        };
     }
 
     /**
      * Compare $v1 and $v2 and calculate factor
-     *
-     * @param string $v1
-     * @param string $v2
-     * @param bool   $ignoreCase [optional]
-     *
-     * @return int
      */
-    public static function toFactor($v1, $v2, $ignoreCase = false): int
+    public static function toFactor(string $v1, string $v2, bool $ignoreCase = false): int
     {
         $function = $ignoreCase ? 'strcasecmp' : 'strcmp';
         $result   = $function($v1, $v2);
@@ -423,7 +304,7 @@ class Text
     /**
      * Convert to float (remove nun numeric chars).
      */
-    public static function toFloat($string): float
+    public static function toFloat(mixed $string): float
     {
         $string = (string) $string;
 
@@ -449,15 +330,11 @@ class Text
     }
 
     /**
-     * Convert json string to object or array.
+     * Convert json string to object or array
      *
-     * @param string $string
-     * @param bool   $assoc [optional]
-     *
-     * @return mixed
      * @throws InvalidArgumentException
      */
-    public static function toObject($string, $assoc = false)
+    public static function toObject(?string $string, bool $assoc = false): array|object
     {
         $obj = json_decode($string, $assoc);
         if (is_null($obj) || is_scalar($obj)) {
@@ -467,30 +344,20 @@ class Text
         return $obj;
     }
 
-    /**
-     * Convert to lower string.
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    public static function toLower($string): string
+    public static function toLower(?string $string): string
     {
         return self::toCase($string, self::LOWER);
     }
 
-    /**
-     * Convert string into regex.
-     *
-     * @param string $string    String to convert into regex.
-     * @param string $modifiers [optional] Modifiers to add to regex.
-     *
-     * @return string
-     */
-    public static function toRegex($string, $modifiers = 'u'): string
+    public static function toLowerFirst(?string $string): string
+    {
+        return self::toCase($string, self::LOWER_FIRST);
+    }
+
+    public static function toRegex(string $string, string $modifiers = 'u'): string
     {
         // Check if string is already a regular expression
-        if (substr($string, 0, 1) == '/') {
+        if (str_starts_with($string, '/')) {
             return $string;
         }
 
@@ -499,15 +366,9 @@ class Text
     }
 
     /**
-     * Convert to [trimmed] [single line] string without multiple whitespaces.
-     *
-     * @param string $string
-     * @param bool   $trim       [optional]
-     * @param bool   $singleLine [optional]
-     *
-     * @return string
+     * Convert to [trimmed] [single line] string without multiple whitespaces
      */
-    public static function toSingleWhitespace($string, $trim = true, $singleLine = true): string
+    public static function toSingleWhitespace(?string $string, bool $trim = true, bool $singleLine = true): string
     {
         if ($singleLine) {
             $string = preg_replace("/[\r\n\t]/", " ", $string);
@@ -523,14 +384,9 @@ class Text
     }
 
     /**
-     * Convert e.g. 8M to size in bytes.
-     *
-     * @param string $string
-     * @param string $system [optional] binary | metric
-     *
-     * @return int
+     * Convert e.g. 8M to size in bytes
      */
-    public static function toSizeInByte($string, $system = 'metric'): int
+    public static function toSizeInByte(string $string, string $system = 'metric'): int
     {
         $mod = ($system === 'binary') ? 1024 : 1000;
 
@@ -543,13 +399,7 @@ class Text
         return (int) round($size);
     }
 
-    /**
-     * @param string|null $string
-     * @param string      $case [optional]
-     *
-     * @return string
-     */
-    public static function toNormalized(?string $string, $case = self::LOWER): string
+    public static function toNormalized(?string $string, string $case = self::LOWER): string
     {
         if (is_null($string)) {
             return '';
@@ -561,14 +411,7 @@ class Text
         return self::toCase($string, $case);
     }
 
-    /**
-     * Convert into slug.
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    public static function toSlug($string): string
+    public static function toSlug(string $string): string
     {
         $string = preg_replace('/[^\p{L}\d]+/u', '-', $string);
         $string = iconv('UTF-8', 'US-ASCII//TRANSLIT', $string);
@@ -579,40 +422,30 @@ class Text
         return strtolower($string);
     }
 
-    /**
-     * Convert to upper string.
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    public static function toUpper($string): string
+    public static function toUpper(?string $string): string
     {
         return self::toCase($string, self::UPPER);
     }
 
-    /**
-     * Convert string to UFT-8.
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    public static function toUtf8($string): string
+    public static function toUpperFirst(?string $string): string
+    {
+        return self::toCase($string, self::UPPER_FIRST);
+    }
+
+    public static function toUpperWords(?string $string): string
+    {
+        return self::toCase($string, self::UPPER_WORDS);
+    }
+
+    public static function toUtf8(?string $string): string
     {
         return self::isUtf8($string) ? $string : utf8_encode($string);
     }
 
     /**
-     * Convert to xml.
-     *
-     * @param string $string
-     * @param bool   $isFile [optional]
-     *
-     * @return SimpleXMLElement
      * @throws ContextException
      */
-    public static function toXml($string, $isFile = false): SimpleXMLElement
+    public static function toXml(string $string, bool $isFile = false): SimpleXMLElement
     {
         $useErrors = libxml_use_internal_errors(true);
         if ($isFile) {
@@ -631,31 +464,15 @@ class Text
         return $xml;
     }
 
-    /**
-     * Trim string.
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    public static function trim($string): string
+    public static function trim(string $string): string
     {
         return trim($string);
     }
 
     /**
-     * Truncate text.
-     *
      * Preserves words and adds suffix "..." by default
-     *
-     * @param string $string
-     * @param int    $limit
-     * @param bool   $preserve [optional] Preserve words if possible
-     * @param string $suffix   [optional]
-     *
-     * @return string
      */
-    public static function truncate($string, int $limit, $preserve = true, $suffix = '...'): string
+    public static function truncate(string $string, int $limit, bool $preserve = true, string $suffix = '...'): string
     {
         if (mb_strlen($string) > $limit) {
             $breakpoint = $limit - mb_strlen($suffix);
