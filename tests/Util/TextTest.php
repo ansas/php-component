@@ -10,6 +10,7 @@
 
 namespace Ansas\Util;
 
+use Ansas\Component\Convert\ConvertNumber;
 use Ansas\Component\Exception\ContextException;
 use PHPUnit\Framework\TestCase;
 
@@ -440,6 +441,16 @@ class TextTest extends TestCase
         $this->assertEquals(-12345.67, Text::toFloat('12.345,67-'));
         $this->assertEquals(12345.67, Text::toFloat('12,345.67'));
         $this->assertEquals(12345.67, Text::toFloat('the price is 12,345.67 EUR'));
+        $this->assertEquals(-12345.67, Text::toFloat('the price is 12,345.67- EUR'));
+        $this->assertEquals(1325125.54, Text::toFloat('1.325.125,54'));
+        $this->assertEquals(1325125.54, Text::toFloat('1,325,125.54'));
+        $this->assertEquals(-1325125.54, Text::toFloat('-1.325.125,54'));
+        $this->assertEquals(-1325125.54, Text::toFloat('-1,325,125.54'));
+        $this->assertEquals(59.95, Text::toFloat('59,95'));
+        $this->assertEquals(1, Text::toFloat(true));
+        $this->assertEquals(0, Text::toFloat(false));
+        $this->assertEquals(0, Text::toFloat(0));
+        $this->assertEquals(1, Text::toFloat(1));
     }
 
     public function testToNormalized()

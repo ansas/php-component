@@ -315,15 +315,9 @@ class Text
             // Sanitize sign (+/-) at end of number
             $string = preg_replace('/^(.*)(\-|\+)$/', '$2$1', $string);
 
-            // Sanitize comma (,) in price
-            if (mb_strpos($string, ',') !== false) {
-                if (preg_match('/,\d+\./', $string)) {
-                    $string = str_replace(',', '', $string);
-                } else {
-                    $string = str_replace('.', '', $string);
-                    $string = str_replace(',', '.', $string);
-                }
-            }
+            // convert american or european styled numbers
+            $string = str_replace(",",".", $string);
+            $string = preg_replace('/\.(?=.*\.)/', '', $string);
         }
 
         return (float) $string;
