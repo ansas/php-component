@@ -20,6 +20,68 @@ use PHPUnit\Framework\TestCase;
  */
 class ArrTest extends TestCase
 {
+    public function testAnyKey()
+    {
+        $this->assertEquals(
+            [],
+            Arr::anyKey(
+                [],
+                'foo'
+            )
+        );
+
+        $this->assertEquals(
+            ['bar'],
+            Arr::anyKey(
+                [
+                    'path1' => [
+                        'path2' => [
+                            'foo'=> 'bar'
+                        ]
+                    ]
+                ],
+                'foo',
+                false
+            )
+        );
+
+        // associative (key is the dot separated array path)
+        $this->assertEquals(
+            [
+                'path1.path2.foo' => 'bar'
+            ],
+            Arr::anyKey(
+                [
+                    'path1' => [
+                        'path2' => [
+                            'foo'=> 'bar'
+                        ]
+                    ]
+                ],
+                'foo',
+            )
+        );
+
+        $this->assertEquals(
+            [
+                'path1.foo' => [
+                    'foo'=> 'bar'
+                ],
+                'path1.foo.foo' => 'bar'
+            ],
+            Arr::anyKey(
+                [
+                    'path1' => [
+                        'foo' => [
+                            'foo'=> 'bar'
+                        ]
+                    ]
+                ],
+                'foo',
+            )
+        );
+    }
+
     public function testReplaceKey()
     {
         $this->assertSame(

@@ -15,6 +15,30 @@ namespace Ansas\Util;
  */
 class Arr
 {
+    public static function anyKey(array $data, string $key, bool $associative = true): array
+    {
+        $matches = [];
+
+        $walk = function ($value, $index, $path) use ($key, $associative, &$walk, &$matches) {
+            $path[] = $index;
+            if (is_array($value)) {
+                array_walk($value, $walk, $path);
+            }
+
+            if ($index == $key) {
+                if ($associative) {
+                    $matches[implode('.', $path)] = $value;
+                } else {
+                    $matches[] = $value;
+                }
+            }
+        };
+
+        array_walk($data, $walk, []);
+
+        return $matches;
+    }
+
     public static function onlyChanged(array $old, array $new): array
     {
         foreach (array_keys($old) as $key) {
