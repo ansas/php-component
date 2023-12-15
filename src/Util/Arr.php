@@ -15,17 +15,19 @@ namespace Ansas\Util;
  */
 class Arr
 {
-    public static function anyKey(array $data, string $key, bool $associative = true): array
+    public static function anyKey(array $data, string|callable $key, bool $associative = true): array
     {
+        $decider = is_string($key) ? fn(string $index) => $index == $key : $key;
+
         $matches = [];
 
-        $walk = function ($value, $index, $path) use ($key, $associative, &$walk, &$matches) {
+        $walk = function ($value, $index, $path) use ($decider, $associative, &$walk, &$matches) {
             $path[] = $index;
             if (is_array($value)) {
                 array_walk($value, $walk, $path);
             }
 
-            if ($index == $key) {
+            if (call_user_func($decider, $index)) {
                 if ($associative) {
                     $matches[implode('.', $path)] = $value;
                 } else {

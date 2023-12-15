@@ -45,6 +45,21 @@ class ArrTest extends TestCase
             )
         );
 
+        $this->assertEquals(
+            ['bar'],
+            Arr::anyKey(
+                [
+                    'path1' => [
+                        'path2' => [
+                            'foo'=> 'bar'
+                        ]
+                    ]
+                ],
+                fn($index) => str_ends_with($index, 'oo'),
+                false
+            )
+        );
+
         // associative (key is the dot separated array path)
         $this->assertEquals(
             [
