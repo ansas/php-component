@@ -99,4 +99,24 @@ class NumberTest extends TestCase
         $this->expectExceptionMessage("Mode 'wrongValue' not supported");
         $this->assertEquals(7.5, Number::toNearestStep(9.9, 2.5, 'wrongValue'));
     }
+
+    public function testToPositive()
+    {
+        $this->assertEquals(0, Number::toPositive(0));
+        $this->assertEquals(1, Number::toPositive(1));
+        $this->assertEquals(1.1, Number::toPositive(1.1));
+        $this->assertEquals(0, Number::toPositive(-0));
+        $this->assertEquals(1, Number::toPositive(-1));
+        $this->assertEquals(1.1, Number::toPositive(-1.1));
+    }
+
+    public function testToNegative()
+    {
+        $this->assertEquals(0, Number::toNegative(0));
+        $this->assertEquals(-1, Number::toNegative(1));
+        $this->assertEquals(-1.1, Number::toNegative(1.1));
+        $this->assertEquals(-0, Number::toNegative(-0));
+        $this->assertEquals(-1, Number::toNegative(-1));
+        $this->assertEquals(-1.1, Number::toNegative(-1.1));
+    }
 }

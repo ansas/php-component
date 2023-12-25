@@ -226,4 +226,14 @@ class Number
 
         return round($value, $digits);
     }
+
+    public static function toNegative(int|float $value): int|float
+    {
+        return static::toPositive($value) * -1;
+    }
+
+    public static function toPositive(int|float $value): int|float
+    {
+        return abs($value);
+    }
 }
