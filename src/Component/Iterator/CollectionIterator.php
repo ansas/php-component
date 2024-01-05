@@ -14,12 +14,6 @@ use Countable;
 use Generator;
 use IteratorAggregate;
 
-/**
- * Class CollectionIterator
- *
- * @package Ansas\Component\Iterator
- * @author  Ansas Meyer <mail@ansas-meyer.de>
- */
 class CollectionIterator implements IteratorAggregate, Countable
 {
     protected iterable $iterator;
@@ -34,7 +28,7 @@ class CollectionIterator implements IteratorAggregate, Countable
 
         if (null !== $count) {
             $this->positions = $count;
-        } elseif (method_exists($iterator, 'count')) {
+        } elseif (is_object($iterator) && method_exists($iterator, 'count')) {
             $this->positions = $iterator->count();
         } elseif($iterator instanceof \Traversable) {
             $this->positions = iterator_count($iterator);
