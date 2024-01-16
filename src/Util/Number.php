@@ -229,7 +229,7 @@ class Number
 
     public static function toNegative(int|float $value): int|float
     {
-        return static::toPositive($value) * -1;
+        return $value ? static::toPositive($value) * -1 : 0;
     }
 
     public static function toPositive(int|float $value): int|float

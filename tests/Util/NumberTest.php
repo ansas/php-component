@@ -115,7 +115,7 @@ class NumberTest extends TestCase
         $this->assertEquals(0, Number::toNegative(0));
         $this->assertEquals(-1, Number::toNegative(1));
         $this->assertEquals(-1.1, Number::toNegative(1.1));
-        $this->assertEquals(-0, Number::toNegative(-0));
+        $this->assertEquals(0, Number::toNegative(-0.00));
         $this->assertEquals(-1, Number::toNegative(-1));
         $this->assertEquals(-1.1, Number::toNegative(-1.1));
     }
