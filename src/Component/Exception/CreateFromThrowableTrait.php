@@ -10,11 +10,11 @@
 
 namespace Ansas\Component\Exception;
 
-use Exception;
+use Throwable;
 
-trait CreateFromExceptionTrait
+trait CreateFromThrowableTrait
 {
-    public static function createFromException(Exception $e): static
+    public static function createFromThrowable(Throwable $e): static
     {
         return new static($e->getMessage(), $e->getCode(), $e);
     }
