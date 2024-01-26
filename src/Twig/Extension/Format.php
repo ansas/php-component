@@ -14,24 +14,17 @@ use Ansas\Util\Number;
 use Twig_Extension;
 use Twig_SimpleFilter;
 
-/**
- * Class Format
- *
- * @package Ansas\Twig\Extension
- * @author  Ansas Meyer <mail@ansas-meyer.de>
- */
 class Format extends Twig_Extension
 {
     /**
      * Returns a list of filters to add to the existing list.
-     *
-     * @return array An array of filters
      */
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new Twig_SimpleFilter('readablesize', [Number::class, 'toReadableSize']),
             new Twig_SimpleFilter('readabletime', [Number::class, 'toReadableTime']),
+            new Twig_SimpleFilter('readableweight', [Number::class, 'toReadableWeight']),
         ];
     }
 }

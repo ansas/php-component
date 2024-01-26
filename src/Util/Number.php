@@ -13,11 +13,9 @@
 
 namespace Ansas\Util;
 
+use Exception;
 use InvalidArgumentException;
 
-/**
- * @author  Ansas Meyer <mail@ansas-meyer.de>
- */
 class Number
 {
     /**
@@ -89,16 +87,14 @@ class Number
     }
 
     /**
-     * Convert to readable size.
-     *
-     * @param int    $bytes
-     * @param int    $decimals [optional]
-     * @param string $system   [optional] binary | metric
-     *
-     * @return string
+     * @throws Exception
      */
-    public static function toReadableSize($bytes, $decimals = 1, $system = 'metric')
-    {
+    public static function toReadableSize(
+        int    $bytes,
+        int    $decimals = 1,
+        string $system = 'metric',
+        string $locale = null
+    ): string {
         $mod = ($system === 'binary') ? 1024 : 1000;
 
         $units = [
@@ -128,23 +124,35 @@ class Number
 
         $factor = floor((strlen($bytes) - 1) / 3);
 
-        return sprintf("%.{$decimals}f %s", $bytes / pow($mod, $factor), $units[$system][$factor]);
+        return sprintf(
+            "%s %s",
+            Format::number($bytes / pow($mod, $factor), ['fractionDigits' => $decimals, 'locale' => $locale]),
+            $units[$system][$factor]
+        );
     }
 
     /**
-     * Convert to readable time.
-     *
-     * @param float $time
-     * @param int   $decimals [optional]
-     *
-     * @return string
+     * @throws Exception
      */
-    public static function toReadableTime($time, $decimals = 3)
+    public static function toReadableTime(float $time, int $decimals = 3, string $locale = null): string
     {
-        $decimals = (int) $decimals;
-        $unit     = 'sec';
+        return sprintf("%s sec", Format::number($time, ['fractionDigits' => $decimals, 'locale' => $locale]));
+    }
 
-        return sprintf("%.{$decimals}f %s", $time, $unit);
+    /**
+     * @throws Exception
+     */
+    public static function toReadableWeight(?int $gramm, int $decimals = 1, string $locale = null): ?string
+    {
+        if ($gramm === null) {
+            return null;
+        }
+
+        if ($gramm < 1_000) {
+            return sprintf('%d g', $gramm);
+        }
+
+        return sprintf("%s kg", Format::number($gramm / 1_000, ['fractionDigits' => $decimals, 'locale' => $locale]));
     }
 
     /**

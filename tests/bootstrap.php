@@ -15,3 +15,7 @@ $autoload = require dirname(__DIR__) . '/vendor/autoload.php';
 
 // Register test classes
 $autoload->addPsr4('Ansas\\', __DIR__);
+
+// Set locale
+setlocale(LC_ALL, 'de_DE.utf8', 'de_DE');
+setlocale(LC_NUMERIC, 'C');

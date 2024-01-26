@@ -13,9 +13,6 @@ namespace Ansas\Util;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @author  Ansas Meyer <mail@ansas-meyer.de>
- */
 class NumberTest extends TestCase
 {
     public function testGetDigits()
@@ -118,5 +115,27 @@ class NumberTest extends TestCase
         $this->assertEquals(0, Number::toNegative(-0.00));
         $this->assertEquals(-1, Number::toNegative(-1));
         $this->assertEquals(-1.1, Number::toNegative(-1.1));
+    }
+
+    public function testToReadableSize()
+    {
+        $this->assertEquals('1,44 MB', Number::toReadableSize(1_440_000, 2, 'metric'));
+        $this->assertEquals('1.4 MB', Number::toReadableSize(1_440_000, 1, 'metric', 'en'));
+    }
+
+    public function testToReadableTime()
+    {
+        $this->assertEquals('0,01 sec', Number::toReadableTime(0.01101, 2));
+        $this->assertEquals('0.01 sec', Number::toReadableTime(0.01101, 2, 'en_GB'));
+    }
+
+    public function testToReadableWeight()
+    {
+        $this->assertEquals(null, Number::toReadableWeight(null, 2));
+        $this->assertEquals('1 g', Number::toReadableWeight(1));
+        $this->assertEquals('999 g', Number::toReadableWeight(999, 1));
+        $this->assertEquals('1,00 kg', Number::toReadableWeight(1_001, 2));
+        $this->assertEquals('1,5 kg', Number::toReadableWeight(1_456));
+        $this->assertEquals('1.46 kg', Number::toReadableWeight(1_456, 2, 'en_US'));
     }
 }
