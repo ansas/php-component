@@ -14,6 +14,7 @@
 namespace Ansas\Util;
 
 use Ansas\Component\Exception\ContextException;
+use ForceUTF8\Encoding;
 use InvalidArgumentException;
 use SimpleXMLElement;
 
@@ -39,6 +40,17 @@ class Text
     public static function firstLine(string $string): string
     {
         return preg_replace('/\r?\n.+$/us', '', $string);
+    }
+
+    public static function fixUtf8(string $string): string
+    {
+        $before = substr_count($string, '?');
+        $fixed  = Encoding::fixUTF8($string);
+        $after  = substr_count($fixed, '?');
+
+        // Only use fixed verion if no invalid chars were added
+        // Note: invalid chars are converted to question marks (?)
+        return $before == $after ? $fixed : $string;
     }
 
     /**

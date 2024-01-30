@@ -27,7 +27,8 @@
         "ext-json": "*",
         "ext-libxml": "*",
         "ext-mbstring": "*",
-        "ext-simplexml": "*"
+        "ext-simplexml": "*",
+        "neitanod/forceutf8": "~2.0"
     },
     "require-dev": {
         "phpunit/phpunit" : "^9"

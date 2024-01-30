@@ -14,11 +14,18 @@ use Ansas\Component\Convert\ConvertNumber;
 use Ansas\Component\Exception\ContextException;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @author  Ansas Meyer <mail@ansas-meyer.de>
- */
 class TextTest extends TestCase
 {
+    public function testFixUtf8()
+    {
+        $this->assertEquals('', Text::fixUtf8(''));
+        $this->assertEquals('AbC', Text::fixUtf8('AbC'));
+        $this->assertEquals('öl', Text::fixUtf8('Ã¶l'));
+        $this->assertEquals('öl?', Text::fixUtf8('Ã¶l?'));
+        $this->assertEquals('Straße?', Text::fixUtf8('Straße?'));
+        $this->assertEquals('Nö?', Text::fixUtf8('Nö?'));
+    }
+
     public function testMaxCharWidth()
     {
         $this->assertEquals(
