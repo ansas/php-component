@@ -14,7 +14,6 @@
 namespace Ansas\Util;
 
 use Ansas\Component\Exception\ContextException;
-use ForceUTF8\Encoding;
 use InvalidArgumentException;
 use SimpleXMLElement;
 
