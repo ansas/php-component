@@ -134,4 +134,12 @@ class PriceTest extends TestCase
         $this->assertEquals(static::$json, Price::create()->setTaxRate(1.19)->setNet(100)->toJson());
         $this->assertEquals(static::$json, Price::create()->setTaxRate(1.19)->setTax(19)->toJson());
     }
+
+    public function testRoundUp()
+    {
+        $this->assertEquals(3.99, Price::roundUp(3.981111));
+        $this->assertEquals(3.99, Price::roundUp(3.989999));
+        $this->assertEquals(4, Price::roundUp(3.1, 0));
+        $this->assertEquals(3.1, Price::roundUp(3.1, 4));
+    }
 }

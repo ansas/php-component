@@ -185,6 +185,25 @@ class Price extends PriceBase
     }
 
     /**
+     * @return float
+     */
+    public static function roundUp(float $value, int $precision = null)
+    {
+        $precision ??= static::getRoundPrecision();
+        if ($precision < 0) {
+            throw new InvalidArgumentException("Precision must be greater than 0");
+        }
+
+        if ($precision == 0) {
+            return ceil($value);
+        }
+
+        $pow = pow(10, $precision);
+
+        return (ceil($pow * $value) + ceil($pow * $value - ceil($pow * $value))) / $pow;
+    }
+
+    /**
      * @param int $roundPrecision
      */
     public static function setRoundPrecision(int $roundPrecision)
