@@ -187,7 +187,7 @@ class Price extends PriceBase
     /**
      * @return float
      */
-    public static function roundUp(float $value, int $precision = null)
+    public static function roundUp(float $value, int $precision = null, int $removeDust = 2)
     {
         $precision ??= static::getRoundPrecision();
         if ($precision < 0) {
@@ -196,6 +196,10 @@ class Price extends PriceBase
 
         if ($precision == 0) {
             return ceil($value);
+        }
+
+        if ($removeDust != 0) {
+            $value = static::round($value, $precision + abs($removeDust));
         }
 
         $pow = pow(10, $precision);
