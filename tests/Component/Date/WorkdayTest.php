@@ -165,7 +165,6 @@ class WorkdayTest extends TestCase
         $this->assertEquals($now, $later->toMax($now));
     }
 
-
     public function testToMin()
     {
         $now = new Workday('now');
@@ -249,6 +248,22 @@ class WorkdayTest extends TestCase
 
         $date->addWorkdays(-5);
         $this->assertEquals($date->getDateFormatted(), "2017-05-04");
+    }
+
+    public function testSubWorkdays()
+    {
+        $date = $this->createWorkdayIn2017("2017-04-28");
+        $date->subWorkdays(-1);
+        $this->assertEquals("2017-05-02", $date->getDateFormatted());
+
+        $date->subWorkdays(-2);
+        $this->assertEquals("2017-05-04", $date->getDateFormatted());
+
+        $date->subWorkdays(-5);
+        $this->assertEquals("2017-05-11", $date->getDateFormatted());
+
+        $date->subWorkdays(5);
+        $this->assertEquals("2017-05-04", $date->getDateFormatted());
     }
 
     public function testAddWorkdaysIfTodayIsHoliday()

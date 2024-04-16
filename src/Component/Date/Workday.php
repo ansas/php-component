@@ -240,6 +240,14 @@ class Workday extends DateTime
     /**
      * @throws Exception
      */
+    public function subWorkdays(?int $days): static
+    {
+        return $this->addWorkdays($days * -1);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function diffWorkdaysSince(Workday $since): int
     {
         return static::diffWorkdays($since, $this, $this->getTimezone());
@@ -457,6 +465,13 @@ class Workday extends DateTime
     public function withoutTime(): static
     {
         $this->setTime(0, 0);
+
+        return $this;
+    }
+
+    public function endOfDay(): static
+    {
+        $this->setTime(23, 59, 59);
 
         return $this;
     }
