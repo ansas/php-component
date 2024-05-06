@@ -381,6 +381,26 @@ class Workday extends DateTime
         return $this->getWeekday() == 7;
     }
 
+    public function isToday(): bool
+    {
+        return $this->format('Y-m-d') == static::create('now', $this->getTimezone())->format('Y-m-d');
+    }
+
+    public function isPast(): bool
+    {
+        return $this < static::create('now', $this->getTimezone());
+    }
+
+    public function isFuture(): bool
+    {
+        return !$this->isPast() && !$this->isNow();
+    }
+
+    public function isNow():bool
+    {
+        return $this == static::create('now', $this->getTimezone());
+    }
+
     /**
      * @throws Exception
      */
