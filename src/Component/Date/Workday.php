@@ -25,9 +25,9 @@ use Exception;
  */
 class Workday extends DateTime
 {
-    const DAY_DATE_FORMAT       = 'Y-m-d';
-    const DAY_WEEKDAY_FORMAT    = 'N';
-    const DEFAULT_TEMPLATE_NAME = 'default';
+    const string DAY_DATE_FORMAT       = 'Y-m-d';
+    const string DAY_WEEKDAY_FORMAT    = 'N';
+    const string DEFAULT_TEMPLATE_NAME = 'default';
 
     /**
      * Path to holiday templates
@@ -381,24 +381,36 @@ class Workday extends DateTime
         return $this->getWeekday() == 7;
     }
 
+    /**
+     * @throws Exception
+     */
     public function isToday(): bool
     {
         return $this->format('Y-m-d') == static::create('now', $this->getTimezone())->format('Y-m-d');
     }
 
+    /**
+     * @throws Exception
+     */
     public function isPast(): bool
     {
-        return $this < static::create('now', $this->getTimezone());
+        return $this < static::create();
     }
 
+    /**
+     * @throws Exception
+     */
     public function isFuture(): bool
     {
-        return !$this->isPast() && !$this->isNow();
+        return $this > static::create();
     }
 
+    /**
+     * @throws Exception
+     */
     public function isNow():bool
     {
-        return $this == static::create('now', $this->getTimezone());
+        return $this == static::create();
     }
 
     /**
