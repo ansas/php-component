@@ -138,10 +138,9 @@ class FtpClient extends FtpClientBase
 
         $files = [];
         foreach ($total as $rawString) {
-            $data    = [];
-            $rawList = preg_split("/\s*/", $rawString, -1, PREG_SPLIT_NO_EMPTY);
+            $data = ['raw' => $rawString];
 
-            foreach ($rawList as $col => $value) {
+            foreach (preg_split("/\s+/u", $rawString, -1, PREG_SPLIT_NO_EMPTY) as $col => $value) {
                 if ($col > 8) { // Filename with spaces
                     $data[$columnMap[8]] .= " " . $value;
                     continue;
@@ -272,9 +271,25 @@ class FtpClient extends FtpClientBase
 
     public function getModifiedTimestamp(string $remoteFile, int $attempts = 1, int $sleepBetweenAttempts = 5): int
     {
+        // Try to get timestamp from default FPT function
         $timestamp = $this->execute('ftp_mdtm', $this->ftp, $remoteFile);
 
         if ($timestamp < 0) {
+            // Try to build timestamp from raw list (if ftp_mdtm is not supported)
+            $path = pathinfo($remoteFile, PATHINFO_DIRNAME);
+            $file = pathinfo($remoteFile, PATHINFO_BASENAME);
+            foreach ($this->listFilesRaw($path, 1) as $raw) {
+                if ($raw['name'] == $file) {
+                    return strtotime(sprintf(
+                        '%d-%d-%d %s',
+                        $raw['year'],
+                        $raw['month'],
+                        $raw['day'],
+                        $raw['time']
+                    ));
+                }
+            }
+
             if (--$attempts > 0) {
                 sleep($sleepBetweenAttempts);
 
