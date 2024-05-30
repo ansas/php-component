@@ -8,7 +8,7 @@ use Ansas\Util\Text;
  * @link https://feiertage-api.de/
  */
 const VALID_COUNTRIES = ['DE'];
-const VALID_STATES    = ['BW', 'BY', 'BE', 'BB', 'HB', 'HE', 'HH', 'MV', 'NI', 'NW', 'RP', 'SL', 'SN', 'ST', 'SH', 'TH'];
+const VALID_STATES    = ['BW', 'BY', 'BE', 'BB', 'HB', 'HE', 'HH', 'MV', 'NI', 'NW', 'RP', 'SL', 'SN', 'ST', 'SH', 'TH', 'NATIONAL'];
 
 try {
     if (!file_exists($file = __DIR__ . '/../../../autoload.php') && !file_exists($file = __DIR__ . '/../autoload.php')) {
@@ -95,12 +95,17 @@ try {
             }
 
             foreach ($data as $key => $value) {
+                // Ignore entry?
+                if (str_contains($value['hinweis'] ?? '', 'ist kein gesetzlicher Feiertag')) {
+                    continue;
+                }
+
                 $date = $value['datum'] ?? '';
-                $name = $key;
                 if (!preg_match('/^\d{4}-\d{2}-\d{2}/u', $date)) {
                     throw new Exception("Invalid data");
                 }
-                $holidays[$date] = $name;
+
+                $holidays[$date] = $key;
             }
         }
     }
