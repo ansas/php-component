@@ -140,12 +140,17 @@ class FtpClient extends FtpClientBase
         foreach ($total as $rawString) {
             $data = ['raw' => $rawString];
 
-            foreach (preg_split("/\s+/u", $rawString, -1, PREG_SPLIT_NO_EMPTY) as $col => $value) {
+            $cols = preg_split("/\s+/u", $rawString, -1, PREG_SPLIT_NO_EMPTY);
+            if (count($cols) < count($columnMap)) {
+                $this->throwException("Cannot parse rawlist row: %s", json_encode($data + ['cols' => $cols]));
+            }
+
+            foreach ($cols as $col => $value) {
                 if ($col > 8) { // Filename with spaces
                     $data[$columnMap[8]] .= " " . $value;
-                    continue;
+                } else {
+                    $data[$columnMap[$col]] = $value;
                 }
-                $data[$columnMap[$col]] = $value;
             }
 
             $data['month'] = $monthMap[$data['month']];

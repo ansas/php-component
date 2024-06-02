@@ -62,12 +62,9 @@ abstract class FtpClientBase implements FtpClientInterface
     }
 
     /**
-     * @param string $message
-     * @param mixed  ...$args [optional]
-     *
      * @throws Exception
      */
-    protected function throwException(string $message, ...$args)
+    protected function throwException(string $message, mixed ...$args)
     {
         if ($this->error) {
             $message .= ' [%s]';
