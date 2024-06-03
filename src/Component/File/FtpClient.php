@@ -4,6 +4,7 @@
 
 namespace Ansas\Component\File;
 
+use Ansas\Util\Text;
 use Exception;
 
 class FtpClient extends FtpClientBase
@@ -93,8 +94,13 @@ class FtpClient extends FtpClientBase
      *
      * @throws Exception
      */
-    public function listFilesRaw(string $dir = ".", int $attempts = 5, int $sleepBetweenAttempts = 5): array
-    {
+    public function listFilesRaw(
+        string $dir = ".",
+        string $regexOrName = "",
+        bool   $returnFirst = false,
+        int    $attempts = 5,
+        int    $sleepBetweenAttempts = 5
+    ): array|string {
         $total = $this->execute('ftp_rawlist', $this->ftp, $dir);
 
         if ($total === false) {
@@ -102,7 +108,7 @@ class FtpClient extends FtpClientBase
             if (--$attempts > 0) {
                 sleep($sleepBetweenAttempts);
 
-                return $this->listFilesRaw($dir, $attempts, $sleepBetweenAttempts);
+                return $this->listFilesRaw($dir, $regexOrName, $returnFirst, $attempts, $sleepBetweenAttempts);
             }
 
             $this->throwException("Cannot list files in %s", $dir);
@@ -136,11 +142,17 @@ class FtpClient extends FtpClientBase
             'Dec'  => '12',
         ];
 
-        $files = [];
-        foreach ($total as $rawString) {
-            $data = ['raw' => $rawString];
+        $regex = $regexOrName ? Text::toRegex($regexOrName) : '';
 
-            $cols = preg_split("/\s+/u", $rawString, -1, PREG_SPLIT_NO_EMPTY);
+        $files = [];
+        foreach ($total as $raw) {
+            if ($regex && !preg_match($regex, $raw)) {
+                continue;
+            }
+
+            $data = ['raw' => $raw];
+
+            $cols = preg_split("/\s+/u", $raw, -1, PREG_SPLIT_NO_EMPTY);
             if (count($cols) < count($columnMap)) {
                 $this->throwException("Cannot parse rawlist row: %s", json_encode($data + ['cols' => $cols]));
             }
@@ -165,7 +177,15 @@ class FtpClient extends FtpClientBase
                 }
             }
 
+            if ($returnFirst) {
+                return $data;
+            }
+
             $files[] = $data;
+        }
+
+        if ($returnFirst) {
+            return '';
         }
 
         return $files;
@@ -283,16 +303,14 @@ class FtpClient extends FtpClientBase
             // Try to build timestamp from raw list (if ftp_mdtm is not supported)
             $path = pathinfo($remoteFile, PATHINFO_DIRNAME);
             $file = pathinfo($remoteFile, PATHINFO_BASENAME);
-            foreach ($this->listFilesRaw($path, 1) as $raw) {
-                if ($raw['name'] == $file) {
-                    return strtotime(sprintf(
-                        '%d-%d-%d %s',
-                        $raw['year'],
-                        $raw['month'],
-                        $raw['day'],
-                        $raw['time']
-                    ));
-                }
+            if ($raw = $this->listFilesRaw($path, $file, true, 1)) {
+                return strtotime(sprintf(
+                    '%d-%d-%d %s',
+                    $raw['year'],
+                    $raw['month'],
+                    $raw['day'],
+                    $raw['time']
+                ));
             }
 
             if (--$attempts > 0) {
