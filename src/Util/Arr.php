@@ -45,7 +45,7 @@ class Arr
     {
         foreach (array_keys($old) as $key) {
             if (array_key_exists($key, $new)) {
-                if (is_array($old[$key])) {
+                if (is_array($old[$key]) && is_array($new[$key])) {
                     [$old[$key], $new[$key]] = static::onlyChanged($old[$key], $new[$key]);
                 }
                 if ($old[$key] === $new[$key]) {
