@@ -14,6 +14,7 @@
 namespace Ansas\Util;
 
 use Exception;
+use NumberFormatter;
 use InvalidArgumentException;
 
 class Number
@@ -84,6 +85,14 @@ class Number
     public static function isSameSign($v1, $v2)
     {
         return ($v1 < 0) == ($v2 < 0);
+    }
+
+    public static function toReadableCurrency(float $amount, string $currency = 'EUR', string $locale = 'de_DE'): string
+    {
+        return NumberFormatter
+            ::create($locale, NumberFormatter::CURRENCY)
+            ->formatCurrency($amount, $currency)
+        ;
     }
 
     /**
