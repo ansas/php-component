@@ -92,11 +92,18 @@ class FtpClientSsh extends FtpClientBase
 
     public function listFiles(string $dir = "", string $regex = "", bool $returnFirst = false): array|string
     {
-        if (!$files = scandir($this->buildUrl($this->buildPath($dir)))) {
+        /** @noinspection SpellCheckingInspection */
+        if (!$handle = $this->execute('opendir', $this->buildUrl($this->buildPath($dir)))) {
             $this->throwException("Cannot list files in '%s'", $this->pwd());
         }
 
-        $files = array_filter($files, fn($file) => !in_array($file, ['.', '..']));
+        $files = [];
+        while (false !== ($file = readdir($handle))) {
+            $files[] = $file;
+        }
+        closedir($handle);
+
+        $files = array_diff($files, ['.', '..']);
 
         return $this->filterFiles($files, $regex, $returnFirst);
     }

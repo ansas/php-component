@@ -28,6 +28,7 @@
         "ext-libxml": "*",
         "ext-mbstring": "*",
         "ext-simplexml": "*",
+        "ext-ssh2": "*",
         "neitanod/forceutf8": "~2.0"
     },
     "require-dev": {
