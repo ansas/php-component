@@ -3,6 +3,7 @@
 namespace Ansas\Component\File;
 
 use Exception;
+use SensitiveParameter;
 
 interface FtpClientInterface
 {
@@ -21,7 +22,7 @@ interface FtpClientInterface
      *
      * @throws Exception
      */
-    public function login(string $user, string $password): static;
+    public function login(string $user, #[SensitiveParameter] string $password): static;
 
     /**
      * Change into $dir on ftp-server.

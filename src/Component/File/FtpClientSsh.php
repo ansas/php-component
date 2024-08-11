@@ -5,6 +5,7 @@ namespace Ansas\Component\File;
 use Ansas\Util\Path;
 use Ansas\Util\Text;
 use Exception;
+use SensitiveParameter;
 
 class FtpClientSsh extends FtpClientBase
 {
@@ -50,7 +51,7 @@ class FtpClientSsh extends FtpClientBase
         }
     }
 
-    public function login(string $user, string $password): static
+    public function login(string $user, #[SensitiveParameter] string $password): static
     {
         if (!$this->execute('ssh2_auth_password', $this->ssh, $user, $password)) {
             $this->throwException("Cannot login to host %s", $this->host);

@@ -6,6 +6,7 @@ namespace Ansas\Component\File;
 
 use Ansas\Util\Text;
 use Exception;
+use SensitiveParameter;
 
 class FtpClient extends FtpClientBase
 {
@@ -28,7 +29,7 @@ class FtpClient extends FtpClientBase
         $this->execute('ftp_close', $this->ftp);
     }
 
-    public function login(string $user, string $password, int $attempts = 1, int $sleepBetweenAttempts = 5): static
+    public function login(string $user, #[SensitiveParameter] string $password, int $attempts = 1, int $sleepBetweenAttempts = 5): static
     {
         if (!$this->execute('ftp_login', $this->ftp, $user, $password)) {
             if (--$attempts > 0) {
