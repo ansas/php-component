@@ -130,6 +130,17 @@ class Text
         return $text;
     }
 
+    public static function replace(string|array $search, string|array $replace, string|array $subject): null|string|array
+    {
+        if (is_string($search)) {
+            $search = sprintf('/%s/ui', $search);
+        } else {
+            $search = array_map(fn($value) => sprintf('/%s/ui', $value), $search);
+        }
+
+        return preg_replace($search, $replace, $subject);
+    }
+
     /**
      * Replace first occurrence to $search in $text by $replace.
      */

@@ -82,6 +82,15 @@ class TextTest extends TestCase
         );
     }
 
+    public function testReplace()
+    {
+        $this->assertEquals('Birnen', Text::replace('Äpfel', 'Birnen', 'äpfel'));
+        $this->assertEquals('Apfel', Text::replace('Äpfel', 'Birnen', 'Apfel'));
+        $this->assertEquals('Birnen', Text::replace(['gespülte Äpfel'], 'Birnen', 'Gespülte Äpfel'));
+        $this->assertEquals('gespülte Birnen', Text::replace(['Äpfel'], 'Birnen', 'gespülte Äpfel'));
+        $this->assertEquals(['Birnen', 'birnen'], Text::replace(['Äpfel'], 'Apfel', ['Birnen', 'birnen']));
+    }
+
     public function testReplaceFirst()
     {
         $this->assertEquals(
