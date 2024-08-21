@@ -485,6 +485,14 @@ class TextTest extends TestCase
         Text::toNormalized(new \DateTime());
     }
 
+    public function testToRegex()
+    {
+        $this->assertEquals('//u', Text::toRegex(''));
+        $this->assertEquals('/abc/i', Text::toRegex('/abc/i'));
+        $this->assertEquals('/ab\/c/u', Text::toRegex('ab/c'));
+        $this->assertEquals('/\//u', Text::toRegex('/'));
+    }
+
     public function testToXml()
     {
         $xml = Text::toXml('<root><name>Test</name></root>');

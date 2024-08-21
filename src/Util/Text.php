@@ -373,12 +373,12 @@ class Text
     public static function toRegex(string $string, string $modifiers = 'u'): string
     {
         // Check if string is already a regular expression
-        if (str_starts_with($string, '/')) {
+        if (preg_match('/^\/.+\/[a-z]*$/i', $string)) {
             return $string;
         }
 
         // Quote special regex chars, add delimiters and modifiers
-        return '/' . preg_quote($string, '/') . '/' . $modifiers;
+        return sprintf('/%s/%s', preg_quote($string, '/'), $modifiers);
     }
 
     /**
