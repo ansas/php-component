@@ -119,18 +119,21 @@ class NumberTest extends TestCase
 
     public function testToReadableSize()
     {
+        Format::setLocale('de_DE');
         $this->assertEquals('1,44 MB', Number::toReadableSize(1_440_000, 2, 'metric'));
         $this->assertEquals('1.4 MB', Number::toReadableSize(1_440_000, 1, 'metric', 'en'));
     }
 
     public function testToReadableTime()
     {
+        Format::setLocale('de_DE');
         $this->assertEquals('0,01 sec', Number::toReadableTime(0.01101, 2));
         $this->assertEquals('0.01 sec', Number::toReadableTime(0.01101, 2, 'en_GB'));
     }
 
     public function testToReadableWeight()
     {
+        Format::setLocale('de_DE');
         $this->assertEquals(null, Number::toReadableWeight(null, 2));
         $this->assertEquals('1 g', Number::toReadableWeight(1));
         $this->assertEquals('999 g', Number::toReadableWeight(999, 1));

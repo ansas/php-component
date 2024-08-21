@@ -104,7 +104,7 @@ class Number
         string $system = 'metric',
         string $locale = null
     ): string {
-        $mod = ($system === 'binary') ? 1024 : 1000;
+        $mod = $system === 'binary' ? 1024 : 1000;
 
         $units = [
             'binary' => [
