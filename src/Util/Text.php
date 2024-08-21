@@ -130,15 +130,17 @@ class Text
         return $text;
     }
 
-    public static function replace(string|array $search, string|array $replace, string|array $text): null|string|array
-    {
-        if (is_string($search)) {
-            $search = static::toRegex($search, 'ui');
-        } else {
-            $search = array_map(fn($v) => static::toRegex($v, 'ui'), $search);
-        }
-
-        return preg_replace($search, $replace, $text);
+    public static function replace(
+        string|array $search,
+        string|array $replace,
+        string|array $text,
+        bool         $partial = false
+    ): null|string|array {
+        return preg_replace(
+            array_map(fn($v) => static::toRegex($v, 'ui', !$partial), (array) $search),
+            $replace,
+            $text
+        );
     }
 
     /**
@@ -370,15 +372,20 @@ class Text
         return self::toCase($string, self::LOWER_FIRST);
     }
 
-    public static function toRegex(string $string, string $modifiers = 'u'): string
+    public static function toRegex(string $string, string $modifiers = 'u', bool $exact = false): string
     {
         // Check if string is already a regular expression
         if (preg_match('/^\/.+\/[a-z]*$/i', $string)) {
             return $string;
         }
 
+        $string = preg_quote($string, '/');
+        if ($exact) {
+            $string = sprintf('^%s$', $string);
+        }
+
         // Quote special regex chars, add delimiters and modifiers
-        return sprintf('/%s/%s', preg_quote($string, '/'), $modifiers);
+        return sprintf('/%s/%s', $string, $modifiers);
     }
 
     /**

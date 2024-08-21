@@ -84,13 +84,19 @@ class TextTest extends TestCase
 
     public function testReplace()
     {
+        // Regex check
         $this->assertEquals('Bir/nen', Text::replace('Äp/fel', 'Bir/nen', 'äp/fel'));
+
+        // Do not replace parts (only whole phrases) by default
+        $this->assertEquals('Birnen', Text::replace('Bi', '', 'Birnen'));
+        $this->assertEquals('gespülte Äpfel', Text::replace(['Äpfel'], 'Birnen', 'gespülte Äpfel'));
+        $this->assertEquals('gespülte Birnen', Text::replace(['Äpfel'], 'Birnen', 'gespülte Äpfel', true));
 
         $this->assertEquals('Birnen', Text::replace('Äpfel', 'Birnen', 'äpfel'));
         $this->assertEquals('Apfel', Text::replace('Äpfel', 'Birnen', 'Apfel'));
         $this->assertEquals('Birnen', Text::replace(['gespülte Äpfel'], 'Birnen', 'Gespülte Äpfel'));
-        $this->assertEquals('gespülte Birnen', Text::replace(['Äpfel'], 'Birnen', 'gespülte Äpfel'));
         $this->assertEquals(['Birnen', 'birnen'], Text::replace(['Äpfel'], 'Apfel', ['Birnen', 'birnen']));
+        $this->assertEquals(['Apfel', 'birnen'], Text::replace(['Äpfel'], 'Apfel', ['Äpfel', 'birnen']));
     }
 
     public function testReplaceFirst()
