@@ -84,6 +84,8 @@ class TextTest extends TestCase
 
     public function testReplace()
     {
+        $this->assertEquals('Bir/nen', Text::replace('Äp/fel', 'Bir/nen', 'äp/fel'));
+
         $this->assertEquals('Birnen', Text::replace('Äpfel', 'Birnen', 'äpfel'));
         $this->assertEquals('Apfel', Text::replace('Äpfel', 'Birnen', 'Apfel'));
         $this->assertEquals('Birnen', Text::replace(['gespülte Äpfel'], 'Birnen', 'Gespülte Äpfel'));

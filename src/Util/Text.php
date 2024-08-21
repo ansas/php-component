@@ -130,15 +130,15 @@ class Text
         return $text;
     }
 
-    public static function replace(string|array $search, string|array $replace, string|array $subject): null|string|array
+    public static function replace(string|array $search, string|array $replace, string|array $text): null|string|array
     {
         if (is_string($search)) {
-            $search = sprintf('/%s/ui', $search);
+            $search = static::toRegex($search, 'ui');
         } else {
-            $search = array_map(fn($value) => sprintf('/%s/ui', $value), $search);
+            $search = array_map(fn($v) => static::toRegex($v, 'ui'), $search);
         }
 
-        return preg_replace($search, $replace, $subject);
+        return preg_replace($search, $replace, $text);
     }
 
     /**
