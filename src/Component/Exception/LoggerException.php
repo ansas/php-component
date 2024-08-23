@@ -44,7 +44,7 @@ class LoggerException extends ContextException
         ]);
 
         if ($withTrace) {
-            $this->addContext(['exceptionTrace' => $this->getTraceAsString()]);
+            $this->addContext(['exceptionTrace' => $this->getTrace()]);
         }
 
         return $this;
