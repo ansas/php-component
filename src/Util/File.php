@@ -13,6 +13,7 @@ namespace Ansas\Util;
 use Ansas\Component\Exception\ContextException;
 use Ansas\Component\Exception\IOException;
 use InvalidArgumentException;
+use JsonSerializable;
 use SimpleXMLElement;
 
 /**
@@ -57,11 +58,9 @@ class File
     }
 
     /**
-     * @param string $file
-     *
      * @throws IOException
      */
-    public static function getContent($file): string
+    public static function getContent(string $file): string
     {
         return static::getContentPartial($file);
     }
@@ -115,15 +114,14 @@ class File
     }
 
     /**
-     * @param string $file
-     * @param mixed  $content
-     * @param int    $flags [optional]
-     *
-     * @return int
      * @throws IOException
      */
-    public static function putContent($file, $content, $flags = 0)
+    public static function putContent(string $file, mixed $content, int $flags = 0): int
     {
+        if (is_array($content) || $content instanceof JsonSerializable) {
+            $content = json_encode($content);
+        }
+
         $bytesWritten = @file_put_contents($file, $content, $flags);
 
         if (false === $bytesWritten) {
