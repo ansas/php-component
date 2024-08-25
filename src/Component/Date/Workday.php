@@ -106,8 +106,23 @@ class Workday extends DateTime
     /**
      * @throws Exception
      */
-    public static function diffWorkdays(Workday $start, Workday $end, DateTimeZone $timezone = null): int
+    public static function diffDays(Workday $start, Workday $end, DateTimeZone $timezone = null): int
     {
+        // Make sure we don't change original objects
+        [$start, $end] = self::diffPrepare($start, $end, $timezone, true);
+
+        return (int) $start->diff($end)->format('%R%a');
+    }
+
+    /**
+     * @return static[]
+     */
+    public static function diffPrepare(
+        Workday $start,
+        Workday $end,
+        ?DateTimeZone $timezone,
+        bool $withoutTime
+    ): array {
         // Make sure we don't change original objects
         $start = clone $start;
         $end   = clone $end;
@@ -121,8 +136,21 @@ class Workday extends DateTime
         }
 
         // Compare without time
-        $start->withoutTime();
-        $end->withoutTime();
+        if ($withoutTime) {
+            $start->withoutTime();
+            $end->withoutTime();
+        }
+
+        return [$start, $end];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function diffWorkdays(Workday $start, Workday $end, DateTimeZone $timezone = null): int
+    {
+        // Make sure we don't change original objects
+        [$start, $end] = self::diffPrepare($start, $end, $timezone, true);
 
         $diff    = 0;
         $factor  = $start > $end ? -1 : 1;
@@ -243,6 +271,22 @@ class Workday extends DateTime
     public function subWorkdays(?int $days): static
     {
         return $this->addWorkdays($days * -1);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function diffDaysSince(Workday $since): int
+    {
+        return static::diffDays($since, $this, $this->getTimezone());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function diffDaysUntil(Workday $until): int
+    {
+        return static::diffDays($this, $until, $this->getTimezone());
     }
 
     /**
