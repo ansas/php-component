@@ -8,19 +8,7 @@ class IPv6
     {
     }
 
-    public static function create(string $ip): static
-    {
-        return new static($ip);
-    }
-
-    public static function fromHostname(string $hostname): ?static
-    {
-        $record = dns_get_record($hostname, DNS_AAAA)[0]['ipv6'] ?? null;
-
-        return $record ? new static($record) : null;
-    }
-
-    public function bin2hex(string $bin): string
+    public static function bin2hex(string $bin): string
     {
 
         if (strlen($bin) < 128) {
@@ -33,6 +21,28 @@ class IPv6
         }
 
         return implode(':', $hex);
+    }
+
+    public static function create(string $ip): static
+    {
+        return new static($ip);
+    }
+
+    public static function fromHostname(string $hostname): ?static
+    {
+        $record = dns_get_record($hostname, DNS_AAAA)[0]['ipv6'] ?? null;
+
+        return $record ? new static($record) : null;
+    }
+
+    public static function hex2bin(string $hex): string
+    {
+        $bin = [];
+        foreach (explode(':', static::create($hex)->getIpLong()) as $v) {
+            $bin[] = str_pad(base_convert($v, 16, 2), 16, '0', STR_PAD_LEFT);
+        }
+
+        return implode($bin);
     }
 
     public function equals(IPv6 $compare): bool
@@ -65,16 +75,6 @@ class IPv6
         $binNetmask = str_repeat('1', $bits) . str_repeat('0', 128 - $bits);
 
         return new static(static::bin2hex(static::hex2bin($this->getIp()) & $binNetmask));
-    }
-
-    public function hex2bin(string $hex): string
-    {
-        $bin = [];
-        foreach (explode(':', static::create($hex)->getIpLong()) as $v) {
-            $bin[] = str_pad(base_convert($v, 16, 2), 16, '0', STR_PAD_LEFT);
-        }
-
-        return implode($bin);
     }
 
     public function isValid(): bool
