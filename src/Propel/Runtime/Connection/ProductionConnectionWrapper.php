@@ -13,19 +13,11 @@ namespace Ansas\Propel\Runtime\Connection;
 use Propel\Runtime\Connection\ConnectionWrapper;
 
 /**
- * Class ProductionConnectionWrapper
- *
  * Sets debugging to true but suppresses info() logging for profiling.
- *
- * @package Ansas\Propel\Runtime\Connection
- * @author  Ansas Meyer <mail@ansas-meyer.de>
  */
 class ProductionConnectionWrapper extends ConnectionWrapper
 {
-    /**
-     * @var boolean
-     */
-    public $useDebug = true;
+    public static $useDebugMode = true;
 
     /**
      * @inheritdoc
