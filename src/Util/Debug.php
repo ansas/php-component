@@ -50,9 +50,7 @@ class Debug
                 echo $description . ":\n";
             }
             $function($data);
-            if (is_scalar($data)) {
-                echo "\n\n";
-            }
+            echo is_scalar($data) ? "\n\n" : "\n";
         } else {
             echo "<pre class=\"debug-dump\">";
             if ($description) {
