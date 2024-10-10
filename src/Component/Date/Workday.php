@@ -415,6 +415,22 @@ class Workday extends DateTime
     /**
      * @throws Exception
      */
+    public function isFirstDayOfMonth(): bool
+    {
+        return $this->format('d') == 1;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function isLastDayOfMonth(): bool
+    {
+        return $this->format('d') == $this->format('t');
+    }
+
+    /**
+     * @throws Exception
+     */
     public function isHoliday(): bool
     {
         return in_array($this->getDateFormatted(), array_keys($this->getHolidays()));

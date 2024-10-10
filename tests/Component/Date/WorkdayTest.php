@@ -20,12 +20,6 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use function PHPUnit\Framework\assertEquals;
 
-/**
- * Class WorkdayTest
- *
- * @package Ansas\Component\Date
- * @author  Ansas Meyer <mail@ansas-meyer.de>
- */
 class WorkdayTest extends TestCase
 {
     public function testCreate()
@@ -174,6 +168,20 @@ class WorkdayTest extends TestCase
         $this->assertEquals($later, $later->toMin($later));
         $this->assertEquals($later, $later->toMin($now));
         $this->assertEquals($later, $now->toMin($later));
+    }
+
+    public function testIsFirstDayOfMonth()
+    {
+        $this->assertTrue($this->createWorkdayIn2017("2017-04-01")->isFirstDayOfMonth());
+        $this->assertFalse($this->createWorkdayIn2017("2017-04-02")->isFirstDayOfMonth());
+        $this->assertFalse($this->createWorkdayIn2017("2017-04-30")->isFirstDayOfMonth());
+    }
+
+    public function testIsLastDayOfMonth()
+    {
+        $this->assertFalse($this->createWorkdayIn2017("2017-04-01")->isLastDayOfMonth());
+        $this->assertFalse($this->createWorkdayIn2017("2017-04-02")->isLastDayOfMonth());
+        $this->assertTrue($this->createWorkdayIn2017("2017-04-30")->isLastDayOfMonth());
     }
 
     public function testIsHoliday()
@@ -454,12 +462,9 @@ class WorkdayTest extends TestCase
     }
 
     /**
-     * @param string $date
-     *
-     * @return Workday
      * @throws Exception
      */
-    public function createWorkdayIn2017($date)
+    public function createWorkdayIn2017(string $date): Workday
     {
         $workday = new Workday($date);
 
