@@ -196,13 +196,13 @@ class Text
      * - <code>www.test.de/test/test.htm?test=1&test2=2</code> (with path, file and param suffix)
      * - <code>test.de/sub</code> (with path)
      */
-    public static function stripLinks(string $text, string $replaceWith = '', array $topLevelDomains = []): string
+    public static function stripLinks(string $text, string $replaceWith = '', ?array $topLevelDomains = []): string
     {
         $text = preg_replace('/(?:(?:[^\s\:>]+:)?\/\/|www\.)[^\s\.]+\.\w+[^\s<]+/u', $replaceWith, $text);
         $text = preg_replace('/[^\s\.>]+\.[a-z]{2,}\/[^\s<]+/u', $replaceWith, $text);
 
-        if ($topLevelDomains) {
-            $list = join('|', $topLevelDomains);
+        if (null !== $topLevelDomains) {
+            $list = $topLevelDomains ? join('|', $topLevelDomains) : '[a-z]{2,5}';
             $text = preg_replace('/\b[^\s\.>]+\.(?:' . $list . ')\b/ui', $replaceWith, $text);
         }
 

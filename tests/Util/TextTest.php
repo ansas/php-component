@@ -287,6 +287,21 @@ class TextTest extends TestCase
             'Buy at <b>[...]</b>.',
             Text::stripLinks('Buy at <b>Amazon.com</b>.', '[...]', ['com'])
         );
+
+        $this->assertEquals(
+            'Buy at <b>Amazon.com</b>.',
+            Text::stripLinks('Buy at <b>Amazon.com</b>.', '[...]', ['de'])
+        );
+
+        $this->assertEquals(
+            'Buy at <b>[...]</b>.',
+            Text::stripLinks('Buy at <b>Amazon.fr</b>.', '[...]')
+        );
+
+        $this->assertEquals(
+            'Buy at <b>Amazon.com</b>.',
+            Text::stripLinks('Buy at <b>Amazon.com</b>.', '[...]', null)
+        );
     }
 
     public function testStripPhones()
