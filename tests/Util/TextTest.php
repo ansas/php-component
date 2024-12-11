@@ -533,6 +533,9 @@ class TextTest extends TestCase
 
     public function testTruncate()
     {
+        $this->assertEquals('MyTooLongTestText', Text::truncate('MyTooLongTestText', 0));
+        $this->assertEquals('MyTooLongTestText', Text::truncate('MyTooLongTestText', -1));
+
         $this->assertEquals('MyTooLo...', Text::truncate('MyTooLongTestText', 10));
         $this->assertEquals('MyTooLongT', Text::truncate('MyTooLongTestText', 10, false, ''));
         $this->assertEquals('MyTooLongT', Text::truncate('MyTooLongTestText', 10, true, ''));

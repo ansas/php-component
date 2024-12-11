@@ -497,7 +497,7 @@ class Text
      */
     public static function truncate(string $string, int $limit, bool $preserve = true, string $suffix = '...'): string
     {
-        if (mb_strlen($string) > $limit) {
+        if ($limit > 0 && mb_strlen($string) > $limit) {
             $breakpoint = $limit - mb_strlen($suffix);
 
             if ($preserve) {
