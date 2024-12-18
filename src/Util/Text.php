@@ -203,7 +203,7 @@ class Text
 
         if (null !== $topLevelDomains) {
             $list = $topLevelDomains ? join('|', $topLevelDomains) : '[a-z]{2,5}';
-            $text = preg_replace('/\b[^\s\.>]+\.(?:' . $list . ')\b/ui', $replaceWith, $text);
+            $text = preg_replace('/(?<!@)\b[^\s\@\.>]+\.(?:' . $list . ')\b/ui', $replaceWith, $text);
         }
 
         return $text;

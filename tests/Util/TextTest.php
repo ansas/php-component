@@ -181,6 +181,11 @@ class TextTest extends TestCase
         );
 
         $this->assertEquals(
+            'The string www.test.de is a link (do not truncate)',
+            Text::stripEmails('The string www.test.de is a link (do not truncate)', '[...]')
+        );
+
+        $this->assertEquals(
             '',
             Text::stripEmails('test@test.de')
         );
@@ -226,6 +231,11 @@ class TextTest extends TestCase
         $this->assertEquals(
             '',
             Text::stripLinks('', '[...]')
+        );
+
+        $this->assertEquals(
+            'The string test@test.de is an email (do not truncate)',
+            Text::stripLinks('The string test@test.de is an email (do not truncate)', '[...]')
         );
 
         $this->assertEquals(
