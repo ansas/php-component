@@ -95,14 +95,18 @@ try {
             }
 
             foreach ($data as $key => $value) {
+                $date = $value['datum'] ?? null;
+
                 // Ignore entry?
+                if (!$date) {
+                    continue;
+                }
                 if (str_contains($value['hinweis'] ?? '', 'ist kein gesetzlicher Feiertag')) {
                     continue;
                 }
 
-                $date = $value['datum'] ?? '';
                 if (!preg_match('/^\d{4}-\d{2}-\d{2}/u', $date)) {
-                    throw new Exception("Invalid data");
+                    throw new Exception("Invalid date: " . json_encode($value));
                 }
 
                 $holidays[$date] = $key;
