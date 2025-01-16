@@ -103,6 +103,18 @@ class Workday extends DateTime
         return new static($time, $timezone, $holidayTemplate);
     }
 
+    public static function tryFrom(
+        $time = 'now',
+        DateTimeZone $timezone = null,
+        string $holidayTemplate = self::DEFAULT_TEMPLATE_NAME
+    ): ?static {
+        try {
+            return new static($time, $timezone, $holidayTemplate);
+        } catch (Exception) {
+            return null;
+        }
+    }
+
     /**
      * @throws Exception
      */
