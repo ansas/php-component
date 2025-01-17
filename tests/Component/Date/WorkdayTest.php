@@ -376,15 +376,15 @@ class WorkdayTest extends TestCase
         $this->assertEquals($date->format('Y-m-d H:i:s'), "2020-01-01 00:00:00");
         $this->assertEquals($date->getTimezone()->getName(), 'UTC');
 
-        // Check if timestamp auto-defect works and timezone is ignored
+        // Check if timestamp auto-detect works
         $date = new Workday('1577836800', new DateTimeZone('Europe/Paris'));
-        $this->assertEquals($date->format('Y-m-d H:i:s'), "2020-01-01 00:00:00");
-        $this->assertEquals($date->getTimezone()->getName(), 'UTC');
+        $this->assertEquals($date->format('Y-m-d H:i:s'), "2020-01-01 01:00:00");
+        $this->assertEquals($date->getTimezone()->getName(), 'Europe/Paris');
 
-        // Check if normal timestamp mode works and timezone is ignored
+        // Check if normal timestamp mode works
         $date = Workday::create('@1577836800', new DateTimeZone('Europe/Paris'));
-        $this->assertEquals($date->format('Y-m-d H:i:s'), "2020-01-01 00:00:00");
-        $this->assertEquals($date->getTimezone()->getName(), 'UTC');
+        $this->assertEquals($date->format('Y-m-d H:i:s'), "2020-01-01 01:00:00");
+        $this->assertEquals($date->getTimezone()->getName(), 'Europe/Paris');
     }
 
     public function testDiffDays()

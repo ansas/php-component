@@ -71,7 +71,10 @@ class Workday extends DateTime
         // @see: https://www.php.net/manual/de/datetime.construct.php
         // @see: https://en.wikipedia.org/wiki/ISO_8601#Time_zone_designators
         if (preg_match('/^@|(?:[+\-]\d\d(:?\d\d)?)$|\d\dZ$/ui', $time)) {
-            parent::__construct($time, $timezone);
+            parent::__construct($time);
+            if ($timezone && str_starts_with($time, '@')) {
+                $this->setTimezone($timezone);
+            }
         } else {
             // Create default object with current timestamp
             parent::__construct('now', $timezone);
