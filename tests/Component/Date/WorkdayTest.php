@@ -1,5 +1,6 @@
 <?php
 
+/** @noinspection PhpIllegalPsrClassPathInspection */
 /** @noinspection PhpUnhandledExceptionInspection */
 /** @noinspection SpellCheckingInspection */
 
@@ -18,7 +19,6 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use PHPUnit\Framework\TestCase;
-use function PHPUnit\Framework\assertEquals;
 
 class WorkdayTest extends TestCase
 {
@@ -31,32 +31,28 @@ class WorkdayTest extends TestCase
         $date = new Workday("now");
         $this->assertInstanceOf(Workday::class, $date);
         $this->assertInstanceOf(DateTime::class, $date);
-        $this->assertEquals($date->getHolidayTemplate(), Workday::DEFAULT_TEMPLATE_NAME);
+        $this->assertEquals(Workday::DEFAULT_TEMPLATE_NAME, $date->getHolidayTemplate());
 
-        $date = Workday::create("now");
+        $date = Workday::create();
         $this->assertInstanceOf(Workday::class, $date);
         $this->assertInstanceOf(DateTime::class, $date);
-        $this->assertEquals($date->getHolidayTemplate(), Workday::DEFAULT_TEMPLATE_NAME);
+        $this->assertEquals(Workday::DEFAULT_TEMPLATE_NAME, $date->getHolidayTemplate());
     }
 
-    /**
-     * @expectedException Exception
-     */
     public function testHolidaysPathNotSet()
     {
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Call setHolidayPath() first');
         Workday::create()->getHolidays();
     }
 
-    /**
-     * @expectedException Exception
-     */
     public function testHolidaysTemplateNotExists()
     {
+        $this->expectException(Exception::class);
         Workday::setHolidayPath(__DIR__ . '/../../var/component/date/workday');
 
         $this->expectExceptionMessage('Holiday template does not exist');
-        $date = Workday::create()->setHolidayTemplate('unknown')->getHolidays();
+        Workday::create()->setHolidayTemplate('unknown')->getHolidays();
     }
 
     public function testGetHolidayNext()
@@ -79,13 +75,11 @@ class WorkdayTest extends TestCase
         $this->assertSame('Karfreitag', $date->getHolidayNext()->getHolidayName());
     }
 
-    /**
-     * @expectedException Exception
-     */
     public function testHolidaysTemplateNotValid()
     {
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Holiday template not valid');
-        $date = Workday::create()->setHolidayTemplate('invalid')->getHolidays();
+        Workday::create()->setHolidayTemplate('invalid')->getHolidays();
     }
 
     public function testGetHolidaysTemplateValid()
@@ -115,16 +109,16 @@ class WorkdayTest extends TestCase
         // Timezone in constructor must not be used
         foreach (['Z', '+00', '+0000', '+00:00'] as $suffix) {
             $date = new Workday('2018-04-30T22:30:00' . $suffix, new DateTimeZone('Europe/Paris'));
-            $this->assertEquals($date->getOffset(), 0);
-            $this->assertEquals($date->getTimezone()->getName(), 'UTC');
-            $this->assertEquals($date->format('Y-m-d H:i:s'), "2018-04-30 22:30:00");
+            $this->assertEquals(0, $date->getOffset());
+            $this->assertEquals('UTC', $date->getTimezone()->getName());
+            $this->assertEquals("2018-04-30 22:30:00", $date->format('Y-m-d H:i:s'));
         }
 
         // Timezone in constructor must be used
         foreach (['Europe/Paris', 'UTC'] as $timezone) {
             $date = new Workday('2018-04-30T22:30:00', new DateTimeZone($timezone));
-            $this->assertEquals($date->getTimezone()->getName(), $timezone);
-            $this->assertEquals($date->format('Y-m-d H:i:s'), "2018-04-30 22:30:00");
+            $this->assertEquals($timezone, $date->getTimezone()->getName());
+            $this->assertEquals("2018-04-30 22:30:00", $date->format('Y-m-d H:i:s'));
         }
     }
 
@@ -187,38 +181,38 @@ class WorkdayTest extends TestCase
     public function testIsHoliday()
     {
         $date = $this->createWorkdayIn2017("2017-04-30");
-        $this->assertEquals(false, $date->isHoliday(), $date->getDateFormatted());
+        $this->assertFalse($date->isHoliday(), $date->getDateFormatted());
 
         $date->modify("+1 day");
-        $this->assertEquals(true, $date->isHoliday(), $date->getDateFormatted());
+        $this->assertTrue($date->isHoliday(), $date->getDateFormatted());
     }
 
     public function testIsSunday()
     {
         $date = $this->createWorkdayIn2017("2017-04-16");
-        $this->assertEquals(true, $date->isSunday(), $date->getDateFormatted());
+        $this->assertTrue($date->isSunday(), $date->getDateFormatted());
 
         $date->modify("+1 day");
-        $this->assertEquals(false, $date->isSunday(), $date->getDateFormatted());
+        $this->assertFalse($date->isSunday(), $date->getDateFormatted());
     }
 
     public function testIsSundayOrHoliday()
     {
         // Sunday and holiday
         $date = $this->createWorkdayIn2017("2017-04-16");
-        $this->assertEquals(true, $date->isSundayOrHoliday(), $date->getDateFormatted());
+        $this->assertTrue($date->isSundayOrHoliday(), $date->getDateFormatted());
 
         // Holiday
         $date->modify("+1 day");
-        $this->assertEquals(true, $date->isSundayOrHoliday(), $date->getDateFormatted());
+        $this->assertTrue($date->isSundayOrHoliday(), $date->getDateFormatted());
 
         // None
         $date->modify("+1 day");
-        $this->assertEquals(false, $date->isSundayOrHoliday(), $date->getDateFormatted());
+        $this->assertFalse($date->isSundayOrHoliday(), $date->getDateFormatted());
 
         // Sunday
         $date->modify("+5 day");
-        $this->assertEquals(true, $date->isSundayOrHoliday(), $date->getDateFormatted());
+        $this->assertTrue($date->isSundayOrHoliday(), $date->getDateFormatted());
     }
 
     public function testIsWeekend()
@@ -233,29 +227,29 @@ class WorkdayTest extends TestCase
     public function testIsWorkday()
     {
         $date = $this->createWorkdayIn2017("2017-04-30");
-        $this->assertEquals(false, $date->isWorkday(), "Weekend");
+        $this->assertFalse($date->isWorkday(), "Weekend");
 
         $date->modify("+1 day");
-        $this->assertEquals(false, $date->isWorkday(), "Holiday");
+        $this->assertFalse($date->isWorkday(), "Holiday");
 
         $date->modify("+1 day");
-        $this->assertEquals(true, $date->isWorkday(), "Workday");
+        $this->assertTrue($date->isWorkday(), "Workday");
     }
 
     public function testAddWorkdays()
     {
         $date = $this->createWorkdayIn2017("2017-04-28");
         $date->addWorkdays(1);
-        $this->assertEquals($date->getDateFormatted(), "2017-05-02");
+        $this->assertEquals("2017-05-02", $date->getDateFormatted());
 
         $date->addWorkdays(2);
-        $this->assertEquals($date->getDateFormatted(), "2017-05-04");
+        $this->assertEquals("2017-05-04", $date->getDateFormatted());
 
         $date->addWorkdays(5);
-        $this->assertEquals($date->getDateFormatted(), "2017-05-11");
+        $this->assertEquals("2017-05-11", $date->getDateFormatted());
 
         $date->addWorkdays(-5);
-        $this->assertEquals($date->getDateFormatted(), "2017-05-04");
+        $this->assertEquals("2017-05-04", $date->getDateFormatted());
     }
 
     public function testSubWorkdays()
@@ -278,78 +272,78 @@ class WorkdayTest extends TestCase
     {
         $date = $this->createWorkdayIn2017("2017-04-14");
         $date->addWorkdays(1);
-        $this->assertEquals($date->getDateFormatted(), "2017-04-18");
+        $this->assertEquals("2017-04-18", $date->getDateFormatted());
 
         $date = $this->createWorkdayIn2017("2017-04-14");
         $date->addWorkdays(-1);
-        $this->assertEquals($date->getDateFormatted(), "2017-04-13");
+        $this->assertEquals("2017-04-13", $date->getDateFormatted());
     }
 
     public function testNextLastWorkday()
     {
         $date = $this->createWorkdayIn2017("2017-04-14");
         $date->nextWorkday();
-        $this->assertEquals($date->getDateFormatted(), "2017-04-18");
+        $this->assertEquals("2017-04-18", $date->getDateFormatted());
 
         $date = $this->createWorkdayIn2017("2017-04-14");
         $date->modify('next workday');
-        $this->assertEquals($date->getDateFormatted(), "2017-04-18");
+        $this->assertEquals("2017-04-18", $date->getDateFormatted());
 
         $date = $this->createWorkdayIn2017("2017-04-14");
         $date->lastWorkday();
-        $this->assertEquals($date->getDateFormatted(), "2017-04-13");
+        $this->assertEquals("2017-04-13", $date->getDateFormatted());
 
         $date = $this->createWorkdayIn2017("2017-04-14");
         $date->modify('last workday');
-        $this->assertEquals($date->getDateFormatted(), "2017-04-13");
+        $this->assertEquals("2017-04-13", $date->getDateFormatted());
 
         $date = $this->createWorkdayIn2017("2017-04-18");
         $date->modify('last workday');
-        $this->assertEquals($date->getDateFormatted(), "2017-04-18");
+        $this->assertEquals("2017-04-18", $date->getDateFormatted());
         $date->modify('next workday');
-        $this->assertEquals($date->getDateFormatted(), "2017-04-18");
+        $this->assertEquals("2017-04-18", $date->getDateFormatted());
 
         $date = $this->createWorkdayIn2017("2017-04-14");
         $date->modify('last workday - 1 workdays');
-        $this->assertEquals($date->getDateFormatted(), "2017-04-12");
+        $this->assertEquals("2017-04-12", $date->getDateFormatted());
     }
 
     public function testAddWorkdaysIfTodayIsWeekend()
     {
         $date = $this->createWorkdayIn2017("2017-04-15");
         $date->addWorkdays(1);
-        $this->assertEquals($date->getDateFormatted(), "2017-04-18");
+        $this->assertEquals("2017-04-18", $date->getDateFormatted());
 
         $date = $this->createWorkdayIn2017("2017-04-15");
         $date->addWorkdays(-1);
-        $this->assertEquals($date->getDateFormatted(), "2017-04-13");
+        $this->assertEquals("2017-04-13", $date->getDateFormatted());
     }
 
     public function testModify()
     {
         $date = $this->createWorkdayIn2017("2017-05-24 10:00:00");
-        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-24 10:00:00");
+        $this->assertEquals("2017-05-24 10:00:00", $date->format('Y-m-d H:i:s'));
 
         $date->modify('1 workday');
-        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-26 10:00:00");
+        $this->assertEquals("2017-05-26 10:00:00", $date->format('Y-m-d H:i:s'));
 
         $date->modify('-1 workdays');
-        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-24 10:00:00");
+        $this->assertEquals("2017-05-24 10:00:00", $date->format('Y-m-d H:i:s'));
 
         $date->modify('+1 workdays + 1 hour');
-        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-26 11:00:00");
+        $this->assertEquals("2017-05-26 11:00:00", $date->format('Y-m-d H:i:s'));
 
         $date->modify('- 1 hour - 1 workday');
-        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-24 10:00:00");
+        $this->assertEquals("2017-05-24 10:00:00", $date->format('Y-m-d H:i:s'));
 
         $date->modify('+ 1 hour + 1 day');
-        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-05-25 11:00:00");
+        $this->assertEquals("2017-05-25 11:00:00", $date->format('Y-m-d H:i:s'));
 
         $date->modify('last day of -1 month');
-        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-04-30 11:00:00");
+        $this->assertEquals("2017-04-30 11:00:00", $date->format('Y-m-d H:i:s'));
 
         $date->modify('+1 hour')->modify('-1 hour');
-        $this->assertEquals($date->format('Y-m-d H:i:s'), "2017-04-30 11:00:00");
+        $this->assertEquals("2017-04-30 11:00:00", $date->format('Y-m-d H:i:s'));
     }
 
     public function testClone()
@@ -358,33 +352,33 @@ class WorkdayTest extends TestCase
         $date2 = clone $date1;
         $date2->modify('+1 hour');
 
-        $this->assertEquals($date1->format('Y-m-d H:i:s'), "2017-05-24 10:00:00");
-        $this->assertEquals($date2->format('Y-m-d H:i:s'), "2017-05-24 11:00:00");
+        $this->assertEquals("2017-05-24 10:00:00", $date1->format('Y-m-d H:i:s'));
+        $this->assertEquals("2017-05-24 11:00:00", $date2->format('Y-m-d H:i:s'));
 
         $date1 = $this->createWorkdayIn2017("2017-05-24 10:00:00");
         $date2 = $date1->clone();
         $date2->modify('+1 hour');
 
-        $this->assertEquals($date1->format('Y-m-d H:i:s'), "2017-05-24 10:00:00");
-        $this->assertEquals($date2->format('Y-m-d H:i:s'), "2017-05-24 11:00:00");
+        $this->assertEquals("2017-05-24 10:00:00", $date1->format('Y-m-d H:i:s'));
+        $this->assertEquals("2017-05-24 11:00:00", $date2->format('Y-m-d H:i:s'));
     }
 
     public function testFromTimestamp()
     {
         // Check if timestamp auto-defect works
         $date = new Workday(1577836800);
-        $this->assertEquals($date->format('Y-m-d H:i:s'), "2020-01-01 00:00:00");
-        $this->assertEquals($date->getTimezone()->getName(), 'UTC');
+        $this->assertEquals("2020-01-01 00:00:00", $date->format('Y-m-d H:i:s'));
+        $this->assertEquals('UTC', $date->getTimezone()->getName());
 
         // Check if timestamp auto-detect works
         $date = new Workday('1577836800', new DateTimeZone('Europe/Paris'));
-        $this->assertEquals($date->format('Y-m-d H:i:s'), "2020-01-01 01:00:00");
-        $this->assertEquals($date->getTimezone()->getName(), 'Europe/Paris');
+        $this->assertEquals("2020-01-01 01:00:00", $date->format('Y-m-d H:i:s'));
+        $this->assertEquals('Europe/Paris', $date->getTimezone()->getName());
 
         // Check if normal timestamp mode works
         $date = Workday::create('@1577836800', new DateTimeZone('Europe/Paris'));
-        $this->assertEquals($date->format('Y-m-d H:i:s'), "2020-01-01 01:00:00");
-        $this->assertEquals($date->getTimezone()->getName(), 'Europe/Paris');
+        $this->assertEquals("2020-01-01 01:00:00", $date->format('Y-m-d H:i:s'));
+        $this->assertEquals('Europe/Paris', $date->getTimezone()->getName());
     }
 
     public function testDiffDays()
@@ -409,10 +403,10 @@ class WorkdayTest extends TestCase
         $date3 = $this->createWorkdayIn2017("2017-05-26"); // friday
         $date4 = $this->createWorkdayIn2017("2017-05-27"); // saturday & weekend
 
-        $this->assertEquals(true, $date1->isWorkday());
-        $this->assertEquals(false, $date2->isWorkday());
-        $this->assertEquals(true, $date3->isWorkday());
-        $this->assertEquals(false, $date4->isWorkday());
+        $this->assertTrue($date1->isWorkday());
+        $this->assertFalse($date2->isWorkday());
+        $this->assertTrue($date3->isWorkday());
+        $this->assertFalse($date4->isWorkday());
 
         $this->assertEquals(1, $date1->diffWorkdaysUntil($date2));
         $this->assertEquals(1, $date1->diffWorkdaysUntil($date3));
@@ -432,11 +426,11 @@ class WorkdayTest extends TestCase
         $date4 = $this->createWorkdayIn2017("2017-05-02"); // tuesday
         $date5 = $this->createWorkdayIn2017("2017-05-03"); // wednesday
 
-        $this->assertEquals(true, $date1->isWorkday());
-        $this->assertEquals(false, $date2->isWorkday());
-        $this->assertEquals(false, $date3->isWorkday());
-        $this->assertEquals(true, $date4->isWorkday());
-        $this->assertEquals(true, $date5->isWorkday());
+        $this->assertTrue($date1->isWorkday());
+        $this->assertFalse($date2->isWorkday());
+        $this->assertFalse($date3->isWorkday());
+        $this->assertTrue($date4->isWorkday());
+        $this->assertTrue($date5->isWorkday());
 
         $this->assertEquals(0, $date1->diffWorkdaysUntil($date1));
         $this->assertEquals(0, $date2->diffWorkdaysUntil($date2));
