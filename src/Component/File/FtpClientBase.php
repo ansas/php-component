@@ -71,7 +71,7 @@ abstract class FtpClientBase implements FtpClientInterface
             $args[]  = $this->error;
         }
 
-        throw new Exception(vsprintf($message, $args));
+        throw new FtpException(vsprintf($message, $args));
     }
 
 }
