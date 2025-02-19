@@ -38,7 +38,7 @@ class Time
         $seconds = (float) $seconds;
 
         if ($seconds > 0) {
-            usleep($seconds * 1000000);
+            usleep($seconds * 1_000_000);
         }
     }
 
