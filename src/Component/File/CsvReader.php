@@ -135,6 +135,41 @@ class CsvReader extends CsvBase implements IteratorAggregate
     }
 
     /**
+     * @throws Exception
+     */
+    public function detectDelimiter(array $delimiters = [";", "\t", "|", ","]): static
+    {
+        // Detection should be done before retrieving any data
+        if ($this->getLineNumber()) {
+            throw new Exception("Already fetched data");
+        }
+
+        // Check if any provided delimiter created more than one header column
+        $detected = null;
+        foreach ($delimiters as $delimiter) {
+            $this->reset();
+            $this->setDelimiter($delimiter);
+
+            if (count($this->getHeader()) > 1) {
+                if ($detected) {
+                    throw new Exception("Multiple delimiters found");
+                }
+                $detected = $delimiter;
+            }
+        }
+
+        if (!$detected) {
+            throw new Exception("No delimiter found");
+        }
+
+        // Set detected delimiter
+        $this->reset();
+        $this->setDelimiter($detected);
+
+        return $this;
+    }
+
+    /**
      * @param array $required
      *
      * @return $this
