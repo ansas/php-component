@@ -194,14 +194,15 @@ class ExtendedRequest extends Request
      *
      * Note: This method is not part of the PSR-7 standard.
      */
-    public function getParamsWith(array|string $only, bool $filledOnly = false): array
+    public function getParamsWith(array|string $filter, bool $filledOnly = false): array
     {
         // Convert $filter to array if necessary
-        if (!is_array($only)) {
-            $only = preg_split("/, */", $only, -1, PREG_SPLIT_NO_EMPTY);
+        if (!is_array($filter)) {
+            $filter = preg_split("/, */", $filter, -1, PREG_SPLIT_NO_EMPTY);
         }
 
-        $params = $this->getParams($only);
+        // Note: $this->getParams($filter) would NOT return empty list if $filter = []
+        $params = array_intersect_key($this->getParams(), array_flip($filter));
 
         if ($filledOnly) {
             $params = array_filter($params, fn ($v) => $v !== '');
@@ -214,13 +215,8 @@ class ExtendedRequest extends Request
      * Fetch filtered associative array of body and query string parameters.
      *
      * Note: This method is not part of the PSR-7 standard.
-     *
-     * @param array|string $filter     Array or comma separated list
-     * @param bool         $filledOnly [optional]
-     *
-     * @return array
      */
-    public function getParamsWithout($filter, $filledOnly = false)
+    public function getParamsWithout(array|string $filter, bool $filledOnly = false): array
     {
         // Convert $filter to array if necessary
         if (!is_array($filter)) {
