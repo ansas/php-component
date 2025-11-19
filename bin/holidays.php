@@ -95,13 +95,14 @@ try {
             }
 
             foreach ($data as $key => $value) {
-                $date = $value['datum'] ?? null;
+                $date      = $value['datum'] ?? null;
+                $isHoliday = holidayHintsToIsHoliday($value['hinweis'] ?? null);
 
                 // Ignore entry?
                 if (!$date) {
                     continue;
                 }
-                if (str_contains($value['hinweis'] ?? '', 'ist kein gesetzlicher Feiertag')) {
+                if (!$isHoliday) {
                     continue;
                 }
 
@@ -124,4 +125,30 @@ try {
 } catch (Throwable $e) {
     fwrite(STDERR, $e->getMessage() . "\n");
     exit(500);
+}
+
+function holidayHintsToIsHoliday(?string $hint): bool
+{
+    $hint = trim($hint ?? '');
+
+    // Always holiday if no hint provided
+    if (!$hint) {
+        return true;
+    }
+
+    $hintMap = [
+        'haben Schüler am Gründonnerstag und am Reformationstag schulfrei' => false,
+        'ist nur im Stadtgebiet' => false,
+        'Buß- und Bettag' => false,
+        'ist kein gesetzlicher Feiertag' => false,
+        'Mariä Himmelfahrt' => true,
+        'Einmaliger Feiertag' => true,
+    ];
+    foreach ($hintMap as $neede => $isHoliday) {
+        if (false !== stripos($hint, $neede)) {
+            return $isHoliday;
+        }
+    }
+
+    throw new Exception("Cannot map hint: '{$hint}'");
 }
