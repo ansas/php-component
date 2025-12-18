@@ -17,6 +17,7 @@ namespace Ansas\Component\Date;
 use Ansas\Util\File;
 use Ansas\Util\Path;
 use DateTime;
+use DateTimeInterface;
 use DateTimeZone;
 use Exception;
 
@@ -192,7 +193,7 @@ class Workday extends DateTime
     /**
      * @throws Exception
      */
-    public static function fromDateTime(DateTime $date): static
+    public static function fromDateTime(DateTimeInterface $date): static
     {
         $workday = new static("@" . $date->getTimestamp());
         $workday->setTimezone($date->getTimezone());
