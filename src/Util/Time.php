@@ -18,49 +18,37 @@ namespace Ansas\Util;
  */
 class Time
 {
-    /**
-     * Get microtime.
-     *
-     * @return float
-     */
-    public static function microtime()
+    public static function microtime(): float
     {
         return microtime(true);
     }
 
-    /**
-     * Sleep for x.x seconds.
-     *
-     * @param float $seconds
-     */
-    public static function sleep($seconds)
+    public static function sleep(float $seconds): void
     {
-        $seconds = (float) $seconds;
-
         if ($seconds > 0) {
             usleep($seconds * 1_000_000);
         }
     }
 
+    public static function sleepRandom(float $min, float $max): void
+    {
+        static::sleep(rand($min, $max));
+    }
+
     /**
      * Sleep for x.x $seconds since last sleep of $timer.
-     *
-     * @param float  $seconds
-     * @param string $timer [optional]
      */
-    public static function sleepSinceLast($seconds, $timer = 'default')
+    public static function sleepSinceLast(float $seconds, string $timer = 'default'): void
     {
         static $sleepTimer = [];
 
-        $lastSlept =& $sleepTimer[$timer] ?? null;
-
-        $seconds = (float) $seconds;
+        $lastSlept = $sleepTimer[$timer] ?? null;
 
         if ($lastSlept) {
             $seconds -= static::microtime() - $lastSlept;
         }
 
         static::sleep($seconds);
-        $lastSlept = static::microtime();
+        $sleepTimer[$timer] = static::microtime();
     }
 }
