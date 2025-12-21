@@ -178,6 +178,39 @@ class ArrTest extends TestCase
         );
     }
 
+    public function testHasPathAnywhere()
+    {
+        $data = [
+            'a' => [
+                'b' => [
+                    'c' => false,
+                ],
+            ],
+            'b' => [
+                'c' => false,
+                'a' => [
+                    'c' => false,
+                    'd' => false,
+                ],
+            ],
+        ];
+
+        $this->assertTrue(Arr::hasPathAnywhere($data, []));
+
+        $this->assertTrue(Arr::hasPathAnywhere($data, ['a']));
+        $this->assertTrue(Arr::hasPathAnywhere($data, ['a', 'b']));
+        $this->assertTrue(Arr::hasPathAnywhere($data, ['a', 'c']));
+        $this->assertTrue(Arr::hasPathAnywhere($data, ['a', 'd']));
+        $this->assertTrue(Arr::hasPathAnywhere($data, ['b']));
+        $this->assertTrue(Arr::hasPathAnywhere($data, ['b', 'c']));
+        $this->assertTrue(Arr::hasPathAnywhere($data, ['b', 'a', 'd']));
+
+        $this->assertFalse(Arr::hasPathAnywhere($data, ['e']));
+        $this->assertFalse(Arr::hasPathAnywhere($data, ['b', 'c', 'd']));
+        $this->assertFalse(Arr::hasPathAnywhere($data, ['b', 'd']));
+        $this->assertFalse(Arr::hasPathAnywhere($data, ['c', 'd']));
+    }
+
     public function testSetPath()
     {
         $data = ['foo' => ['bar' => 1]];

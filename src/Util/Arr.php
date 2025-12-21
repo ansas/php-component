@@ -228,6 +228,29 @@ class Arr
     }
 
     /**
+     * Does the path exist in the array on any level?
+     */
+    public static function hasPathAnywhere(array $data, array $path): bool
+    {
+        $subData = $data;
+        foreach ($path as $key) {
+            if (is_array($subData) && array_key_exists($key, $subData)) {
+                $subData = $subData[$key];
+            } else {
+                foreach ($data as $subData) {
+                    if (is_array($subData) && static::hasPathAnywhere($subData, $path)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Get specified value in array path.
      *
      * @param array $data
