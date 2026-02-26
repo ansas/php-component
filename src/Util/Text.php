@@ -445,6 +445,30 @@ class Text
         return strtolower($string);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
+    public static function toTrend(mixed $string): ?int
+    {
+        if (is_null($string)) {
+            return null;
+        }
+
+        if (!is_scalar($string)) {
+            throw new InvalidArgumentException("Value must be scalar");
+        }
+
+        if (is_numeric($string)) {
+            return $string > 0 ? 1 : ($string < 0 ? -1 : 0);
+        }
+
+        return match (strtolower(trim($string))) {
+            'positive', 'up'   => 1,
+            'negative', 'down' => -1,
+            default            => 0,
+        };
+    }
+
     public static function toUpper(?string $string): string
     {
         return self::toCase($string, self::UPPER);
