@@ -394,7 +394,8 @@ class Text
     public static function toSingleWhitespace(?string $string, bool $trim = true, bool $singleLine = true): string
     {
         if ($singleLine) {
-            $string = preg_replace("/[\r\n\t]/", " ", $string);
+            // Replace Unicode line separator (U+2028) with normal space as well
+            $string = preg_replace("/[\r\n\t\x{2028}]/u", " ", $string);
         }
 
         $string = preg_replace("/ {2,}/", " ", $string);
