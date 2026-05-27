@@ -318,6 +318,19 @@ class Arr
         return $data;
     }
 
+    public static function sortKeys(array $array): array
+    {
+        ksort($array);
+
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $array[$key] = static::sortKeys($value);
+            }
+        }
+
+        return $array;
+    }
+
     public static function unsetPath(array $data, array $path)
     {
         $current = &$data;
