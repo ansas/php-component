@@ -148,4 +148,20 @@ class PriceTest extends TestCase
         $this->assertEquals(3.1, Price::roundUp(3.1000001, 4));
         $this->assertEquals(3.1001, Price::roundUp(3.1000001, 4, 3));
     }
+
+    public function testDiff()
+    {
+        $this->assertEquals(0.00, Price::diff(3.99, 3.989));
+        $this->assertEquals(0.01, Price::diff(3.991, 3.983));
+        $this->assertEquals(-0.02, Price::diff(3.9643, 3.9834));
+    }
+
+    public function testIsEqual()
+    {
+        $this->assertTrue(Price::isEqual(3.99, 3.989));
+
+        $this->assertFalse(Price::isEqual(3.99, 3.979));
+        $this->assertTrue(Price::isEqual(3.99, 3.979, 0.01));
+        $this->assertTrue(Price::isEqual(3.99, 3.979, -0.01));
+    }
 }

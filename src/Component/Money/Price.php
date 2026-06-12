@@ -160,12 +160,22 @@ class Price extends PriceBase
         return $price;
     }
 
+    public static function diff(float $v1, float $v2): float
+    {
+        return static::round(static::round($v1) - static::round($v2));
+    }
+
     /**
      * @return int
      */
     public static function getRoundPrecision()
     {
         return self::$roundPrecision;
+    }
+
+    public static function isEqual(float $v1, float $v2, float $tolerance = 0.00): bool
+    {
+        return abs(static::diff($v1, $v2)) <= abs(static::round($tolerance));
     }
 
     /**
