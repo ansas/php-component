@@ -160,12 +160,14 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Appends specified items to collection (overwrites existing keys).
+     * Appends specified items to collection (overwrites existing keys by default).
      */
-    public function append(iterable $items): static
+    public function append(iterable $items, ?int $modeExclude = null): static
     {
         foreach ($items as $key => $value) {
-            $this->set($key, $value);
+            if (!$modeExclude || !$this->has($key, $modeExclude)) {
+                $this->set($key, $value);
+            }
         }
 
         return $this;
