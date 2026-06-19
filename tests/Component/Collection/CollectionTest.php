@@ -1,24 +1,14 @@
-<?php
-/**
- * This file is part of the PHP components.
- *
- * For the full copyright and license information, please view the LICENSE.md file distributed with this source code.
- *
- * @license MIT License
- * @link    https://github.com/ansas/php-component
- */
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
 namespace Ansas\Component\Collection;
 
-use DateTime;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class CollectionTest
- *
- * @package Ansas\Component\Collection
- * @author  Ansas Meyer <mail@ansas-meyer.de>
- */
+enum MockStatus: string
+{
+    case Active = 'active';
+}
+
 class CollectionTest extends TestCase
 {
     public function testCreate()
@@ -99,5 +89,21 @@ class CollectionTest extends TestCase
         $this->assertEquals(['john', 'joe'], $collection['set3']);
 
         return $collection;
+    }
+
+    public function testPathAcceptsRealEnums(): void
+    {
+        $collection = new class([
+            'active' => [
+                'admin' => 'Erlaubt'
+            ]
+        ]) extends Collection {
+            protected function normalizeKey(mixed $key): mixed
+            {
+                return strtolower($key instanceof MockStatus ? $key->value : $key);
+            }
+        };
+
+        $this->assertEquals('Erlaubt', $collection->path([MockStatus::Active, 'Admin']));
     }
 }

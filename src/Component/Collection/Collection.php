@@ -354,7 +354,14 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
      */
     public function path(array|string $path, mixed $default = null, string $glue = '.'): mixed
     {
-        return Arr::path($this->data, $path, $default, $glue);
+        if (!is_array($path)) {
+            $path = explode($glue, $path);
+        }
+        foreach ($path as $key => $value) {
+            $path[$key] = $this->normalizeKey($value);
+        }
+
+        return Arr::path($this->data, $path, $default);
     }
 
     /**
